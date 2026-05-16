@@ -1,0 +1,12 @@
+.env
+.env.*
+node_modules/
+dist/
+build/
+coverage/
+.git/
+
+bob_sessions/**/*.png
+bob_sessions/**/*.jpg
+bob_sessions/**/*.jpeg
+bob_sessions/*

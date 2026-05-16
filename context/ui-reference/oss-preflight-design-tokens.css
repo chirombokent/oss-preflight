@@ -1,0 +1,384 @@
+/* ============================================================
+   OSS Preflight — oss-preflight-design-tokens.css
+   Token-first design system. Evidence-backed recommendations.
+   ============================================================ */
+
+/* ─── Webfonts (self-hosted) ─────────────────────────────── */
+/* Satoshi Medium — headline display (evidence clarity).
+   JetBrains Mono — code blocks (package names, versions).
+   DM Sans + Playfair Display from Google Fonts (same stack). */
+@font-face {
+  font-family: "Satoshi";
+  src: url("./fonts/Satoshi-Medium.woff2") format("woff2"),
+       url("./fonts/Satoshi-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-VariableFont.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-Italic-VariableFont.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* DM Sans + Playfair Display are pulled from Google Fonts.
+   Include this in <head>:
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* ─── Brand — Slate (primary) ─── */
+  /* Deep indigo/slate: signals clarity, evidence, technical trust */
+  --pf-slate-deep:   #3B4E7A;   /* Primary button, headers, primary text */
+  --pf-slate-mid:    #5268A0;   /* Hover states, secondary accents */
+  --pf-slate-light:  #6B82BA;   /* Disabled, muted states */
+
+  /* ─── Brand — Copper (secondary / accent) ─── */
+  /* Warmth, approachability, highlights evidence */
+  --pf-copper-warm:  #C9A96E;
+  --pf-copper-light: #D4BC8A;
+  --pf-copper-dark:  #B8944F;
+
+  /* ─── Brand — Evidence (tertiary accents) ─── */
+  /* For highlighting evidence quality, source confidence */
+  --pf-evidence-solid:   #6B7D9F;   /* Sourced fact */
+  --pf-evidence-light:   #8B9DBF;   /* Inferred signal */
+
+  /* ─── Neutrals (warm, sophisticated) ─── */
+  --pf-charcoal:     #1A1A1A;
+  --pf-stone:        #6E6E6E;
+  --pf-stone-mid:    #9E9E9E;
+  --pf-sand-light:   #E8DFD0;
+  --pf-sand-pale:    #F0EBE1;
+  --pf-ivory:        #FAFAF5;
+  --pf-ivory-warm:   #F5F0E8;
+
+  /* ─── Semantic (evidence-appropriate) ─── */
+  --pf-success:      #2E7D4F;      /* Test passed, safe */
+  --pf-success-bg:   #E8F5EE;
+  --pf-warning:      #B8860B;      /* Caution signal, review recommended */
+  --pf-warning-bg:   #FFF8E1;
+  --pf-error:        #C0392B;      /* Critical issue, do not use */
+  --pf-error-bg:     #FDECEC;
+  --pf-info:         #3B4E7A;      /* Informational, note */
+  --pf-info-bg:      #EEF1F8;
+
+  /* ─── Semantic surfaces (design tokens override RHS) ─── */
+  --pf-bg:             var(--pf-ivory);
+  --pf-surface:        var(--pf-ivory-warm);
+  --pf-surface-raised: #ffffff;
+  --pf-overlay:        rgba(26, 26, 26, 0.42);
+
+  --pf-text-primary:   var(--pf-charcoal);
+  --pf-text-secondary: var(--pf-stone);
+  --pf-text-tertiary:  var(--pf-stone-mid);
+  --pf-text-inverse:   var(--pf-ivory);
+  --pf-text-link:      var(--pf-slate-mid);
+
+  --pf-border:         var(--pf-sand-light);
+  --pf-border-strong:  rgba(26, 26, 26, 0.18);
+  --pf-input-bg:       #ffffff;
+  --pf-ring:           rgba(59, 78, 122, 0.32);  /* Slate-based focus ring */
+
+  --pf-brand-primary:        var(--pf-slate-deep);
+  --pf-brand-primary-hover:  var(--pf-slate-mid);
+  --pf-brand-primary-muted:  var(--pf-sand-pale);
+  --pf-brand-secondary:      var(--pf-copper-warm);
+  --pf-brand-secondary-muted: var(--pf-ivory-warm);
+
+  /* RGB channels for alpha compositing (gradients / glows / score bars) */
+  --pf-copper-rgb: 201, 169, 110;
+  --pf-slate-rgb:  59, 78, 122;
+
+  /* ─── Type families ─── */
+  --pf-font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --pf-font-body:    "DM Sans", "Satoshi", system-ui, "Segoe UI", sans-serif;
+  --pf-font-mono:    "JetBrains Mono", Consolas, ui-monospace, monospace;
+
+  /* ─── Type scale (rem; base 16px) ─── */
+  --pf-size-xs:   0.75rem;   /* 12 */
+  --pf-size-sm:   0.875rem;  /* 14 */
+  --pf-size-base: 1rem;      /* 16 */
+  --pf-size-md:   1.125rem;  /* 18 */
+  --pf-size-lg:   1.25rem;   /* 20 */
+  --pf-size-xl:   1.5rem;    /* 24 */
+  --pf-size-2xl:  1.875rem;  /* 30 */
+  --pf-size-3xl:  2.25rem;   /* 36 */
+  --pf-size-4xl:  3rem;      /* 48 */
+  --pf-size-5xl:  3.75rem;   /* 60 */
+
+  --pf-weight-regular:  400;
+  --pf-weight-medium:   500;
+  --pf-weight-semibold: 600;
+  --pf-weight-bold:     700;
+
+  --pf-line-tight:   1.15;
+  --pf-line-snug:    1.25;
+  --pf-line-normal:  1.5;
+  --pf-line-relaxed: 1.72;  /* Body baseline */
+
+  --pf-tracking-wide:    0.02em;
+  --pf-tracking-eyebrow: 0.08em;
+  --pf-tracking-caps:    0.1em;
+
+  /* ─── Spacing scale (4 / 8 base) ─── */
+  --pf-space-0:  0;
+  --pf-space-1:  0.25rem;
+  --pf-space-2:  0.5rem;
+  --pf-space-3:  0.75rem;
+  --pf-space-4:  1rem;
+  --pf-space-5:  1.25rem;
+  --pf-space-6:  1.5rem;
+  --pf-space-8:  2rem;
+  --pf-space-10: 2.5rem;
+  --pf-space-12: 3rem;
+  --pf-space-16: 4rem;
+  --pf-space-20: 5rem;
+  --pf-space-24: 6rem;
+
+  /* ─── Radii ─── */
+  /* Scale: 8px → 50% (circle) and 9999px (pills) */
+  --pf-radius-none: 0;
+  --pf-radius-sm:   0.5rem;    /* 8px  */
+  --pf-radius-md:   0.75rem;   /* 12px */
+  --pf-radius-lg:   1rem;      /* 16px */
+  --pf-radius-xl:   1.25rem;   /* 20px */
+  --pf-radius-2xl:  1.5rem;    /* 24px */
+  --pf-radius-full: 50%;
+  --pf-radius-pill: 9999px;
+
+  /* ─── Shadows (quiet, warm — not blue) ─── */
+  --pf-shadow-none:  none;
+  --pf-shadow-sm:    0 1px 2px rgba(59, 78, 122, 0.05);
+  --pf-shadow-md:    0 4px 12px rgba(59, 78, 122, 0.08);
+  --pf-shadow-lg:    0 8px 24px rgba(59, 78, 122, 0.12);
+  --pf-shadow-xl:    0 16px 48px rgba(59, 78, 122, 0.16);
+  --pf-shadow-card:  0 1px 3px rgba(59, 78, 122, 0.04), 0 4px 12px rgba(59, 78, 122, 0.06);
+  --pf-shadow-glow:  0 0 20px rgba(var(--pf-copper-rgb), 0.22);
+  --pf-shadow-focus: 0 0 0 3px var(--pf-ring);
+
+  /* ─── Motion (calm, intentional) ─── */
+  --pf-motion-fast:   150ms;
+  --pf-motion-normal: 250ms;
+  --pf-motion-slow:   400ms;
+  --pf-motion-ease:   cubic-bezier(0.4, 0, 0.2, 1);
+  --pf-motion-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+
+  /* ─── Breakpoints ─── */
+  --pf-bp-sm: 640px;
+  --pf-bp-md: 768px;
+  --pf-bp-lg: 1024px;
+  --pf-bp-xl: 1280px;
+
+  /* ─── Z-Index layers ─── */
+  --pf-z-base:    0;
+  --pf-z-raised:  10;
+  --pf-z-sticky:  100;
+  --pf-z-overlay: 200;
+  --pf-z-modal:   300;
+  --pf-z-toast:   400;
+}
+
+/* ─── Dark mode (opt-in via .dark or [data-theme=dark]) ─ */
+.dark,
+[data-theme="dark"] {
+  --pf-bg:             #171613;
+  --pf-surface:        #201F1A;
+  --pf-surface-raised: #282722;
+  --pf-overlay:        rgba(0, 0, 0, 0.56);
+
+  --pf-text-primary:   #FAFAF7;
+  --pf-text-secondary: #D3D0C8;
+  --pf-text-tertiary:  #B3AD9F;
+  --pf-text-inverse:   #171613;
+  --pf-text-link:      #8B9DBF;  /* Slate light for readability */
+
+  --pf-border:         rgba(250, 250, 247, 0.14);
+  --pf-input-bg:       #2A2924;
+  --pf-ring:           rgba(107, 130, 186, 0.45);  /* Slate-based */
+
+  --pf-info-bg:        #1F2540;  /* Dark mode info background */
+}
+
+/* ─── Calm mode — reduces contrast, kills excess shadows ─── */
+[data-calm="true"] {
+  --pf-shadow-sm:   none;
+  --pf-shadow-md:   0 1px 2px rgba(59, 78, 122, 0.05);
+  --pf-shadow-lg:   0 2px 6px rgba(59, 78, 122, 0.06);
+  --pf-shadow-xl:   0 4px 12px rgba(59, 78, 122, 0.08);
+  --pf-shadow-card: 0 1px 2px rgba(59, 78, 122, 0.04);
+  --pf-shadow-glow: none;
+  --pf-surface:        var(--pf-ivory);
+  --pf-surface-raised: var(--pf-ivory);
+}
+
+/* ─── Reduced motion (respected globally) ─── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pf-motion-fast:   0ms;
+    --pf-motion-normal: 0ms;
+    --pf-motion-slow:   0ms;
+  }
+}
+
+/* ============================================================
+   Semantic type roles — use these, not raw sizes, in product.
+   ============================================================ */
+
+.pf-display-xl {
+  font-family: var(--pf-font-display);
+  font-size: var(--pf-size-5xl);
+  line-height: var(--pf-line-tight);
+  font-weight: var(--pf-weight-bold);
+  letter-spacing: -0.01em;
+  color: var(--pf-slate-deep);
+}
+
+.pf-display-lg {
+  font-family: var(--pf-font-display);
+  font-size: var(--pf-size-4xl);
+  line-height: var(--pf-line-tight);
+  font-weight: var(--pf-weight-medium);
+  color: var(--pf-slate-deep);
+}
+
+.pf-h1 {
+  font-family: var(--pf-font-display);
+  font-size: var(--pf-size-3xl);
+  line-height: var(--pf-line-snug);
+  font-weight: var(--pf-weight-bold);
+  color: var(--pf-slate-deep);
+}
+
+.pf-h2 {
+  font-family: var(--pf-font-display);
+  font-size: var(--pf-size-2xl);
+  line-height: var(--pf-line-snug);
+  font-weight: var(--pf-weight-medium);
+  color: var(--pf-slate-deep);
+}
+
+.pf-h3 {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-lg);
+  line-height: var(--pf-line-snug);
+  font-weight: var(--pf-weight-semibold);
+  color: var(--pf-text-primary);
+}
+
+.pf-h4 {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-md);
+  line-height: var(--pf-line-snug);
+  font-weight: var(--pf-weight-semibold);
+  color: var(--pf-text-primary);
+}
+
+.pf-body {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-base);
+  line-height: var(--pf-line-relaxed);
+  font-weight: var(--pf-weight-regular);
+  color: var(--pf-text-primary);
+}
+
+.pf-body-lg {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-md);
+  line-height: var(--pf-line-relaxed);
+  color: var(--pf-text-secondary);
+}
+
+.pf-small {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-sm);
+  line-height: var(--pf-line-normal);
+  color: var(--pf-text-secondary);
+}
+
+.pf-caption {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-xs);
+  line-height: var(--pf-line-normal);
+  color: var(--pf-text-tertiary);
+}
+
+.pf-eyebrow {
+  font-family: var(--pf-font-body);
+  font-size: var(--pf-size-xs);
+  font-weight: var(--pf-weight-semibold);
+  letter-spacing: var(--pf-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--pf-copper-dark);
+}
+
+.pf-emphasis {
+  font-family: var(--pf-font-display);
+  font-style: italic;
+  font-weight: var(--pf-weight-medium);
+}
+
+.pf-code {
+  font-family: var(--pf-font-mono);
+  font-size: 0.925em;
+  color: var(--pf-slate-mid);
+  background: var(--pf-ivory-warm);
+  padding: 0.125em 0.375em;
+  border-radius: var(--pf-radius-sm);
+}
+
+.pf-link {
+  color: var(--pf-text-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(var(--pf-copper-rgb), 0.5);
+  transition: color var(--pf-motion-fast) var(--pf-motion-ease);
+}
+.pf-link:hover { color: var(--pf-copper-warm); }
+
+/* ============================================================
+   OSS Preflight-specific utility tokens
+   ============================================================ */
+
+/* Fact vs. Inferred visual distinction */
+.pf-fact-badge {
+  color: var(--pf-evidence-solid);
+  font-weight: var(--pf-weight-semibold);
+}
+
+.pf-inferred-badge {
+  color: var(--pf-evidence-light);
+  font-weight: var(--pf-weight-semibold);
+}
+
+/* Score bar segments (6 dimensions) */
+.pf-score-goal-fit { background-color: var(--pf-slate-deep); }
+.pf-score-compat { background-color: var(--pf-slate-mid); }
+.pf-score-maintenance { background-color: var(--pf-slate-light); }
+.pf-score-safety { background-color: var(--pf-copper-dark); }
+.pf-score-community { background-color: var(--pf-copper-warm); }
+.pf-score-docs { background-color: var(--pf-copper-light); }
+
+/* Evidence quality indicators */
+.pf-evidence-fresh {
+  border-left: 3px solid var(--pf-evidence-solid);
+  padding-left: var(--pf-space-3);
+}
+
+.pf-evidence-cached {
+  border-left: 3px solid var(--pf-evidence-light);
+  padding-left: var(--pf-space-3);
+  opacity: 0.85;
+}

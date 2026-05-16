@@ -1,0 +1,347 @@
+/* ============================================================
+   Dreamverse Core — colors_and_type.css
+   Token-first foundation. Child brands override these vars.
+   ============================================================ */
+
+/* ─── Webfonts (self-hosted) ─────────────────────────────── */
+/* Satoshi Medium — uploaded by user (onlinewebfonts trial).
+   Flagged as a LICENSE-CHECK substitution for headline display
+   use. Core currently uses Playfair Display (live brand D2H)
+   as the canonical display face. */
+@font-face {
+  font-family: "Satoshi";
+  src: url("./fonts/Satoshi-Medium.woff2") format("woff2"),
+       url("./fonts/Satoshi-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-VariableFont.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/JetBrainsMono-Italic-VariableFont.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* DM Sans + Playfair Display are pulled from Google Fonts
+   (same stack as Dream2Host). Include this in <head>:
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* ─── Brand — Forest (primary) ─── */
+  --dv-forest-deep:  #2D3B2D;
+  --dv-forest-mid:   #3D5A3D;
+  --dv-forest-light: #4A7A4A;
+
+  /* ─── Brand — Copper (secondary / accent) ─── */
+  --dv-copper-warm:  #C9A96E;
+  --dv-copper-light: #D4BC8A;
+  --dv-copper-dark:  #B8944F;
+
+  /* ─── Brand — Earth (tertiary accents) ─── */
+  --dv-earth-clay:   #6B4D3A;
+  --dv-earth-light:  #8B6D5A;
+
+  /* ─── Neutrals ─── */
+  --dv-charcoal:     #1A1A1A;
+  --dv-stone:        #6E6E6E;
+  --dv-stone-mid:    #9E9E9E;
+  --dv-sand-light:   #E8DFD0;
+  --dv-sand-pale:    #F0EBE1;
+  --dv-ivory:        #FAFAF5;
+  --dv-ivory-warm:   #F5F0E8;
+
+  /* ─── Semantic ─── */
+  --dv-success:      #2E7D4F;
+  --dv-success-bg:   #E8F5EE;
+  --dv-warning:      #B8860B;
+  --dv-warning-bg:   #FFF8E1;
+  --dv-error:        #C0392B;
+  --dv-error-bg:     #FDECEC;
+  --dv-info:         #2E6B8A;
+  --dv-info-bg:      #E8F0F5;
+
+  /* ─── Semantic surfaces (child brands override the RHS) ─── */
+  --dv-bg:             var(--dv-ivory);
+  --dv-surface:        var(--dv-ivory-warm);
+  --dv-surface-raised: #ffffff;
+  --dv-overlay:        rgba(26, 26, 26, 0.42);
+
+  --dv-text-primary:   var(--dv-charcoal);
+  --dv-text-secondary: var(--dv-stone);
+  --dv-text-tertiary:  var(--dv-stone-mid);
+  --dv-text-inverse:   var(--dv-ivory);
+  --dv-text-link:      var(--dv-forest-mid);
+
+  --dv-border:         var(--dv-sand-light);
+  --dv-border-strong:  rgba(26, 26, 26, 0.18);
+  --dv-input-bg:       #ffffff;
+  --dv-ring:           rgba(201, 169, 110, 0.32);
+
+  --dv-brand-primary:        var(--dv-forest-deep);
+  --dv-brand-primary-hover:  var(--dv-forest-mid);
+  --dv-brand-primary-muted:  var(--dv-sand-pale);
+  --dv-brand-secondary:      var(--dv-copper-warm);
+  --dv-brand-secondary-muted: var(--dv-ivory-warm);
+
+  /* RGB channels for alpha compositing (gradients / glows) */
+  --dv-copper-rgb: 201, 169, 110;
+  --dv-forest-rgb: 45, 59, 45;
+
+  /* ─── Type families ─── */
+  --dv-font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --dv-font-body:    "DM Sans", "Satoshi", system-ui, "Segoe UI", sans-serif;
+  --dv-font-mono:    "JetBrains Mono", Consolas, ui-monospace, monospace;
+
+  /* ─── Type scale (rem; base 16px) ─── */
+  --dv-size-xs:   0.75rem;   /* 12 */
+  --dv-size-sm:   0.875rem;  /* 14 */
+  --dv-size-base: 1rem;      /* 16 */
+  --dv-size-md:   1.125rem;  /* 18 */
+  --dv-size-lg:   1.25rem;   /* 20 */
+  --dv-size-xl:   1.5rem;    /* 24 */
+  --dv-size-2xl:  1.875rem;  /* 30 */
+  --dv-size-3xl:  2.25rem;   /* 36 */
+  --dv-size-4xl:  3rem;      /* 48 */
+  --dv-size-5xl:  3.75rem;   /* 60 */
+
+  --dv-weight-regular:  400;
+  --dv-weight-medium:   500;
+  --dv-weight-semibold: 600;
+  --dv-weight-bold:     700;
+
+  --dv-line-tight:   1.15;
+  --dv-line-snug:    1.25;
+  --dv-line-normal:  1.5;
+  --dv-line-relaxed: 1.72;  /* Dream2Host body baseline */
+
+  --dv-tracking-wide:  0.02em;
+  --dv-tracking-eyebrow: 0.08em;
+  --dv-tracking-caps:    0.1em;
+
+  /* ─── Spacing scale (4 / 8 base) ─── */
+  --dv-space-0:  0;
+  --dv-space-1:  0.25rem;
+  --dv-space-2:  0.5rem;
+  --dv-space-3:  0.75rem;
+  --dv-space-4:  1rem;
+  --dv-space-5:  1.25rem;
+  --dv-space-6:  1.5rem;
+  --dv-space-8:  2rem;
+  --dv-space-10: 2.5rem;
+  --dv-space-12: 3rem;
+  --dv-space-16: 4rem;
+  --dv-space-20: 5rem;
+  --dv-space-24: 6rem;
+
+  /* ─── Radii ─── */
+  /* Scale starts at 8px and steps up evenly. `full` is 50% (perfect
+     circle for square elements); `pill` is 9999px (capsules / badges
+     whose aspect ratio isn't 1:1). */
+  --dv-radius-none: 0;
+  --dv-radius-sm:   0.5rem;    /* 8px  */
+  --dv-radius-md:   0.75rem;   /* 12px */
+  --dv-radius-lg:   1rem;      /* 16px */
+  --dv-radius-xl:   1.25rem;   /* 20px */
+  --dv-radius-2xl:  1.5rem;    /* 24px */
+  --dv-radius-full: 50%;
+  --dv-radius-pill: 9999px;
+
+  /* ─── Shadows (quiet, warm — not blue) ─── */
+  --dv-shadow-none:  none;
+  --dv-shadow-sm:    0 1px 2px rgba(45, 59, 45, 0.05);
+  --dv-shadow-md:    0 4px 12px rgba(45, 59, 45, 0.08);
+  --dv-shadow-lg:    0 8px 24px rgba(45, 59, 45, 0.12);
+  --dv-shadow-xl:    0 16px 48px rgba(45, 59, 45, 0.16);
+  --dv-shadow-card:  0 1px 3px rgba(45, 59, 45, 0.04), 0 4px 12px rgba(45, 59, 45, 0.06);
+  --dv-shadow-glow:  0 0 20px rgba(var(--dv-copper-rgb), 0.22);
+  --dv-shadow-focus: 0 0 0 3px var(--dv-ring);
+
+  /* ─── Motion (calm by default) ─── */
+  --dv-motion-fast:   150ms;
+  --dv-motion-normal: 250ms;
+  --dv-motion-slow:   400ms;
+  --dv-motion-ease:   cubic-bezier(0.4, 0, 0.2, 1);
+  --dv-motion-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+
+  /* ─── Breakpoints ─── */
+  --dv-bp-sm: 640px;
+  --dv-bp-md: 768px;
+  --dv-bp-lg: 1024px;
+  --dv-bp-xl: 1280px;
+
+  /* ─── Z-Index layers ─── */
+  --dv-z-base:    0;
+  --dv-z-raised:  10;
+  --dv-z-sticky:  100;
+  --dv-z-overlay: 200;
+  --dv-z-modal:   300;
+  --dv-z-toast:   400;
+}
+
+/* ─── Dark mode (opt-in via .dark on html or [data-theme=dark]) ─ */
+.dark,
+[data-theme="dark"] {
+  --dv-bg:             #171613;
+  --dv-surface:        #201F1A;
+  --dv-surface-raised: #282722;
+  --dv-overlay:        rgba(0, 0, 0, 0.56);
+
+  --dv-text-primary:   #FAFAF7;
+  --dv-text-secondary: #D3D0C8;
+  --dv-text-tertiary:  #B3AD9F;
+  --dv-text-inverse:   #171613;
+  --dv-text-link:      #D4BC8A;
+
+  --dv-border:         rgba(250, 250, 247, 0.14);
+  --dv-input-bg:       #2A2924;
+  --dv-ring:           rgba(212, 188, 138, 0.45);
+}
+
+/* ─── Calm mode — reduces contrast, kills shadows/glows ─── */
+[data-calm="true"] {
+  --dv-shadow-sm:   none;
+  --dv-shadow-md:   0 1px 2px rgba(45, 59, 45, 0.05);
+  --dv-shadow-lg:   0 2px 6px rgba(45, 59, 45, 0.06);
+  --dv-shadow-xl:   0 4px 12px rgba(45, 59, 45, 0.08);
+  --dv-shadow-card: 0 1px 2px rgba(45, 59, 45, 0.04);
+  --dv-shadow-glow: none;
+  --dv-surface:        var(--dv-ivory);
+  --dv-surface-raised: var(--dv-ivory);
+}
+
+/* ─── Reduced motion (respected globally) ─── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dv-motion-fast:   0ms;
+    --dv-motion-normal: 0ms;
+    --dv-motion-slow:   0ms;
+  }
+}
+
+/* ============================================================
+   Semantic type roles — use these, not raw sizes, in product.
+   ============================================================ */
+
+.dv-display-xl {
+  font-family: var(--dv-font-display);
+  font-size: var(--dv-size-5xl);
+  line-height: var(--dv-line-tight);
+  font-weight: var(--dv-weight-bold);
+  letter-spacing: -0.01em;
+  color: var(--dv-forest-deep);
+}
+
+.dv-display-lg {
+  font-family: var(--dv-font-display);
+  font-size: var(--dv-size-4xl);
+  line-height: var(--dv-line-tight);
+  font-weight: var(--dv-weight-medium);
+  color: var(--dv-forest-deep);
+}
+
+.dv-h1 {
+  font-family: var(--dv-font-display);
+  font-size: var(--dv-size-3xl);
+  line-height: var(--dv-line-snug);
+  font-weight: var(--dv-weight-bold);
+  color: var(--dv-forest-deep);
+}
+
+.dv-h2 {
+  font-family: var(--dv-font-display);
+  font-size: var(--dv-size-2xl);
+  line-height: var(--dv-line-snug);
+  font-weight: var(--dv-weight-medium);
+  color: var(--dv-forest-deep);
+}
+
+.dv-h3 {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-lg);
+  line-height: var(--dv-line-snug);
+  font-weight: var(--dv-weight-semibold);
+  color: var(--dv-text-primary);
+}
+
+.dv-h4 {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-md);
+  line-height: var(--dv-line-snug);
+  font-weight: var(--dv-weight-semibold);
+  color: var(--dv-text-primary);
+}
+
+.dv-body {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-base);
+  line-height: var(--dv-line-relaxed);
+  font-weight: var(--dv-weight-regular);
+  color: var(--dv-text-primary);
+}
+
+.dv-body-lg {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-md);
+  line-height: var(--dv-line-relaxed);
+  color: var(--dv-text-secondary);
+}
+
+.dv-small {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-sm);
+  line-height: var(--dv-line-normal);
+  color: var(--dv-text-secondary);
+}
+
+.dv-caption {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-xs);
+  line-height: var(--dv-line-normal);
+  color: var(--dv-text-tertiary);
+}
+
+.dv-eyebrow {
+  font-family: var(--dv-font-body);
+  font-size: var(--dv-size-xs);
+  font-weight: var(--dv-weight-semibold);
+  letter-spacing: var(--dv-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--dv-copper-dark);
+}
+
+.dv-emphasis {
+  font-family: var(--dv-font-display);
+  font-style: italic;
+  font-weight: var(--dv-weight-medium);
+}
+
+.dv-code {
+  font-family: var(--dv-font-mono);
+  font-size: 0.925em;
+  color: var(--dv-forest-mid);
+  background: var(--dv-ivory-warm);
+  padding: 0.125em 0.375em;
+  border-radius: var(--dv-radius-sm);
+}
+
+.dv-link {
+  color: var(--dv-text-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(var(--dv-copper-rgb), 0.5);
+  transition: color var(--dv-motion-fast) var(--dv-motion-ease);
+}
+.dv-link:hover { color: var(--dv-copper-warm); }

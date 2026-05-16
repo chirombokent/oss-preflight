@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+.vite/
+
+.DS_Store
+*.log
+
+.oss-preflight/cache/tmp/
+oss-preflight-output/
+
