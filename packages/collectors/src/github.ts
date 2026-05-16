@@ -1,5 +1,6 @@
 import { CollectorError, RateLimitError } from './errors.js';
 import { readCache, writeCache } from './cache/index.js';
+import type { CollectorResultSource } from './cache/index.js';
 
 /**
  * GitHub repository API response
@@ -40,10 +41,11 @@ interface GitHubContributor {
  */
 export interface GitHubCollectedData {
   repo: GitHubRepoResponse;
-  contributors: GitHubContributor[];
-  contributorCount: number;
+  contributors: GitHubContributor[] | null;
+  contributorCount: number | null;
   sourceUrl: string;
   collectedAt: string;
+  source: CollectorResultSource;
 }
 
 /**
@@ -63,8 +65,8 @@ function getGitHubToken(): string | undefined {
 /**
  * Create fetch headers with optional auth
  */
-function createHeaders(): HeadersInit {
-  const headers: HeadersInit = {
+function createHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'oss-preflight'
   };
@@ -115,7 +117,7 @@ async function fetchGitHubRepo(ownerRepo: string): Promise<GitHubRepoResponse> {
 /**
  * Fetch GitHub contributors
  */
-async function fetchGitHubContributors(ownerRepo: string): Promise<GitHubContributor[]> {
+async function fetchGitHubContributors(ownerRepo: string): Promise<GitHubContributor[] | null> {
   const url = `https://api.github.com/repos/${ownerRepo}/contributors?per_page=10`;
   
   try {
@@ -123,15 +125,22 @@ async function fetchGitHubContributors(ownerRepo: string): Promise<GitHubContrib
       headers: createHeaders()
     });
     
+    if (isRateLimited(response)) {
+      const resetTime = response.headers.get('X-RateLimit-Reset');
+      const retryAfter = resetTime ? parseInt(resetTime, 10) - Math.floor(Date.now() / 1000) : undefined;
+      throw new RateLimitError('github', retryAfter);
+    }
+
     if (!response.ok) {
-      // Contributors fetch is not critical - return empty array
-      return [];
+      return null;
     }
     
     return await response.json() as GitHubContributor[];
-  } catch {
-    // Network error - return empty array
-    return [];
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      throw error;
+    }
+    return null;
   }
 }
 
@@ -150,7 +159,8 @@ export async function collectGitHubData(
     if (cached && !cached.error) {
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache'
       };
     }
   }
@@ -168,9 +178,10 @@ export async function collectGitHubData(
     const data: GitHubCollectedData = {
       repo,
       contributors,
-      contributorCount: contributors.length,
+      contributorCount: contributors?.length ?? null,
       sourceUrl,
-      collectedAt
+      collectedAt,
+      source: 'live'
     };
     
     // Cache the result
@@ -180,12 +191,13 @@ export async function collectGitHubData(
   } catch (error) {
     // If rate limited, try to return cached data with cache-fallback source
     if (error instanceof RateLimitError) {
-      const cached = await readCache<GitHubCollectedData>('github', canonicalId);
+      const cached = await readCache<GitHubCollectedData>('github', canonicalId, { allowExpired: true });
       if (cached && !cached.error) {
         // Return stale cache as fallback with updated source
         return {
           ...cached.data,
-          collectedAt: cached.collectedAt
+          collectedAt: cached.collectedAt,
+          source: 'cache-fallback'
         };
       }
       
@@ -194,11 +206,12 @@ export async function collectGitHubData(
     }
     
     // For other errors, try to return cached data if available
-    const cached = await readCache<GitHubCollectedData>('github', canonicalId);
+    const cached = await readCache<GitHubCollectedData>('github', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache-fallback'
       };
     }
     

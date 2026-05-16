@@ -1,7 +1,7 @@
 import type { Ecosystem } from '@oss-preflight/core';
-import { collectNpmData, type NpmCollectedData } from './npm.js';
-import { collectGitHubData, type GitHubCollectedData } from './github.js';
-import { collectPyPIData, type PyPICollectedData } from './pypi.js';
+import { collectNpmData } from './npm.js';
+import { collectGitHubData } from './github.js';
+import { collectPyPIData } from './pypi.js';
 
 /**
  * Collector function type

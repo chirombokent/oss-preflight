@@ -1,5 +1,6 @@
 import { CollectorError } from './errors.js';
 import { readCache, writeCache } from './cache/index.js';
+import type { CollectorResultSource } from './cache/index.js';
 
 /**
  * OpenSSF Scorecard API response
@@ -32,6 +33,7 @@ export interface OpenSSFCollectedData {
   score: number | null;
   sourceUrl: string;
   collectedAt: string;
+  source: CollectorResultSource;
 }
 
 /**
@@ -85,7 +87,8 @@ export async function collectOpenSSFData(
     if (cached && !cached.error) {
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache'
       };
     }
   }
@@ -101,7 +104,8 @@ export async function collectOpenSSFData(
       scorecard,
       score: scorecard?.score ?? null,
       sourceUrl,
-      collectedAt
+      collectedAt,
+      source: 'live'
     };
     
     // Cache the result (even if null - we don't want to keep retrying)
@@ -110,11 +114,12 @@ export async function collectOpenSSFData(
     return data;
   } catch (error) {
     // For errors, try to return cached data if available
-    const cached = await readCache<OpenSSFCollectedData>('openssf', canonicalId);
+    const cached = await readCache<OpenSSFCollectedData>('openssf', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache-fallback'
       };
     }
     

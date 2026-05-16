@@ -1,5 +1,6 @@
 import { PackageNotFoundError, CollectorError } from './errors.js';
 import { readCache, writeCache } from './cache/index.js';
+import type { CollectorResultSource } from './cache/index.js';
 
 /**
  * PyPI package metadata response
@@ -30,6 +31,7 @@ export interface PyPICollectedData {
   metadata: PyPIMetadata;
   sourceUrl: string;
   collectedAt: string;
+  source: CollectorResultSource;
 }
 
 /**
@@ -74,7 +76,8 @@ export async function collectPyPIData(
     if (cached && !cached.error) {
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache'
       };
     }
   }
@@ -89,7 +92,8 @@ export async function collectPyPIData(
     const data: PyPICollectedData = {
       metadata,
       sourceUrl,
-      collectedAt
+      collectedAt,
+      source: 'live'
     };
     
     // Cache the result
@@ -97,18 +101,19 @@ export async function collectPyPIData(
     
     return data;
   } catch (error) {
-    // If it's a 404, don't cache and rethrow
     if (error instanceof PackageNotFoundError) {
+      await writeCache('pypi', canonicalId, { error: error.message }, 'live', true);
       throw error;
     }
     
     // For other errors, try to return cached data if available
-    const cached = await readCache<PyPICollectedData>('pypi', canonicalId);
+    const cached = await readCache<PyPICollectedData>('pypi', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       // Return stale cache as fallback
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache-fallback'
       };
     }
     

@@ -294,7 +294,7 @@ function createEvidencePassport(
  * Generate goal fit interpretation
  */
 function generateGoalFitInterpretation(
-  candidate: Candidate,
+  _candidate: Candidate,
   brief: IdeaBrief,
   score: number
 ): string {
@@ -312,7 +312,7 @@ function generateGoalFitInterpretation(
  */
 function generateCompatibilityInterpretation(
   candidate: Candidate,
-  brief: IdeaBrief
+  _brief: IdeaBrief
 ): string {
   if (candidate.ecosystem === 'npm') {
     return 'Compatible with Node.js and TypeScript projects';

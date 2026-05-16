@@ -1,6 +1,8 @@
 import { promises as fs } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { homedir } from 'node:os';
+
+export type CacheEntrySource = 'live' | 'cache';
+export type CollectorResultSource = CacheEntrySource | 'cache-fallback';
 
 /**
  * Cache entry structure
@@ -8,15 +10,21 @@ import { homedir } from 'node:os';
 export interface CacheEntry<T = unknown> {
   data: T;
   collectedAt: string; // ISO-8601
-  source: 'live' | 'cache' | 'cache-fallback';
+  source: CacheEntrySource;
   error?: boolean;
+}
+
+export interface ReadCacheOptions {
+  allowExpired?: boolean;
 }
 
 /**
  * TTL configuration per ecosystem (in milliseconds)
  */
+const DEFAULT_TTL_MS = 6 * 60 * 60 * 1000;
+
 const TTL_MS: Record<string, number> = {
-  npm: 6 * 60 * 60 * 1000,      // 6 hours
+  npm: DEFAULT_TTL_MS,           // 6 hours
   github: 2 * 60 * 60 * 1000,   // 2 hours
   pypi: 6 * 60 * 60 * 1000,     // 6 hours
   openssf: 24 * 60 * 60 * 1000, // 24 hours
@@ -27,8 +35,7 @@ const TTL_MS: Record<string, number> = {
  * Get cache directory path
  */
 function getCacheDir(): string {
-  // Use .oss-preflight/cache in user's home directory
-  return join(homedir(), '.oss-preflight', 'cache');
+  return process.env.OSS_PREFLIGHT_CACHE_DIR ?? join(process.cwd(), '.oss-preflight', 'cache');
 }
 
 /**
@@ -56,7 +63,7 @@ async function ensureDir(dirPath: string): Promise<void> {
  * Check if cache entry is still valid based on TTL
  */
 function isValid(entry: CacheEntry, ecosystem: string): boolean {
-  const ttl = TTL_MS[ecosystem] || TTL_MS.npm; // Default to npm TTL
+  const ttl = TTL_MS[ecosystem] ?? DEFAULT_TTL_MS;
   const collectedAt = new Date(entry.collectedAt).getTime();
   const now = Date.now();
   return (now - collectedAt) < ttl;
@@ -68,14 +75,15 @@ function isValid(entry: CacheEntry, ecosystem: string): boolean {
  */
 export async function readCache<T>(
   ecosystem: string,
-  canonicalId: string
+  canonicalId: string,
+  options: ReadCacheOptions = {}
 ): Promise<CacheEntry<T> | null> {
   try {
     const cachePath = getCachePath(ecosystem, canonicalId);
     const content = await fs.readFile(cachePath, 'utf-8');
     const entry = JSON.parse(content) as CacheEntry<T>;
     
-    if (isValid(entry, ecosystem)) {
+    if (options.allowExpired || isValid(entry, ecosystem)) {
       return entry;
     }
     
@@ -94,7 +102,7 @@ export async function writeCache<T>(
   ecosystem: string,
   canonicalId: string,
   data: T,
-  source: 'live' | 'cache' | 'cache-fallback' = 'live',
+  source: CacheEntrySource = 'live',
   isError = false
 ): Promise<void> {
   const cachePath = getCachePath(ecosystem, canonicalId);

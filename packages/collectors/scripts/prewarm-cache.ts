@@ -37,16 +37,16 @@ async function prewarmNpm(): Promise<void> {
     const normalizedName = packageName.toLowerCase();
     
     if (await isCacheFresh('npm', normalizedName)) {
-      console.log(`  ✓ ${packageName} - cache is fresh, skipping`);
+      console.log(`  OK ${packageName} - cache is fresh, skipping`);
       continue;
     }
     
     try {
-      console.log(`  → Fetching ${packageName}...`);
+      console.log(`  -> Fetching ${packageName}...`);
       await collectNpmData(packageName);
-      console.log(`  ✓ ${packageName} - cached`);
+      console.log(`  OK ${packageName} - cached`);
     } catch (error) {
-      console.error(`  ✗ ${packageName} - failed:`, (error as Error).message);
+      console.error(`  FAIL ${packageName} - failed:`, (error as Error).message);
     }
   }
 }
@@ -61,16 +61,16 @@ async function prewarmGitHub(): Promise<void> {
     const normalizedRepo = repo.toLowerCase();
     
     if (await isCacheFresh('github', normalizedRepo)) {
-      console.log(`  ✓ ${repo} - cache is fresh, skipping`);
+      console.log(`  OK ${repo} - cache is fresh, skipping`);
       continue;
     }
     
     try {
-      console.log(`  → Fetching ${repo}...`);
+      console.log(`  -> Fetching ${repo}...`);
       await collectGitHubData(repo);
-      console.log(`  ✓ ${repo} - cached`);
+      console.log(`  OK ${repo} - cached`);
     } catch (error) {
-      console.error(`  ✗ ${repo} - failed:`, (error as Error).message);
+      console.error(`  FAIL ${repo} - failed:`, (error as Error).message);
     }
   }
 }
@@ -85,10 +85,10 @@ async function main(): Promise<void> {
     await prewarmNpm();
     await prewarmGitHub();
     
-    console.log('\n✓ Cache prewarm complete');
+    console.log('\nOK Cache prewarm complete');
     process.exit(0);
   } catch (error) {
-    console.error('\n✗ Cache prewarm failed:', error);
+    console.error('\nFAIL Cache prewarm failed:', error);
     process.exit(1);
   }
 }

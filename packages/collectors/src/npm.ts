@@ -1,5 +1,6 @@
 import { PackageNotFoundError, CollectorError } from './errors.js';
 import { readCache, writeCache } from './cache/index.js';
+import type { CollectorResultSource } from './cache/index.js';
 
 /**
  * npm registry metadata response
@@ -37,9 +38,10 @@ interface NpmDownloadsResponse {
  */
 export interface NpmCollectedData {
   metadata: NpmMetadata;
-  weeklyDownloads: number;
+  weeklyDownloads: number | null;
   sourceUrl: string;
   collectedAt: string;
+  source: CollectorResultSource;
 }
 
 /**
@@ -71,22 +73,20 @@ async function fetchNpmMetadata(packageName: string): Promise<NpmMetadata> {
 /**
  * Fetch npm package download stats (last 7 days)
  */
-async function fetchNpmDownloads(packageName: string): Promise<number> {
+async function fetchNpmDownloads(packageName: string): Promise<number | null> {
   const url = `https://api.npmjs.org/downloads/point/last-week/${encodeURIComponent(packageName)}`;
   
   try {
     const response = await fetch(url);
     
     if (!response.ok) {
-      // Downloads API failure is not critical - return 0
-      return 0;
+      return null;
     }
     
     const data = await response.json() as NpmDownloadsResponse;
-    return data.downloads || 0;
+    return typeof data.downloads === 'number' ? data.downloads : null;
   } catch {
-    // Network error - return 0
-    return 0;
+    return null;
   }
 }
 
@@ -110,7 +110,8 @@ export async function collectNpmData(
       // Cached success data
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache'
       };
     }
   }
@@ -129,7 +130,8 @@ export async function collectNpmData(
       metadata,
       weeklyDownloads,
       sourceUrl,
-      collectedAt
+      collectedAt,
+      source: 'live'
     };
     
     // Cache the result
@@ -137,18 +139,19 @@ export async function collectNpmData(
     
     return data;
   } catch (error) {
-    // If it's a 404, don't cache and rethrow
     if (error instanceof PackageNotFoundError) {
+      await writeCache('npm', canonicalId, { error: error.message }, 'live', true);
       throw error;
     }
     
     // For other errors, try to return cached data if available
-    const cached = await readCache<NpmCollectedData>('npm', canonicalId);
+    const cached = await readCache<NpmCollectedData>('npm', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       // Return stale cache as fallback
       return {
         ...cached.data,
-        collectedAt: cached.collectedAt
+        collectedAt: cached.collectedAt,
+        source: 'cache-fallback'
       };
     }
     
