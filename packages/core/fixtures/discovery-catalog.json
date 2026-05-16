@@ -1,0 +1,20 @@
+{
+  "npm": {
+    "discord": ["discord.js", "discord.py", "eris"],
+    "web-framework": ["express", "fastify", "koa", "hapi"],
+    "react": ["react", "preact", "inferno"],
+    "testing": ["vitest", "jest", "mocha", "chai"],
+    "http-client": ["axios", "node-fetch", "got", "undici"]
+  },
+  "pypi": {
+    "discord": ["discord.py", "discord.js", "py-cord"],
+    "web-framework": ["flask", "django", "fastapi", "tornado"],
+    "data-science": ["numpy", "pandas", "scikit-learn", "matplotlib"],
+    "testing": ["pytest", "unittest", "nose2"]
+  },
+  "github": {
+    "discord-bot": ["discordjs/discord.js", "Rapptz/discord.py", "abalabahaha/eris"],
+    "web-framework": ["expressjs/express", "fastify/fastify", "koajs/koa"],
+    "starter": ["microsoft/typescript-starter", "facebook/create-react-app"]
+  }
+}
