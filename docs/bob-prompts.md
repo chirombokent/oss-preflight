@@ -1,6 +1,6 @@
 # OSS Preflight — Supercharged IBM Bob Prompts & Pro Tips
 
-> **Reference for [bob-build-guide.md](./bob-build-guide.md).** In the new model you hand-type **four things only**: (1) the Hour-0 test, (2) the Plan-mode phase-plan generator, (3) a one-line Orchestrator launcher per phase, (4) the runtime skill demo. Everything else — discipline, the loop, skill activation — is encoded in `.bob/` and fires automatically.
+> **Reference for [bob-build-guide.md](./bob-build-guide.md).** In the new model you hand-type **four things only**: (1) the Hour-0 test, (2) the Plan-mode phase-plan generator, (3) a one-line Orchestrator launcher per session (six launches; P3+P4 share S05 — see §5), (4) the runtime skill demo. Everything else — discipline, the loop, skill activation — is encoded in `.bob/` and fires automatically.
 
 ---
 
@@ -176,17 +176,63 @@ Council Verdict at the top of docs/phase-plan.md.
 
 > BobCoin cost is no longer the limiting factor. The limiting factor is measurable value: a new round is justified only when the prior round produced concrete plan improvements. The gate exists to turn "a plan" into "a gapless, reproducible plan any agent can build."
 
-## 5. The per-phase launcher — what you actually type
+## 5. The per-session launcher — what you actually type
 
-Once `docs/phase-plan.md` is approved **and the council PASSes**, each phase is **one line**:
+The unit you drive is the **session**, not the phase and not the whole build.
+One Bob task = one exportable session = one `bob_sessions/S<id>-<slug>/`
+folder. Running all phases in a single orchestrator task is the documented
+anti-pattern (§8: *one mega-task for the whole build*) — it produces one
+tangled task-history that cannot be split into clean per-session evidence.
+The Phase→Session map (`bob-build-guide.md` §7) collapses **P3+P4 into the
+single session S05**, so the build is **six launches**, not seven phases:
+
+| Launch | Runs | Phase-plan target | Exports to |
+|---|---|---|---|
+| (gate, once) | Plan Council to a genuine PASS | `docs/phase-plan.md` | `bob_sessions/S01.5-plan-council/` |
+| 1 | P1 | Phase P1 | `bob_sessions/S03-core-schemas-scoring/` |
+| 2 | P2 | Phase P2 | `bob_sessions/S04-collectors-cache/` |
+| 3 | **P3 + P4** | Phases P3 and P4 | `bob_sessions/S05-cli-scaffold/` |
+| 4 | P5 | Phase P5 | `bob_sessions/S06-web-build-proof/` |
+| 5 | P6 | Phase P6 | `bob_sessions/S07-runtime-skill-demo/` |
+| 6 | P7 | Phase P7 | `bob_sessions/S08-review-submission/` |
+
+Within a launch the loop is automated end to end; you do only the two things
+the agent cannot: **export** the task-history + consumption screenshot from
+the Bob IDE History UI into that session's folder, and give the **STEP 9
+approval** before commit.
+
+**Gate re-validation — run once before launch 1 (do not trust the headline):**
 
 ```text
-/orchestrator Run Phase <Pn> from @/docs/phase-plan.md. Honor every field as
-the contract. Loop until all acceptance criteria are met while each loop
-produces measurable progress; escalate the precise gap only if progress stalls
-or an external decision is required. Export the Bob task-history markdown and
-consumption-summary screenshot into bob_sessions/S<id>-<slug>/, then STOP for
-my review before commit.
+/orchestrator Open docs/phase-plan.md → the latest ## Council Verdict.
+Recompute the gate yourself from the team-score table: overall = MIN(all five
+team scores); PASS requires overall >= 9 AND zero unresolved blockers. Never
+average; never accept a "PASS" string the table contradicts. If the recomputed
+result is FAIL, stale, or absent, launch NO phase — run the plan-council skill
+as the iterative measurable-refinement gate (consolidate findings → scoped
+plan-mode revision recording measurable refinements → re-run all 5 independent
+teams), repeating while each round resolves blockers or raises the true
+minimum. Record every round's verdict at the top of docs/phase-plan.md. Stop
+and escalate only if two consecutive rounds produce no measurable refinement,
+an external decision is required, or I ask you to stop.
+```
+
+**Per-session launcher — one line, repeated for each row above** (`<Pn>` = the
+phase, or `P3 and P4` for launch 3; `<id>-<slug>` = that row's export folder):
+
+```text
+/orchestrator Run <Pn> from @/docs/phase-plan.md as a single Bob session.
+Honor every spec field as a binding contract; verify Preconditions before
+SPEC and refuse an incomplete or ambiguous spec. Run the encoded loop
+(spec→implement→review→test→fix→enhance) enforcing that phase's named Quality
+gates as hard pass/fail and executing the FULL must-test list. Loop is
+value-gated with no iteration cap: continue while each loop yields a
+measurable delta; escalate the precise gap only if two consecutive loops
+produce no measurable progress or an external decision is required. When
+acceptance criteria are green with zero reviewer blockers, instruct me to
+export the task-history markdown + consumption-summary screenshot into
+bob_sessions/<id>-<slug>/ and delegate the build-report.md row to reviewer,
+then STOP for my approval before commit. Never commit autonomously.
 ```
 
 Resume / escalation variants:
@@ -249,7 +295,7 @@ Each lever is active because something enforces it. Column 3 is where it lives.
 | 8 | Project rules auto-inject every conversation, all modes | `.bob/rules/` is the reliability backbone | rules |
 | 9 | `fileRegex` fences are demo evidence, not just safety | every mode has a fence; show on stage | custom-modes |
 | 10 | Context mentions over pasting (`@/file`, ⌘+L) | §3 generator + §4 spec forbid paste | best-practices |
-| 11 | New task per objective | one phase = one `/orchestrator` launch | best-practices |
+| 11 | New task per objective | one session = one `/orchestrator` launch (P3+P4 share S05) | best-practices |
 | 12 | `.bobignore` protects generated/known-good files | add `examples/`, caches, secret-adjacent paths | best-practices |
 | 13 | Enhance Prompt before expensive sessions | run §3 generator + launchers through Enhance | best-practices |
 | 14 | Conventional-commit regeneration is free iteration | sparkle icon; `feat/<phase>` branch names | commit-messages |
@@ -271,7 +317,7 @@ Sources: modes/custom-modes/skills/rules/checkpoints/commit-messages/best-practi
 | Pasting whole files | §3 generator + §4 spec mandate `@/` mentions only |
 | Re-prompting bad output instead of restoring | pro tip 4; checkpoint discipline |
 | Expecting skills in `code`/`plan` | `code`/`plan` do not declare `skill`; loop §5 routes recipe steps to `reviewer` where supported or Advanced as the guaranteed runtime |
-| One mega-task for the whole build | one phase = one launch; per-phase exports |
+| One mega-task for the whole build | one session = one launch (six launches; P3+P4 share S05); per-session exports |
 | Writing app code in `plan`/`reviewer` | `fileRegex` fence blocks it — by design |
 | Adding a parallel custom slug | `plan`/`code`/`orchestrator` are overridden, not duplicated |
 | Orchestrator committing without human review | encoded STEP 9 — non-skippable; do not prompt around it |
