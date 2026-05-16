@@ -47,8 +47,8 @@ customModes:
     groups:
       - read
       - - edit
-        - fileRegex: ^(docs/|context/|bob/|\.bob/).*\.(md|txt|yaml)$
-          description: Specs, docs, and Bob configuration only (markdown-first)
+        - fileRegex: ^(docs/|context/|bob_sessions/|\.bob/).*\.(md|txt|yaml)$
+          description: Specs, docs, Bob config, and the bob_sessions/ ledger only (markdown-first; no bob/ dir exists)
       - mcp
 
   # ----------------------------------------------------------------------
@@ -77,8 +77,8 @@ customModes:
     groups:
       - read
       - - edit
-        - fileRegex: ^(packages/|apps/|examples/|tests/|\.oss-preflight/).*
-          description: Application code, examples, tests, OSS Preflight runtime
+        - fileRegex: ^(packages/|apps/|examples/|tests/|\.oss-preflight/).*|^(package\.json|pnpm-workspace\.yaml|pnpm-lock\.yaml|tsconfig(\..+)?\.json|vitest\.config\.[tj]s|turbo\.json|\.npmrc|\.nvmrc|\.gitignore|\.bobignore)$
+          description: App code, examples, tests, OSS Preflight runtime, plus monorepo root config (package.json, pnpm-workspace.yaml, tsconfig*, vitest/turbo config). Needed so P0/P1 can bootstrap the workspace.
       - command
 
   # ----------------------------------------------------------------------
@@ -103,14 +103,17 @@ customModes:
       these instructions supersede conflicting general mode instructions.
       Skills activate in built-in Advanced. The reviewer custom mode also
       declares the official skill group so review recipes can activate if this
-      Bob build supports custom-mode skills. plan/code cannot run skills -
+      Bob build supports custom-mode skills. plan/code do not declare skills -
       their always-on rules carry the discipline floor there.
       STEP 0 PLAN GATE: no phase may launch until docs/phase-plan.md carries a
       current Council Verdict = PASS. If absent, stale, or FAIL, run the
-      plan-council skill (5 independent adversarial team reviews via new_task;
-      gate = MIN team score >= 9 AND zero blockers). On FAIL, delegate revision
-      to plan, then re-convene a fresh council. Cap 3 council rounds, then STOP
-      and escalate the lowest team + exact unmet criteria. Never lower the bar.
+      plan-council skill ONCE (5 independent adversarial team reviews via
+      new_task; gate = MIN team score >= 9 AND zero blockers). Cap 1 council
+      round per invocation - never auto-revise-and-re-council (unbounded
+      Bobcoin cost). On FAIL, consolidate findings, record the FAIL verdict,
+      STOP and escalate to the user the lowest team + exact unmet criteria;
+      the user decides whether to delegate a plan revision and re-invoke the
+      council. Never lower the bar.
       STEP 1 SPEC: delegate to plan (no skills; rules-plan) - produce spec +
       testable acceptance criteria + gated todo; get user approval of the spec
       before proceeding.
@@ -134,15 +137,19 @@ customModes:
       STEP 8 EXPORT: when satisfied, instruct the user to export this Bob
       task from Bob IDE History: select the task, open the task header, save
       the task-session consumption-summary screenshot, and use Export task
-      history to download the markdown. Save both artifacts to
-      bob/build-sessions/<id>/ and mirror them to the official
-      bob_sessions/S<id>-<slug>/ folder; add the row to bob/build-report.md.
+      history to download the markdown. Save both artifacts directly to
+      bob_sessions/S<id>-<slug>/. Then delegate the ledger update to reviewer
+      (whose fence permits bob_sessions/ markdown): add this phase's row to
+      bob_sessions/build-report.md. The Orchestrator is read-only and never
+      writes the ledger itself.
       STEP 9 HUMAN REVIEW: STOP. Present a concise summary and the met
       acceptance criteria and explicitly ask the user to approve. Never
       proceed without approval.
       STEP 10 COMMIT: only after approval, delegate to code to stage scoped
       files and create the commit using Bob's generated conventional-commit
-      message; note in the report that the message was Bob-generated.
+      message. Then delegate to reviewer a final ledger touch recording the
+      commit and that the message was Bob-generated (code cannot write
+      bob_sessions/; reviewer's fence can).
       Never commit autonomously. Never skip the review, test, human-review, or
       export steps. Ask clarifying questions whenever scope is unclear.
     groups:
@@ -169,8 +176,8 @@ customModes:
     groups:
       - read
       - - edit
-        - fileRegex: ^(docs/|bob/|\.bob/).*\.(md|txt)$
-          description: Review notes and docs only
+        - fileRegex: ^(docs/|bob_sessions/|\.bob/).*\.(md|txt)$
+          description: Review notes, docs, and the bob_sessions/ ledger/exports only (no bob/ dir exists)
       - command
       - browser
       - mcp

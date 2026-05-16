@@ -24,9 +24,12 @@ proceed past an open BLOCKER.
 
 - Discord-bot demo runs idea → scaffold; smoke test passes green.
 - `/build-proof` (or local equivalent) shows Bob artifacts;
-  `bob/build-sessions/` contains exports.
+  root `bob_sessions/` contains the official task-history markdown exports plus
+  task-session consumption-summary screenshots.
 - `docs/bob-build-guide.md` maps every Bob claim to a verified official
   source or local proof.
 - Risk register (`docs/implementation-plan.md` §9) addressed; submission
   checklist (§10) complete.
+- `docs/source-ledger.md` lists every public registry/API/dataset used, with
+  terms/commercial-use verification status resolved before final submission.
 - No overclaim language anywhere user-facing.

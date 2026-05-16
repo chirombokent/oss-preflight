@@ -384,8 +384,8 @@ export function BuildProof() {
   const [gitLog, setGitLog] = useState('');
 
   useEffect(() => {
-    // Load bob/build-report.md
-    fetch('/bob/build-report.md')
+    // Load bob_sessions/build-report.md
+    fetch('/bob_sessions/build-report.md')
       .then(r => r.text())
       .then(text => setBuildData(text));
 

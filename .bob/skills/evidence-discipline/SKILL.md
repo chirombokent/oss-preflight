@@ -1,6 +1,6 @@
 ---
 name: evidence-discipline
-description: Ensure OSS Preflight recommendations, Evidence Passports, and scoring code separate verified facts from AI inference and never invent package evidence.
+description: Ensure OSS Preflight recommendations, Evidence Passports, and scoring code separate verified facts from AI inference and never invent package evidence. Activates on the Orchestrator REVIEW or TEST step, or "check evidence discipline", "verify the fact/inference split", "is this fact sourced", "audit the passport", when working on collectors, scoring, recommendations, Passports, or evidence-displaying UI.
 ---
 
 # Evidence Discipline

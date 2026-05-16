@@ -45,16 +45,23 @@ the adversarial property). Each team returns: a 0–10 score, BLOCKERS
 **PASS** only if `overall ≥ 9` **AND** zero unresolved BLOCKERS across all
 teams. A single build-stopping gap fails the gate — it is never averaged away.
 
-## On FAIL
+## On FAIL — escalate, do not auto-loop
+
+The council runs **once** (one round, all 5 teams). It does **not**
+auto-revise-and-re-council — that loop is unbounded in Bobcoin cost. On FAIL:
 
 1. Produce one consolidated, deduplicated, prioritized findings list, each
    item mapped to a specific phase + field in `docs/phase-plan.md`.
-2. Delegate revision to `plan` with those findings (plan owns the file; the
-   council does not edit it).
-3. Re-convene a **fresh, independent** council on the revised plan.
-4. **Cap: 3 council rounds.** If still failing, STOP and escalate to the user
-   with the lowest-scoring team, its score, and the exact unmet criteria.
-   Never lower the bar to pass. Never skip a team.
+2. **STOP and escalate to the user**: report the lowest-scoring team, its
+   score, every unresolved BLOCKER, and the exact unmet criteria. Record the
+   FAIL verdict (below).
+3. The user decides the next step (typically: delegate a `plan` revision with
+   these findings, then re-invoke the council manually on the revised plan).
+   The council never edits the plan and never re-convenes itself.
+
+**Cap: 1 council round per invocation.** Never lower the bar to pass. Never
+skip a team. Never average. A re-run is always a fresh, independent council
+invoked explicitly by the user, never an automatic loop.
 
 ## Record (the gate artifact)
 

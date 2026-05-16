@@ -6,7 +6,9 @@ build/
 coverage/
 .git/
 
+# Exclude only binary screenshots from Bob context (large, unreadable as text).
+# Keep build-report.md, README.md, and per-session task-history.md VISIBLE so
+# the Orchestrator can write the ledger and the Reviewer can validate evidence.
 bob_sessions/**/*.png
 bob_sessions/**/*.jpg
 bob_sessions/**/*.jpeg
-bob_sessions/*

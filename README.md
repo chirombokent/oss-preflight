@@ -18,9 +18,8 @@ session exports, and build-report evidence.
 
 ## Bob Evidence
 
-- Working evidence ledger: [bob/build-report.md](bob/build-report.md)
-- Per-session working folders: [bob/build-sessions/](bob/build-sessions/)
-- Official hackathon export folder: [bob_sessions/](bob_sessions/)
+- Single evidence ledger: [bob_sessions/build-report.md](bob_sessions/build-report.md)
+- Official hackathon export folder (per-session subfolders): [bob_sessions/](bob_sessions/)
 
 ## Status
 

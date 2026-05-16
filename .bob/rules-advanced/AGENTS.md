@@ -52,7 +52,7 @@ From `docs/bob-build-guide.md` §5 STEP 0:
 - 5 independent adversarial teams via `new_task`
 - Teams: reproducibility/idempotency · architecture fidelity · AC/test rigor · integration/data-contract · gap/risk red team
 - Gate = MIN team score ≥9 AND zero blockers (never averaged)
-- Cap 3 rounds, then escalate lowest team + exact unmet criteria
+- Cap 1 round per invocation; on FAIL STOP and escalate lowest team + exact unmet criteria (no auto re-council)
 - Never lower the bar
 
 ## Same Evidence Discipline as Code Mode

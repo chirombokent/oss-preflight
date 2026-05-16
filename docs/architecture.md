@@ -143,9 +143,9 @@ oss-preflight/
     rules/                      # always-on discipline (all modes, every conversation)
     rules-plan/  rules-code/  rules-reviewer/  rules-orchestrator/
     skills/{oss-preflight-advisor,evidence-discipline,code-review,test-runner,doc-writer,plan-council}/SKILL.md
-  bob/
-    build-sessions/             # exported Bob session reports (00–08)
-    build-report.md             # living submission artifact
+  bob_sessions/                 # official Bob deliverable folder (single location)
+    build-report.md             # living submission ledger (single summary)
+    S00-hour0-export-test/      # per-session: task-history.md + consumption-summary.png
   docs/
     architecture.md             # THIS FILE — source of truth
     implementation-plan.md      # build sequence, pro tips, risks, demo, submission
@@ -325,6 +325,13 @@ The web server is a thin bridge — all logic lives in the CLI/core so the Bob s
 | Bob IDE (runtime) | Open Bob → "Run OSS Preflight on this idea" → `oss-preflight-advisor` skill activates |
 | CI/CD (future) | GitHub Action runs `oss-preflight scaffold --validate-deps` on PR |
 
+> **Toolchain note (intentional, not a contradiction):** the **monorepo
+> itself is built and tested with pnpm** (`pnpm-workspace.yaml`, `pnpm test`
+> in the phase exit gates). The **generated end-user scaffolds use plain
+> `npm`** (`npm install`, `npm test` in the smoke runner) so a developer
+> adopting a starter inherits no workspace assumptions. Both are correct for
+> their layer — never "normalize" one to the other.
+
 ---
 
 ## 17. Wow moments & judge success criteria
@@ -344,7 +351,7 @@ The web server is a thin bridge — all logic lives in the CLI/core so the Bob s
 
 ## 18. Scope cutline
 
-**Must ship:** idea→recommendation JSON · Evidence Passport with fact/inference split · ranked top-3 · npm + GitHub collectors · cache with timestamps · Discord-bot scaffold · smoke test · web UI for the demo · `/build-proof` · Bob custom modes/skills/rules · Bob build sessions/report · demo script.
+**Must ship:** idea→recommendation JSON · Evidence Passport with fact/inference split · ranked top-3 · npm + GitHub collectors · cache with timestamps · Discord-bot scaffold · smoke test · web UI for the demo · `/build-proof` · Bob custom modes/skills/rules · `bob_sessions/` exports + build report · demo script.
 
 **Should ship:** PyPI collector · OpenSSF collector · repo flow · fork-first GitHub starter search · live Bob skill demo · Bob-generated PR description.
 
