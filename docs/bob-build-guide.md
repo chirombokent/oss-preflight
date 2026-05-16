@@ -145,16 +145,17 @@ flowchart TD
     C[2 IMPLEMENT - delegate to code<br/>next slice, tests first]
     D[3 REVIEW - delegate to reviewer<br/>blocker-first rules review]
     E[4 TEST - delegate to advanced<br/>skills test-runner + evidence-discipline]
-    F[5 FIX - delegate to code<br/>clear every blocker + failing test]
-    G[6 ENHANCE - delegate to code<br/>perf + pattern + cleanliness; docs via advanced doc-writer]
-    H{7 LOOP GATE<br/>acceptance criteria met?}
+    F[5 FIX conditional - delegate to code<br/>only the specific blockers + failing tests; skip if none]
+    G[6 ENHANCE conditional - delegate to code<br/>only if non-blocking findings or user-facing docs; skip if clean]
+    H{7 LOOP GATE<br/>clean pass?}
     I[8 EXPORT session report + screenshot]
     J{9 HUMAN REVIEW<br/>user approves?}
     K[10 COMMIT - delegate to code<br/>Bob-generated conventional message]
     A --> B --> C --> D --> E --> F --> G --> H
-    H -- no, measurable progress possible --> D
+    H -- yes, clean pass --> I --> J
+    H -- unmet, scoped re-verify --> E
+    H -- unmet, shared-contract change --> D
     H -- no progress or external decision --> Esc[STOP - escalate gap to user]
-    H -- yes --> I --> J
     J -- no --> D
     J -- yes --> K
 ```
@@ -167,8 +168,8 @@ flowchart TD
 | 2 IMPLEMENT | `code` | no | — | rules + rules-code |
 | 3 REVIEW | `reviewer` | **yes** | `code-review`, `evidence-discipline` | rules + rules-reviewer |
 | 4 TEST / validate | `advanced` | **yes** | `test-runner`, `evidence-discipline` | rules |
-| 5 FIX | `code` | no | — | rules + rules-code |
-| 6 ENHANCE | `code` (docs → `advanced`) | docs only | `doc-writer` (on the doc pass) | rules + rules-code |
+| 5 FIX *(conditional)* | `code` | no | — | rules + rules-code |
+| 6 ENHANCE *(conditional)* | `code` (docs → `advanced`) | docs only | `doc-writer` (on the doc pass) | rules + rules-code |
 | 10 COMMIT | `code` | no | — | rules |
 
 Build/spec/review sit on custom modes where the **rules floor** is sufficient. Review declares the official `skill` group so review recipes can fire where supported. Test/validate, fact-check, and doc-write are workflows that can always be delegated to Advanced so the recipe fires on top of the floor.
@@ -177,7 +178,7 @@ Build/spec/review sit on custom modes where the **rules floor** is sufficient. R
 
 - Spec is approved by the user **before** any code (step 1→2 gate).
 - Review and test stages **cannot be skipped**.
-- Build loops are **value-gated, not count-capped**: repeat REVIEW/TEST/FIX/ENHANCE while each loop produces a measurable acceptance-criteria improvement, resolved blocker, or newly passing test; stop and escalate the precise gap when progress stalls or a real external decision is required.
+- Build loops are **value-gated, conditionally scoped, not count-capped**: the first REVIEW+TEST pass is authoritative (full review + full must-test list). A **clean pass** (all acceptance criteria green, zero reviewer blockers, full must-test green) exits straight to EXPORT — FIX and ENHANCE are skipped, no re-verification loop runs. On an unmet criterion, FIX only the specific failure and re-verify only the affected criteria + changed-file tests; a full REVIEW+TEST re-run happens only when a shared/core contract was touched. Each loop names its measurable delta; stop and escalate when progress stalls or a real external decision is required.
 - **Never commits autonomously** — step 9 is a mandatory human approval gate; step 10 only runs after approval and uses Bob's generated conventional-commit message.
 - Every completed feature leaves an exported session (step 8) — the evidence chain is part of the loop, not an afterthought.
 

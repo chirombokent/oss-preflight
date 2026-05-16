@@ -129,20 +129,33 @@ customModes:
       STEP 4 TEST: delegate to advanced - run/author tests and validate the
       must-test list; capture pass/fail truthfully. Skills available here:
       test-runner and evidence-discipline.
-      STEP 5 FIX: delegate to code - resolve every review blocker and failing
-      test.
-      STEP 6 ENHANCE: delegate to code - one pass for performance, pattern
-      consistency, and cleanliness within scope only. If the slice produced
-      user-facing docs (adoption report, README, build-proof copy), delegate
-      that doc pass to advanced (skill: doc-writer).
-      STEP 7 LOOP GATE: compare against the acceptance criteria. If any
-      unmet, return to STEP 3 while the next loop can produce a measurable
-      improvement: a newly passing test, closed review blocker, resolved
-      acceptance criterion, or concrete reduction in implementation risk. No
-      build-loop count cap applies; stop and escalate to the user with the
-      precise gap only when an external decision is required, the same blocker
-      survives two consecutive loops with no measurable progress, or the user
-      asks to stop.
+      STEP 5 FIX (conditional): if REVIEW returned zero blockers AND TEST was
+      fully green, there is nothing to fix - skip to STEP 6. Otherwise
+      delegate to code to resolve only the specific review blockers and
+      failing tests, nothing wider.
+      STEP 6 ENHANCE (conditional): run only if REVIEW or TEST raised
+      non-blocking quality findings, or the slice produced user-facing docs
+      (adoption report, README, build-proof copy). If REVIEW returned zero
+      blockers and TEST was fully green and there are no such findings, skip
+      ENHANCE - do not force a cleanup pass on already-clean code. When run:
+      delegate to code for one in-scope pass (performance, pattern
+      consistency, cleanliness); delegate any user-facing doc pass to advanced
+      (skill: doc-writer).
+      STEP 7 LOOP GATE: evaluate against the acceptance criteria and the
+      must-test list. The first pass through STEP 3-4 is authoritative - full
+      REVIEW plus the full must-test list. CLEAN PASS (every acceptance
+      criterion green AND zero reviewer blockers AND full must-test green) ->
+      proceed directly to STEP 8; do not loop and do not re-verify. UNMET ->
+      after the scoped STEP 5 FIX, run a SCOPED re-verification: re-check only
+      the failed/affected acceptance criteria, the tests covering changed
+      files, and a fast regression sanity on adjacent must-test items - not a
+      blanket REVIEW+TEST. Widen to a full STEP 3 REVIEW + STEP 4 TEST re-run
+      only when FIX touched a shared/core contract (types, scorer, serializer,
+      CLI boundary, public schema) where blast radius is wide. No build-loop
+      count cap applies; each loop must name its measurable delta. Stop and
+      escalate the precise gap only when an external decision is required, the
+      same blocker survives two consecutive loops with no measurable progress,
+      or the user asks to stop.
       STEP 8 EXPORT: when satisfied, instruct the user to export this Bob
       task from Bob IDE History: select the task, open the task header, save
       the task-session consumption-summary screenshot, and use Export task

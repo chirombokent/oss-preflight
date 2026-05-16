@@ -21,12 +21,19 @@ procedure lives in `custom_modes.yaml` + the loop in
   escalate to the user. Never improvise the spec.
 - **Never skip REVIEW or TEST.** A slice is done only when its acceptance
   criteria are green *and* the reviewer reports no open BLOCKER.
-- **Build loops are value-gated, not count-capped.** REVIEW, TEST, FIX, and
-  ENHANCE continue until the phase acceptance criteria are green and reviewer
-  blockers are closed. Each loop must name the measurable delta it produced.
-  If two consecutive loops produce no new passing test, resolved blocker, or
-  acceptance-criteria progress, STOP and escalate the precise blocker. Do not
-  spin.
+- **Build loops are value-gated, conditionally scoped, not count-capped.**
+  The first pass through REVIEW + TEST is authoritative: full review plus the
+  full must-test list. A **clean pass** (every acceptance criterion green AND
+  zero reviewer blockers AND full must-test green) exits to EXPORT — no forced
+  FIX, no forced ENHANCE, no re-verification loop. On any unmet criterion, FIX
+  only the specific failure, then re-verify **only** the affected criteria and
+  changed-file tests (plus a regression sanity); widen to a full REVIEW+TEST
+  re-run only when a shared/core contract (types, scorer, serializer, CLI
+  boundary, public schema) was touched. FIX and ENHANCE are conditional —
+  skipped when there is nothing to fix and nothing to polish. Each loop must
+  name the measurable delta it produced. If two consecutive loops produce no
+  new passing test, resolved blocker, or acceptance-criteria progress, STOP
+  and escalate the precise blocker. Do not spin.
 - **Never commit autonomously.** STEP 9 human review is mandatory; STEP 10
   commit runs only after explicit user approval, with a Bob-generated message.
 - **Evidence before the next phase.** Each completed phase leaves its

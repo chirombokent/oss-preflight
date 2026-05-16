@@ -137,8 +137,13 @@ one-pipeline contract (web/skill call the CLI, never import core).
 **Loop config** — steps to run; per-step delegate+skills (spec→plan;
 implement→code; review→reviewer[code-review,evidence-discipline];
 test→advanced[test-runner,evidence-discipline]; fix→code; enhance→code,
-docs→advanced[doc-writer]; commit→code); value-gated loop continuation
-rule; stalled-progress escalation rule; human gate before commit.
+docs→advanced[doc-writer]; commit→code); the conditional value-gated loop
+rule (first REVIEW+TEST pass is full; a clean pass — all AC green, zero
+reviewer blockers, full must-test green — exits straight to export with FIX
+and ENHANCE skipped; an unmet criterion triggers a scoped FIX + scoped
+re-verify, widening to a full REVIEW+TEST re-run only on a shared/core
+contract change); the stalled-progress escalation rule; human gate before
+commit.
 
 **Evidence artifact** — official `bob_sessions/S<id>-<slug>/` folder
 containing the task-history markdown and task-session consumption-summary
@@ -225,13 +230,16 @@ phase, or `P3 and P4` for launch 3; `<id>-<slug>` = that row's export folder):
 Honor every spec field as a binding contract; verify Preconditions before
 SPEC and refuse an incomplete or ambiguous spec. Run the encoded loop
 (spec→implement→review→test→fix→enhance) enforcing that phase's named Quality
-gates as hard pass/fail and executing the FULL must-test list. Loop is
-value-gated with no iteration cap: continue while each loop yields a
-measurable delta; escalate the precise gap only if two consecutive loops
-produce no measurable progress or an external decision is required. When
-acceptance criteria are green with zero reviewer blockers, instruct me to
-export the task-history markdown + consumption-summary screenshot into
-bob_sessions/<id>-<slug>/ and delegate the build-report.md row to reviewer,
+gates as hard pass/fail and executing the FULL must-test list on the first
+pass. Loop is value-gated and conditionally scoped, no iteration cap: a clean
+first pass (all AC green, zero reviewer blockers, full must-test green) exits
+straight to export — skip FIX and ENHANCE, run no re-verification loop; an
+unmet criterion gets a scoped FIX plus re-verification of only the affected
+criteria and changed-file tests, widening to a full REVIEW+TEST re-run only
+on a shared/core contract change. Escalate the precise gap only if two
+consecutive loops produce no measurable progress or an external decision is
+required. When
+acceptance criteria are green with zero reviewer blockers, and delegate the build-report.md row to reviewer,
 then STOP for my approval before commit. Never commit autonomously.
 ```
 
