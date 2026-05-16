@@ -15,7 +15,7 @@
 - **Checkpoints work? (row 8):** _(yes / no — restore tested?)_
 - **Bob commit-message sparkle works? (row 7):** _(yes / no)_
 - **Bob Shell available? (row 10, optional):** _(yes / no)_
-- **Bobcoin balance after Hour-0:** _(record running balance each session)_
+- **BobCoin usage note:** IBM clarified provisioned BobCoins are free to use with the hackathon accounts; record meaningful session usage and measurable outcomes rather than treating 40 as a hard charge cap.
 
 ## Session ledger
 

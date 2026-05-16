@@ -43,8 +43,8 @@ The **highest-risk** version puts live Bob skill demo, live repo audit, live Git
 
 - Official Bob reports live in `bob_sessions/` and include **both** task-history markdown and task-session consumption screenshots. `bob_sessions/build-report.md` is the single summary ledger.
 - Keep a public-data/source ledger at `docs/source-ledger.md`: registry/API source, data used, URL, terms/commercial-use verification status, and whether it is live, cached, or fixture data.
-- Treat Bobcoins as a finite build budget. The guide grants 40 Bobcoins; use one context/task per session ID, use Enhance Prompt before expensive sessions, avoid re-running the Plan Council unless needed, and record consumption screenshots as part of the export.
-- IBM Bob IDE must be a core component. Optional watsonx.ai / watsonx Orchestrate can strengthen the IBM story, but they are not on the critical path and must not consume the demo budget unless already green.
+- IBM clarified that the provisioned 40 BobCoins are free to use with the hackathon accounts. Use that flexibility for measurable quality: iterative Plan Council rounds, deeper review/test/fix loops, and additional adversarial checks are allowed when they resolve concrete blockers or improve acceptance criteria, contracts, tests, or evidence.
+- IBM Bob IDE must be a core component. Optional watsonx.ai / watsonx Orchestrate can strengthen the IBM story, but they are not on the critical path and must not distract from the demo unless the must-ship path is already green.
 - If watsonx.ai is used, avoid out-of-scope models named in the hackathon guide and save/export watsonx work before the hackathon account is deactivated.
 
 ---
@@ -94,6 +94,10 @@ After the gate: write the **export format, UI path, screenshot path, markdown pa
 - **Hour 24** — UI works or **drop the repo flow**.
 - **Hour 38** — three clean demo runs recorded or **record the backup video now**.
 
+These are product/timeline cutlines, not Bob usage caps. Use the extra Bob
+flexibility before each gate to improve measurable quality, but do not keep a
+late feature alive past the gate just because more agent cycles are available.
+
 > **Pro tip:** the gates are commitments, not aspirations. At each gate, the question is binary and answered out loud. "Almost working" at Hour 14 means the UI is dropped. Sentimental scope-keeping is how solo hackathons fail.
 
 ---
@@ -108,7 +112,7 @@ Each phase: **goal → files → implementation notes → tests → exit gate �
 
 **Files:** `.bob/custom_modes.yaml` (overrides `plan`/`code`/`orchestrator` + additive `reviewer`/`oss-preflight-scaffolder`), `.bob/rules/` (always-on), `.bob/rules-{plan,code,reviewer,orchestrator}/`, `.bob/skills/{oss-preflight-advisor,evidence-discipline,code-review,test-runner,doc-writer}/SKILL.md`, official `bob_sessions/S00–S08/` export folders, `bob_sessions/build-report.md`.
 
-**Notes:** these already exist in the repo — P0 is *verifying* them against the Hour-0 gate (§3) and recording the exact export format in `bob_sessions/build-report.md`. The May 2026 hackathon guide requires each relevant Bob IDE task session to be exported from History, with the task-session consumption-summary screenshot and task-history markdown uploaded in a root `bob_sessions/` folder. P0 then runs **S01: the Plan-mode phase-plan generator** ([bob-prompts.md](./bob-prompts.md) §3) → `docs/phase-plan.md`, one self-contained, Orchestrator-ready spec per P-phase. Then **S01.5: the Plan Council** ([bob-prompts.md](./bob-prompts.md) §5a) — 5 independent adversarial teams gate the plan at **MIN ≥9/10, zero blockers** (run once, cap 1 round; on FAIL STOP and escalate to the user — no auto re-council); no phase launches without `## Council Verdict = PASS`. **Every later P-phase is then launched with a single `/orchestrator` line** ([bob-prompts.md](./bob-prompts.md) §5); the encoded loop (spec→implement→review→test→fix→enhance→export→human review→commit) runs from the phase spec — see [bob-build-guide.md](./bob-build-guide.md) §5. `docs/phase-plan.md` is a generated artifact, not part of the authored 3+1 doc set.
+**Notes:** these already exist in the repo — P0 is *verifying* them against the Hour-0 gate (§3) and recording the exact export format in `bob_sessions/build-report.md`. The May 2026 hackathon guide requires each relevant Bob IDE task session to be exported from History, with the task-session consumption-summary screenshot and task-history markdown uploaded in a root `bob_sessions/` folder. P0 then runs **S01: the Plan-mode phase-plan generator** ([bob-prompts.md](./bob-prompts.md) §3) → `docs/phase-plan.md`, one self-contained, Orchestrator-ready spec per P-phase. Then **S01.5: the Plan Council** ([bob-prompts.md](./bob-prompts.md) §5a) — 5 independent adversarial teams gate the plan at **MIN ≥9/10, zero blockers**. If the council fails, it records blockers, delegates a scoped Plan-mode revision, and re-runs all 5 teams while each cycle produces measurable refinements; no score may rise unless the written plan concretely resolves a cited issue. No phase launches without `## Council Verdict = PASS`. **Every later P-phase is then launched with a single `/orchestrator` line** ([bob-prompts.md](./bob-prompts.md) §5); the encoded loop (spec→implement→review→test→fix→enhance→export→human review→commit) runs from the phase spec and continues while it produces measurable acceptance-criteria progress — see [bob-build-guide.md](./bob-build-guide.md) §5. `docs/phase-plan.md` is a generated artifact, not part of the authored 3+1 doc set.
 
 **Exit gate:** every Hour-0 check passes; export format written down.
 
@@ -309,7 +313,7 @@ Uncommon, high-leverage, learned-the-hard-way:
 | Recommendation looks arbitrary | High | Show scoring weights + fact/inference split in UI |
 | Scope creep | High | Cut Hugging Face, MCP, multi-template, repo audit first; enforce gates |
 | Scorer non-determinism | High | Determinism snapshot test written before scorer logic |
-| Plan has build gaps / not reproducible | High | Plan Council (S01.5): 5 adversarial teams gate at ≥9/10, zero blockers, before any phase builds (1 round; FAIL → escalate to user, no auto re-council) |
+| Plan has build gaps / not reproducible | High | Plan Council (S01.5): 5 adversarial teams gate at ≥9/10, zero blockers, before any phase builds; failed rounds trigger scoped plan revisions and re-council until measurable refinements produce a real PASS or progress stalls |
 | Skill won't activate outside Advanced mode | Medium | Verified constraint — demo skill in Advanced mode; see [bob-build-guide.md](./bob-build-guide.md) |
 
 ---

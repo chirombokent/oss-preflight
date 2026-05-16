@@ -9,9 +9,10 @@
 ```mermaid
 flowchart LR
   H[Hour-0 test<br/>literal prompt] --> G
-  G[Plan mode ONCE<br/>phase-plan generator §3] --> P[docs/phase-plan.md<br/>self-contained phase specs §4]
-  P --> C{Plan Council §5a<br/>5 adversarial teams<br/>1 round MIN score >= 9?}
-  C -- FAIL --> Esc[STOP escalate to user<br/>user decides revise + re-invoke]
+  G[Plan mode initial<br/>phase-plan generator §3] --> P[docs/phase-plan.md<br/>self-contained phase specs §4]
+  P --> C{Plan Council §5a<br/>5 adversarial teams<br/>real MIN score >= 9?}
+  C -- FAIL --> V[Plan revision<br/>measurable refinements]
+  V --> C
   C -- PASS --> L[per phase: 1-line<br/>/orchestrator launcher §5]
   L --> O[overridden Orchestrator<br/>runs the loop §5 bob-build-guide]
   O --> R[rules auto-injected<br/>skills auto-activate]
@@ -22,7 +23,7 @@ flowchart LR
 | Layer | Owns | Does NOT |
 |---|---|---|
 | [implementation-plan.md](./implementation-plan.md) | human strategy: P0–P7, scope cutline, gates, risks | contain executable specs |
-| **Plan mode** (run once, §3) | *generate* `docs/phase-plan.md` — one Orchestrator-ready spec per P-phase | write code, run the loop |
+| **Plan mode** (§3 initial generator + scoped revisions) | *generate/refine* `docs/phase-plan.md` — one Orchestrator-ready spec per P-phase | write code, run the loop |
 | `docs/phase-plan.md` (generated) | the executable contract per phase (§4 schema) | be hand-edited during build |
 | **Plan Council** (§5a, gate) | adversarially judge the plan to ≥9/10 before any build | edit the plan or code (it judges; `plan` revises) |
 | **Orchestrator** (per phase, §5) | read one phase spec + run the encoded loop; author its own `new_task` messages | read this file; commit without the human gate |
@@ -52,7 +53,7 @@ Every prompt/spec here applies the official best-practice levers (https://bob.ib
 
 ## 3. THE prompt that matters — Plan-mode phase-plan generator
 
-Run **once**, in `plan` mode (markdown-only by construction). This single supercharged prompt converts strategy into an Orchestrator-ready execution contract.
+Run initially in `plan` mode (markdown-only by construction). This single supercharged prompt converts strategy into an Orchestrator-ready execution contract; later Plan Council failures may trigger scoped Plan-mode revisions to the generated file.
 
 ```text
 /plan
@@ -77,8 +78,9 @@ Hard requirements:
   project goal, and its integration-success contract with adjacent phases.
 - Quality gates name WHICH rule/skill enforces each gate.
 - Test scenarios enumerate explicit cases incl. the must-test list.
-- Loop config names the delegated mode + skills per step, the cap (3), and the
-  non-skippable human-review-before-commit gate.
+- Loop config names the delegated mode + skills per step, the measurable
+  progress rule for continued loops, the stalled-progress escalation rule, and
+  the non-skippable human-review-before-commit gate.
 - Respect every fileRegex fence; never plan a write outside a mode's fence.
 - Keep scope inside the must-ship cutline; mark should/cut explicitly.
 
@@ -135,7 +137,8 @@ one-pipeline contract (web/skill call the CLI, never import core).
 **Loop config** — steps to run; per-step delegate+skills (spec→plan;
 implement→code; review→reviewer[code-review,evidence-discipline];
 test→advanced[test-runner,evidence-discipline]; fix→code; enhance→code,
-docs→advanced[doc-writer]; commit→code); loop cap 3; human gate before commit.
+docs→advanced[doc-writer]; commit→code); value-gated loop continuation
+rule; stalled-progress escalation rule; human gate before commit.
 
 **Evidence artifact** — official `bob_sessions/S<id>-<slug>/` folder
 containing the task-history markdown and task-session consumption-summary
@@ -149,26 +152,29 @@ evidence exported; human approved; committed with a Bob-generated message.
 
 ---
 
-## 5a. The plan-council gate — run once after §3, before any §5 launch
+## 5a. The plan-council gate — iterate after §3 until real PASS
 
 A hard quality gate: 5 independent adversarial teams judge `docs/phase-plan.md`
 for idempotent build-readiness. **No phase launches until it PASSes** (enforced
 by `.bob/rules-orchestrator/`). One line:
 
 ```text
-/orchestrator Convene the plan-council on @/docs/phase-plan.md ONCE. Run all 5
+/orchestrator Convene the plan-council on @/docs/phase-plan.md. Run all 5
 adversarial teams as independent subtasks (reproducibility/idempotency,
 architecture fidelity, AC/test rigor, integration/data-contract continuity,
-gap/risk red team). Gate = MIN team score >= 9 AND zero blockers. Cap 1
-round - do not auto-revise-and-re-council. On FAIL, consolidate findings,
-record the FAIL verdict at the top of docs/phase-plan.md, STOP and escalate
-to me the lowest team + exact unmet criteria. Record the Council Verdict at
-the top of docs/phase-plan.md.
+gap/risk red team). Gate = MIN team score >= 9 AND zero blockers. Scores must
+reflect real measurable build-readiness, not inflated confidence. On FAIL,
+consolidate findings, delegate a scoped Plan-mode revision that records
+measurable refinements, then re-run all 5 teams. Continue while each round
+resolves blockers, strengthens acceptance criteria, repairs contract drift, or
+improves reproducibility. Stop and escalate only if progress stalls for two
+cycles, an external decision is required, or I ask you to stop. Record every
+Council Verdict at the top of docs/phase-plan.md.
 ```
 
-**Done:** `docs/phase-plan.md` carries `## Council Verdict (round N) = PASS`, every team ≥9, zero blockers. Protocol: `.bob/skills/plan-council/SKILL.md`. The council **judges only** — `plan` does any revision.
+**Done:** `docs/phase-plan.md` carries `## Council Verdict (round N) = PASS`, every team ≥9, zero blockers, plus measurable refinements for any failed rounds. Protocol: `.bob/skills/plan-council/SKILL.md`. The council **judges only** — `plan` does any revision.
 
-> Cost is fixed: this runs at *plan time* (not per phase), **exactly one round** (5 team subtasks), then PASS or escalate. No auto re-council loop — a re-run is an explicit, user-initiated decision after a `plan` revision. It is the one thing standing between "a plan" and "a gapless, reproducible plan any agent can build."
+> BobCoin cost is no longer the limiting factor. The limiting factor is measurable value: a new round is justified only when the prior round produced concrete plan improvements. The gate exists to turn "a plan" into "a gapless, reproducible plan any agent can build."
 
 ## 5. The per-phase launcher — what you actually type
 
@@ -176,10 +182,11 @@ Once `docs/phase-plan.md` is approved **and the council PASSes**, each phase is 
 
 ```text
 /orchestrator Run Phase <Pn> from @/docs/phase-plan.md. Honor every field as
-the contract. Loop until all acceptance criteria are met (cap 3, then escalate
-the precise gap). Export the Bob task-history markdown and consumption-summary
-screenshot into bob_sessions/S<id>-<slug>/, then STOP for my review before
-commit.
+the contract. Loop until all acceptance criteria are met while each loop
+produces measurable progress; escalate the precise gap only if progress stalls
+or an external decision is required. Export the Bob task-history markdown and
+consumption-summary screenshot into bob_sessions/S<id>-<slug>/, then STOP for
+my review before commit.
 ```
 
 Resume / escalation variants:
@@ -189,8 +196,9 @@ Resume / escalation variants:
 REVIEW with that as the only open item; do not re-open passed criteria.
 ```
 ```text
-/orchestrator Phase <Pn> hit the loop cap. Summarize the exact unmet criterion
-and the blocking cause. Do not commit. Wait for my decision.
+/orchestrator Phase <Pn> has stalled with no measurable progress. Summarize
+the exact unmet criterion and the blocking cause. Do not commit. Wait for my
+decision.
 ```
 
 > Skills are normally not named by you — they fire by `description` match. Advanced is the guaranteed skill runtime; `reviewer` also declares the official `skill` group so review recipes can fire where the installed Bob build supports it. On all custom-mode steps the always-on rules remain the floor.
@@ -247,10 +255,10 @@ Each lever is active because something enforces it. Column 3 is where it lives.
 | 14 | Conventional-commit regeneration is free iteration | sparkle icon; `feat/<phase>` branch names | commit-messages |
 | 15 | Export per session, never once at the end | phase-spec **Evidence artifact** field | hackathon |
 | 15b | Export directly into official `bob_sessions/` folder with task-history markdown + consumption screenshot | bob-build-guide §8 + final checklist | hackathon guide pp. 18–19 |
-| 15c | Treat Bobcoins as a fixed budget; one objective per task, no speculative loops | S00–S08 session map + loop caps | hackathon guide |
+| 15c | Treat BobCoins as free but value-gated; one objective per task, no speculative loops | S00–S08 session map + measurable-progress gates | IBM clarification + hackathon guide |
 | 16 | Override the slug, don't add a parallel one | `plan`/`code`/`orchestrator` overridden | custom-modes |
 | 17 | Encode the human gate into the Orchestrator | `custom_modes.yaml` orchestrator STEP 9 | modes |
-| 18 | Cap the loop, escalate the gap | orchestrator STEP 7 (cap 3) | modes |
+| 18 | Keep looping while there is measurable progress; escalate stalled gaps | orchestrator STEP 7 value gate | modes |
 
 Sources: modes/custom-modes/skills/rules/checkpoints/commit-messages/best-practices/hackathon — full URLs in §9.
 

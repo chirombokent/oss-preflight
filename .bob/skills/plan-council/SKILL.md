@@ -1,6 +1,6 @@
 ---
 name: plan-council
-description: Use to judge docs/phase-plan.md before any build phase launches — an adversarial 5-team review that gates the build at 9/10. Activates on "convene the plan council", "is the phase-plan build-ready", "review the plan", "plan gate", "judge the plan", or the Orchestrator PLAN GATE.
+description: Use to judge and iteratively harden docs/phase-plan.md before any build phase launches — an adversarial 5-team review gate that must reach real measurable 9/10 build-readiness, not inflated scores. Activates on "convene the plan council", "is the phase-plan build-ready", "review the plan", "plan gate", "judge the plan", or the Orchestrator PLAN GATE.
 ---
 
 # Plan Council — adversarial build-readiness gate
@@ -12,10 +12,13 @@ plan or code. Revision is delegated to `plan`. This is a hard gate, not advice.
 ## Convene (Orchestrator)
 
 Delegate **5 separate `new_task` reviews**, one per team. Each team receives
-`@/docs/phase-plan.md`, `@/docs/architecture.md`, `@/docs/implementation-plan.md`
-and its own charter **only** — no team sees another's verdict (independence is
-the adversarial property). Each team returns: a 0–10 score, BLOCKERS
-(gap-level, build-stopping), MAJORS, and the exact phase/field each maps to.
+`@/docs/phase-plan.md`, `@/docs/architecture.md`, `@/docs/implementation-plan.md`,
+`@/.bob/custom_modes.yaml`, `@/.bob/rules-orchestrator/` (the enforcement layer
+the plan will actually execute under — flag any plan↔runtime drift as a
+BLOCKER), and its own charter **only** — no team sees another's verdict
+(independence is the adversarial property). Each team returns: a 0–10 score,
+BLOCKERS (gap-level, build-stopping), MAJORS, and the exact phase/field each
+maps to.
 
 ## The 5 teams (orthogonal lenses)
 
@@ -45,33 +48,47 @@ the adversarial property). Each team returns: a 0–10 score, BLOCKERS
 **PASS** only if `overall ≥ 9` **AND** zero unresolved BLOCKERS across all
 teams. A single build-stopping gap fails the gate — it is never averaged away.
 
-## On FAIL — escalate, do not auto-loop
+## On FAIL — revise measurably, then re-council
 
-The council runs **once** (one round, all 5 teams). It does **not**
-auto-revise-and-re-council — that loop is unbounded in Bobcoin cost. On FAIL:
+IBM clarified that the provisioned BobCoins are free for the hackathon
+accounts, so the council is no longer capped to one round for cost reasons.
+The council may run as many rounds as needed to reach the gate, but every
+round after the first must produce measurable plan improvement before another
+PASS/FAIL judgment is accepted.
+
+On FAIL:
 
 1. Produce one consolidated, deduplicated, prioritized findings list, each
    item mapped to a specific phase + field in `docs/phase-plan.md`.
-2. **STOP and escalate to the user**: report the lowest-scoring team, its
-   score, every unresolved BLOCKER, and the exact unmet criteria. Record the
-   FAIL verdict (below).
-3. The user decides the next step (typically: delegate a `plan` revision with
-   these findings, then re-invoke the council manually on the revised plan).
-   The council never edits the plan and never re-convenes itself.
+2. Delegate a `plan` revision that edits `docs/phase-plan.md` only to address
+   those findings. The revision must add a `Measurable refinements` note under
+   the Council Verdict naming the exact changed sections and which blockers or
+   major risks those changes resolve.
+3. Re-convene all 5 independent teams against the revised plan. Teams must
+   score from the written plan and the listed refinements only; they must not
+   raise a score unless a previously cited issue is concretely resolved.
+4. Continue this FAIL -> plan revision -> full 5-team re-council loop while
+   each cycle removes blockers, converts vague acceptance criteria into
+   testable criteria, repairs contract drift, or strengthens reproducibility.
+5. Escalate to the user only when an external decision is required, two
+   consecutive cycles produce no measurable refinement, or the user asks to
+   stop.
 
-**Cap: 1 council round per invocation.** Never lower the bar to pass. Never
-skip a team. Never average. A re-run is always a fresh, independent council
-invoked explicitly by the user, never an automatic loop.
+Never lower the bar to pass. Never skip a team. Never average. Never inflate a
+score to finish the process. A PASS requires real, reviewable improvements that
+make the plan more buildable.
 
 ## Record (the gate artifact)
 
 Write a `## Council Verdict (round N)` block at the top of
 `docs/phase-plan.md`: per-team scores, blockers, overall, PASS/FAIL,
-round, timestamp. The latest round is authoritative. **No phase may launch
-until a current PASS is recorded** (enforced by `.bob/rules-orchestrator/`).
+round, timestamp, and measurable refinements since the previous round. The
+latest round is authoritative. **No phase may launch until a current PASS is
+recorded** (enforced by `.bob/rules-orchestrator/`).
 
 ## Constraints
 
 - Judge only; do not edit the plan or write code.
 - Always-on rules remain the floor; the council never relaxes them.
-- One round of the council is a plan-time gate, not per-phase — bounded cost.
+- Iteration is allowed, but every extra round must be justified by concrete
+  plan improvements, not by a desire to force a higher score.

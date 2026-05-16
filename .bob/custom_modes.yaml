@@ -107,13 +107,17 @@ customModes:
       their always-on rules carry the discipline floor there.
       STEP 0 PLAN GATE: no phase may launch until docs/phase-plan.md carries a
       current Council Verdict = PASS. If absent, stale, or FAIL, run the
-      plan-council skill ONCE (5 independent adversarial team reviews via
-      new_task; gate = MIN team score >= 9 AND zero blockers). Cap 1 council
-      round per invocation - never auto-revise-and-re-council (unbounded
-      Bobcoin cost). On FAIL, consolidate findings, record the FAIL verdict,
-      STOP and escalate to the user the lowest team + exact unmet criteria;
-      the user decides whether to delegate a plan revision and re-invoke the
-      council. Never lower the bar.
+      plan-council skill as an iterative measurable-refinement gate (5
+      independent adversarial team reviews via new_task; gate = MIN team score
+      >= 9 AND zero blockers). There is no fixed council-round cap now that
+      IBM clarified provisioned BobCoins are free to use. On FAIL,
+      consolidate findings, delegate a scoped plan revision, and re-run all 5
+      teams while each cycle produces concrete plan refinements such as
+      resolved blockers, stronger acceptance criteria, repaired contract drift,
+      or clearer reproducibility. Stop and escalate only when an external
+      decision is required, two consecutive cycles produce no measurable
+      refinement, or the user asks to stop. Never lower the bar or inflate a
+      score to pass.
       STEP 1 SPEC: delegate to plan (no skills; rules-plan) - produce spec +
       testable acceptance criteria + gated todo; get user approval of the spec
       before proceeding.
@@ -132,8 +136,13 @@ customModes:
       user-facing docs (adoption report, README, build-proof copy), delegate
       that doc pass to advanced (skill: doc-writer).
       STEP 7 LOOP GATE: compare against the acceptance criteria. If any
-      unmet, return to STEP 3. Hard cap 3 full loops; if still unmet, stop and
-      escalate to the user with the precise gap.
+      unmet, return to STEP 3 while the next loop can produce a measurable
+      improvement: a newly passing test, closed review blocker, resolved
+      acceptance criterion, or concrete reduction in implementation risk. No
+      build-loop count cap applies; stop and escalate to the user with the
+      precise gap only when an external decision is required, the same blocker
+      survives two consecutive loops with no measurable progress, or the user
+      asks to stop.
       STEP 8 EXPORT: when satisfied, instruct the user to export this Bob
       task from Bob IDE History: select the task, open the task header, save
       the task-session consumption-summary screenshot, and use Export task

@@ -8,10 +8,12 @@ paraphrase the loop here — a second copy is how they drift.
 
 Invariant reminders (authoritative text is in `01-loop-invariants.md`):
 
-- STEP 0 Plan Council runs **once (cap 1 round)**; on FAIL, STOP and escalate
-  to the user — never auto-revise-and-re-council.
-- Never skip REVIEW or TEST; the feature loop caps at **3** full iterations,
-  then STOP and escalate the precise gap.
+- STEP 0 Plan Council is iterative: on FAIL, consolidate findings, delegate a
+  scoped `plan` revision, and re-run all 5 independent teams while each cycle
+  produces measurable plan refinements. Never lower the bar or inflate scores.
+- Never skip REVIEW or TEST; the feature loop is value-gated rather than
+  count-capped. Continue while loops resolve blockers or acceptance criteria;
+  stop only when progress stalls or a real external decision is required.
 - Never commit autonomously — STEP 9 human approval is mandatory.
 - Each completed phase leaves a `bob_sessions/S<id>-<slug>/` folder
   (task-history markdown + consumption-summary screenshot) and its

@@ -123,12 +123,16 @@ skill: 5 **independent adversarial teams** (reproducibility/idempotency ·
 architecture fidelity · AC/test rigor · integration/data-contract continuity ·
 gap/risk red team), each delegated as its own `new_task`. Gate =
 **MIN team score ≥ 9 AND zero blockers** (adversarial — never averaged). The
-council runs **once (cap 1 round)** — it never auto-revises-and-re-councils
-(that loop is unbounded in Bobcoin cost). On FAIL: consolidate findings,
-record the FAIL verdict, **STOP and escalate to the user** the lowest team +
-exact unmet criteria; the user decides whether to delegate a `plan` revision
-and re-invoke the council. This is a fixed-cost plan-time gate, enforced by
-`.bob/rules-orchestrator/`. Protocol: `.bob/skills/plan-council/SKILL.md`.
+council is no longer capped to one round for cost reasons: IBM clarified the
+provisioned BobCoins are free to use with the hackathon accounts. On FAIL:
+consolidate findings, delegate a scoped `plan` revision, record the measurable
+refinements made to `docs/phase-plan.md`, and re-run all 5 independent teams.
+Continue while each cycle produces concrete plan improvements. Stop and
+escalate only when an external decision is required, two consecutive cycles
+produce no measurable refinement, or the user asks to stop. The score must
+reflect real build-readiness, not inflated confidence. This gate is enforced
+by `.bob/rules-orchestrator/`. Protocol:
+`.bob/skills/plan-council/SKILL.md`.
 
 Once the council PASSes, the overridden `orchestrator` encodes one
 deterministic loop per phase. It delegates each step with `new_task` (full
@@ -148,8 +152,8 @@ flowchart TD
     J{9 HUMAN REVIEW<br/>user approves?}
     K[10 COMMIT - delegate to code<br/>Bob-generated conventional message]
     A --> B --> C --> D --> E --> F --> G --> H
-    H -- no, under 3 loops --> D
-    H -- no, cap hit --> Esc[STOP - escalate gap to user]
+    H -- no, measurable progress possible --> D
+    H -- no progress or external decision --> Esc[STOP - escalate gap to user]
     H -- yes --> I --> J
     J -- no --> D
     J -- yes --> K
@@ -173,7 +177,7 @@ Build/spec/review sit on custom modes where the **rules floor** is sufficient. R
 
 - Spec is approved by the user **before** any code (step 1→2 gate).
 - Review and test stages **cannot be skipped**.
-- Loop cap of **3** full iterations; if still unmet, it **stops and escalates** the precise gap rather than spinning.
+- Build loops are **value-gated, not count-capped**: repeat REVIEW/TEST/FIX/ENHANCE while each loop produces a measurable acceptance-criteria improvement, resolved blocker, or newly passing test; stop and escalate the precise gap when progress stalls or a real external decision is required.
 - **Never commits autonomously** — step 9 is a mandatory human approval gate; step 10 only runs after approval and uses Bob's generated conventional-commit message.
 - Every completed feature leaves an exported session (step 8) — the evidence chain is part of the loop, not an afterthought.
 
@@ -211,34 +215,37 @@ The submission must include code/files where Bob assisted **and** the exported B
 
 **The principle:** every meaningful Bob task leaves *one exported session*, *one row in `bob_sessions/build-report.md`*, and *at least one committed artifact or validation result*.
 
-**Bobcoin discipline:** the hackathon guide says the provisioned Bob account has
-**40 Bobcoins, account-wide, with no top-up** (PDF p.6). Every Bob AI
-interaction — every `new_task` delegation — consumes Bobcoins, so the
-delegation-heavy loop must be budgeted, not run open-ended. Keep sessions
-scoped to S00–S08, one objective per task, run Enhance Prompt before costly
-launches, and record the consumption-summary screenshot during every export.
+**BobCoin clarification and usage discipline:** IBM clarified that the
+provisioned 40 BobCoins are free to use with the hackathon accounts and should
+not be treated as a hard charge limit. The project should therefore use Bob
+more aggressively where it produces measurable quality: repeated Plan Council
+rounds, additional review/test/fix loops, and deeper adversarial checks are
+allowed.
 
-**Indicative budget (treat as a ceiling, not a target):**
+Free usage is not permission for speculative loops. Every additional Bob task
+must have one clear objective and must leave one of these measurable outcomes:
+a resolved blocker, a stronger acceptance criterion, a newly passing test, a
+repaired data/API contract, a clearer fallback, or a committed/exported
+artifact. A loop that only raises confidence language without changing the
+plan, code, tests, or evidence is treated as waste and must stop.
 
-| Session | Bob work | Budget (Bobcoins) | Notes |
-|---|---|---:|---|
-| S00 | Hour-0 export test | 1 | Tiny; literal prompt |
-| S01 | Phase-plan generator (Plan, once) | 3 | One rich Plan-mode pass |
-| S01.5 | Plan Council (5 team subtasks, **1 round**) | 6 | Fixed cost — no auto re-council; FAIL → escalate |
-| S03 P1 | Core schemas + scoring loop | 5 | Loop cap 3 internal iterations |
-| S04 P2 | Collectors + cache loop | 5 | |
-| S05 P3+P4 | CLI + scaffold loop | 6 | Two phases, one session |
-| S06 P5 | Web UI + build-proof loop | 6 | |
-| S07 P6 | Runtime skill demo (Advanced) | 2 | |
-| S08 P7 | Review + submission loop | 4 | |
-| — | Reserve (overruns, re-council, fixes) | ~2 | Hard reserve |
+**Indicative usage map (not a cap):**
 
-Total ≈ 38–40. **If Bobcoins approach exhaustion mid-build:** stop launching
-new loops, finish the current phase to a committable state, then degrade
-remaining "should-ship" work to fixtures/static artifacts and — per the
-hackathon guide — shift any remaining AI assist to the optional watsonx
-budget (`$80` IBM Cloud credits) rather than blocking the submission. Record
-the Bobcoin state per session in the `bob_sessions/build-report.md` row.
+| Session | Bob work | Usage posture | Measurable output required |
+|---|---|---|---|
+| S00 | Hour-0 export test | Tiny | Export mechanism proven |
+| S01 | Phase-plan generator | Rich Plan-mode pass | Complete phase specs |
+| S01.5 | Plan Council | Iterative until real PASS | Resolved blockers + measurable refinements per round |
+| S03 P1 | Core schemas + scoring loop | Continue while improving | Determinism/tests/AC progress |
+| S04 P2 | Collectors + cache loop | Continue while improving | Mocked tests, fixtures, cache fallback |
+| S05 P3+P4 | CLI + scaffold loop | Continue while improving | CLI/scaffold AC progress |
+| S06 P5 | Web UI + build-proof loop | Continue while improving | Browser/API/build-proof evidence |
+| S07 P6 | Runtime skill demo | Iterate if useful | Activation/fence evidence |
+| S08 P7 | Review + submission loop | Iterate until clean | Zero blockers + submission proof |
+
+Record each meaningful Bob session in `bob_sessions/build-report.md`. If a
+round does not produce a measurable delta, document that and stop rather than
+manufacturing a higher score.
 
 ### Evidence folder layout
 
@@ -269,13 +276,13 @@ Example:
 
 ## 7. Session task plan (S00–S08)
 
-The session IDs are the **evidence-export units**: one official `bob_sessions/S<id>-<slug>/` folder per relevant Bob task. In the new model you hand-type only four prompt kinds (see [bob-prompts.md](./bob-prompts.md) §1): the Hour-0 test, the Plan-mode **phase-plan generator** (run once → `docs/phase-plan.md`), a **one-line `/orchestrator` launcher** per build phase, and the runtime skill demo. The Orchestrator authors its own `new_task` instructions from the generated phase spec + its encoded loop — it does **not** read `bob-prompts.md`. Rules auto-inject; skills auto-activate.
+The session IDs are the **evidence-export units**: one official `bob_sessions/S<id>-<slug>/` folder per relevant Bob task. In the new model you hand-type only four prompt kinds (see [bob-prompts.md](./bob-prompts.md) §1): the Hour-0 test, the Plan-mode **phase-plan generator** (initial pass → `docs/phase-plan.md`), a **one-line `/orchestrator` launcher** per build phase, and the runtime skill demo. The Orchestrator authors its own `new_task` instructions from the generated phase spec + its encoded loop — it does **not** read `bob-prompts.md`. Rules auto-inject; skills auto-activate.
 
 | ID | Session | What you type | Runs as | Success criteria |
 |---|---|---|---|---|
 | S00 | Hour-0 export test | literal prompt (§6) | Ask or Code | Export exists, opens after commit, no secrets |
 | S01 | Generate phase-plan | the **generator** (bob-prompts §3) | Plan (markdown-only) | `docs/phase-plan.md`: every P-phase a §4-conformant, self-contained, zero-open-questions spec; user-approved |
-| S01.5 | **Plan Council gate** | 1-line `/orchestrator` (bob-prompts §5a) | Orchestrator → 5 adversarial teams; reviewer for floor checks + official `skill` group where supported, Advanced fallback for skill recipes | `## Council Verdict = PASS`, every team ≥9, zero blockers (run once, cap 1 round; FAIL → STOP + escalate to user) |
+| S01.5 | **Plan Council gate** | 1-line `/orchestrator` (bob-prompts §5a) | Orchestrator → 5 adversarial teams; reviewer for floor checks + official `skill` group where supported, Advanced fallback for skill recipes | `## Council Verdict = PASS`, every team ≥9, zero blockers, with measurable refinements recorded for every failed round before the final PASS |
 | S02 | *(optional)* workplan sanity | 1-line `/orchestrator` | Orchestrator | Phase order/fences/gates confirmed against repo folders |
 | S03 | Core schemas + scoring | 1-line launcher (§5) | Orchestrator loop → code | Phase spec acceptance criteria green; stable ranking |
 | S04 | Collectors + cache | 1-line launcher | Orchestrator loop → code | npm+GitHub work; cache-fallback tested; missing evidence explicit |

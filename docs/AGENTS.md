@@ -12,7 +12,7 @@ This file provides guidance to agents when working with code in this repository.
 - **Plan mode is markdown-only by design**: Cannot edit application code - this enforces spec-before-code discipline
 - **Skills only run in Advanced/reviewer modes**: `plan` and `code` modes cannot activate skills - they rely on always-on `.bob/rules/` instead
 - **Phase specs are GENERATED artifacts**: `docs/phase-plan.md` is created by Plan mode's generator prompt, not hand-written
-- **Plan Council is a mandatory gate**: Before any phase builds, 5 adversarial teams must score ≥9/10 with zero blockers (see `docs/implementation-plan.md` §3, row S01.5)
+- **Plan Council is a mandatory iterative gate**: Before any phase builds, 5 adversarial teams must score ≥9/10 with zero blockers. Re-run council rounds after scoped plan revisions until the score reflects real measurable build-readiness, not inflated confidence (see `docs/implementation-plan.md` §3, row S01.5)
 
 ## Evidence Discipline (Non-Negotiable)
 
@@ -31,7 +31,7 @@ The Orchestrator runs a 10-step loop per phase (see `.bob/custom_modes.yaml` lin
 4. TEST (delegate to advanced with skills)
 5. FIX (delegate to code)
 6. ENHANCE (delegate to code)
-7. LOOP GATE (cap 3 iterations, then escalate)
+7. LOOP GATE (continue while loops produce measurable acceptance-criteria progress; escalate only on stalled progress or a real external decision)
 8. EXPORT session
 9. HUMAN REVIEW (mandatory approval gate)
 10. COMMIT (Bob-generated message, never autonomous)
