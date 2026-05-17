@@ -106,6 +106,20 @@ export const EvidencePassportSchema = z.object({
 export type EvidencePassport = z.infer<typeof EvidencePassportSchema>;
 
 /**
+ * Collected facts for a single candidate (the `facts` block of an
+ * EvidencePassport). Built by the I/O layer (collectors live in the CLI),
+ * then injected into the pure scorer so core stays zero-I/O.
+ */
+export type CandidateFacts = EvidencePassport['facts'];
+
+/**
+ * Map of candidate name → collected facts, injected into `scoreAndRank`.
+ * Candidates absent from the map (or facts left as `null`) keep explicit
+ * `null` evidence — missing evidence is never silently invented.
+ */
+export type EvidenceMap = Record<string, CandidateFacts>;
+
+/**
  * Subscores - 6 dimensions, each 0-100
  */
 export const SubscoresSchema = z.object({

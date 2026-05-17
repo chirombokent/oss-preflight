@@ -1,13 +1,13 @@
 {
   "npm": {
-    "discord": ["discord.js", "discord.py", "eris"],
+    "discord": ["discord.js", "eris", "oceanic.js"],
     "web-framework": ["express", "fastify", "koa", "hapi"],
     "react": ["react", "preact", "inferno"],
     "testing": ["vitest", "jest", "mocha", "chai"],
     "http-client": ["axios", "node-fetch", "got", "undici"]
   },
   "pypi": {
-    "discord": ["discord.py", "discord.js", "py-cord"],
+    "discord": ["discord.py", "py-cord", "nextcord"],
     "web-framework": ["flask", "django", "fastapi", "tornado"],
     "data-science": ["numpy", "pandas", "scikit-learn", "matplotlib"],
     "testing": ["pytest", "unittest", "nose2"]

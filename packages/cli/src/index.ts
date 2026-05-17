@@ -10,7 +10,7 @@
  */
 
 import { Command } from 'commander';
-import { runRecommendPipeline, checkEnvironment, validateInput } from './recommend-command.js';
+import { runRecommendPipeline, validateInput } from './recommend-command.js';
 import { scaffoldCommand } from './scaffold-command.js';
 import { formatOutput } from './output-formatter.js';
 
@@ -33,9 +33,14 @@ program
   .option('--refresh', 'Force live collector calls, bypass cache')
   .action(async (options) => {
     try {
-      // Validate environment
-      checkEnvironment();
-      
+      // Claude is optional: degrade to keyword parsing rather than fail when
+      // no API key is present (keeps the demo runnable on a fresh clone).
+      if (!process.env.ANTHROPIC_API_KEY) {
+        console.error(
+          'Notice: ANTHROPIC_API_KEY not set — using keyword intent parsing (reduced capability).'
+        );
+      }
+
       // Validate input
       validateInput(options.idea);
       

@@ -47,12 +47,16 @@ available.
    Expected: `packages/core`, `packages/collectors`, `packages/scaffold`,
    `packages/cli`, and `apps/web` report successful builds.
 
-3. Configure the Claude API key for the recommendation parser:
+3. *(Optional)* Configure a Claude API key for higher-quality intent parsing:
    ```powershell
    $env:ANTHROPIC_API_KEY="your-api-key"
    ```
-   Expected: no terminal output. If the key is invalid or unavailable, the CLI
-   falls back to keyword parsing and labels the result as reduced capability.
+   Expected: no terminal output. The key is **optional** — when it is unset or
+   the API call fails, the CLI prints a one-line notice and degrades to
+   deterministic keyword intent parsing, so the demo runs on a fresh clone
+   with no credentials. Evidence facts (npm/GitHub/OpenSSF) are independent of
+   this key and are served from the committed cache when upstream APIs are
+   unavailable.
 
 4. Start the API server in one terminal:
    ```powershell

@@ -9,14 +9,19 @@
 
 import { collectNpmData } from '../src/npm.js';
 import { collectGitHubData } from '../src/github.js';
+import { collectOpenSSFData } from '../src/openssf.js';
 import { readCache } from '../src/cache/index.js';
 
 /**
- * Demo packages to prewarm
+ * Demo packages to prewarm — the exact npm Discord set the demo recommends,
+ * plus their GitHub repos and OpenSSF scorecards. This is the live-API
+ * seatbelt: with this cache committed, the demo never depends on a
+ * rate-limited or down upstream API during judging.
  */
 const DEMO_PACKAGES = {
-  npm: ['discord.js', 'discord.py'],
-  github: ['discordjs/discord.js']
+  npm: ['discord.js', 'eris', 'oceanic.js'],
+  github: ['discordjs/discord.js', 'abalabahaha/eris', 'OceanicJS/Oceanic'],
+  openssf: ['discordjs/discord.js', 'abalabahaha/eris', 'OceanicJS/Oceanic']
 };
 
 /**
@@ -76,15 +81,40 @@ async function prewarmGitHub(): Promise<void> {
 }
 
 /**
+ * Prewarm OpenSSF scorecards
+ */
+async function prewarmOpenSSF(): Promise<void> {
+  console.log('\nPrewarming OpenSSF scorecards...');
+
+  for (const repo of DEMO_PACKAGES.openssf) {
+    const normalizedRepo = repo.toLowerCase();
+
+    if (await isCacheFresh('openssf', normalizedRepo)) {
+      console.log(`  OK ${repo} - cache is fresh, skipping`);
+      continue;
+    }
+
+    try {
+      console.log(`  -> Fetching OpenSSF ${repo}...`);
+      await collectOpenSSFData(repo);
+      console.log(`  OK ${repo} - cached`);
+    } catch (error) {
+      console.error(`  FAIL ${repo} - failed:`, (error as Error).message);
+    }
+  }
+}
+
+/**
  * Main execution
  */
 async function main(): Promise<void> {
   console.log('=== OSS Preflight Cache Prewarm ===\n');
-  
+
   try {
     await prewarmNpm();
     await prewarmGitHub();
-    
+    await prewarmOpenSSF();
+
     console.log('\nOK Cache prewarm complete');
     process.exit(0);
   } catch (error) {

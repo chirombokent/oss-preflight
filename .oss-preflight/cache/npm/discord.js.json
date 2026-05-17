@@ -3,22 +3,22 @@
     "metadata": {
       "name": "discord.js",
       "version": "14.26.4",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/discord.js/-/discord.js-14.26.4.tgz"
+      },
       "description": "A powerful library for interacting with the Discord API",
       "license": "Apache-2.0",
       "homepage": "https://discord.js.org",
       "repository": {
         "type": "git",
         "url": "git+https://github.com/discordjs/discord.js.git"
-      },
-      "dist": {
-        "tarball": "https://registry.npmjs.org/discord.js/-/discord.js-14.26.4.tgz"
       }
     },
-    "weeklyDownloads": 706517,
+    "weeklyDownloads": 805337,
     "sourceUrl": "https://registry.npmjs.org/discord.js/latest",
-    "collectedAt": "2026-05-17T03:23:44.642Z",
+    "collectedAt": "2026-05-17T09:01:36.646Z",
     "source": "live"
   },
-  "collectedAt": "2026-05-17T03:23:44.643Z",
+  "collectedAt": "2026-05-17T09:01:36.647Z",
   "source": "live"
 }

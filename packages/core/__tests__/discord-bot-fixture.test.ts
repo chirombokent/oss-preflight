@@ -16,20 +16,21 @@ describe('Discord-bot Fixture Test (AC #9)', () => {
       },
     };
 
-    // Discovery returns expected candidates
+    // Discovery returns only real npm discord packages (discord.py is PyPI)
     const candidateNames = discoverCandidates(brief);
     expect(candidateNames).toContain('discord.js');
-    expect(candidateNames).toContain('discord.py');
     expect(candidateNames).toContain('eris');
+    expect(candidateNames).toContain('oceanic.js');
+    expect(candidateNames).not.toContain('discord.py');
 
     // Convert to Candidate objects
     const candidates = candidateNames.map(name => ({
       name,
-      version: name === 'discord.js' ? '14.11.0' : 
-               name === 'discord.py' ? '2.3.0' : '0.17.0',
+      version: name === 'discord.js' ? '14.11.0' :
+               name === 'oceanic.js' ? '1.11.2' : '0.17.0',
       ecosystem: 'npm' as const,
       repositoryUrl: name === 'discord.js' ? 'https://github.com/discordjs/discord.js' :
-                     name === 'discord.py' ? 'https://github.com/Rapptz/discord.py' :
+                     name === 'oceanic.js' ? 'https://github.com/OceanicJS/Oceanic' :
                      'https://github.com/abalabahaha/eris',
       homepageUrl: name === 'discord.js' ? 'https://discord.js.org' : null,
     }));

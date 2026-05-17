@@ -4,7 +4,7 @@ import type { IdeaBrief } from '../src/types.js';
 
 describe('discovery.ts', () => {
   describe('discoverCandidates', () => {
-    it('returns discord packages for discord domain', () => {
+    it('returns only real npm discord packages for npm discord domain', () => {
       const brief: IdeaBrief = {
         capabilities: ['bot', 'message processing'],
         domain: 'discord',
@@ -14,8 +14,10 @@ describe('discovery.ts', () => {
       const candidates = discoverCandidates(brief);
 
       expect(candidates).toContain('discord.js');
-      expect(candidates).toContain('discord.py');
       expect(candidates).toContain('eris');
+      expect(candidates).toContain('oceanic.js');
+      // discord.py is a PyPI package, not npm — it must not leak into npm results
+      expect(candidates).not.toContain('discord.py');
       expect(candidates.length).toBeGreaterThan(0);
     });
 
@@ -85,6 +87,8 @@ describe('discovery.ts', () => {
       const candidates = discoverCandidates(brief);
 
       expect(candidates).toContain('discord.py');
+      // discord.js is an npm package, not PyPI — it must not leak into PyPI results
+      expect(candidates).not.toContain('discord.js');
       expect(candidates.length).toBeGreaterThan(0);
     });
 

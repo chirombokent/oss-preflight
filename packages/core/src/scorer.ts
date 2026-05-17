@@ -1,4 +1,12 @@
-import type { Candidate, IdeaBrief, Recommendation, RepoStack, Subscores } from './types.js';
+import type {
+  Candidate,
+  CandidateFacts,
+  EvidenceMap,
+  IdeaBrief,
+  Recommendation,
+  RepoStack,
+  Subscores,
+} from './types.js';
 
 /**
  * Scoring weights (must sum to 1.0)
@@ -21,12 +29,16 @@ const WEIGHTS = {
  * @param candidates - Array of candidates to score
  * @param brief - The parsed user intent
  * @param repoStack - Optional existing repo context for compatibility scoring
+ * @param evidence - Optional collected facts (built by the I/O layer) keyed by
+ *   candidate name. Candidates absent from the map keep explicit `null`
+ *   evidence — core never invents missing facts and performs no I/O itself.
  * @returns Ranked recommendations with subscores and evidence passports
  */
 export function scoreAndRank(
   candidates: Candidate[],
   brief: IdeaBrief,
-  repoStack?: RepoStack
+  repoStack?: RepoStack,
+  evidence?: EvidenceMap
 ): Recommendation[] {
   if (candidates.length === 0) {
     return [];
@@ -34,14 +46,15 @@ export function scoreAndRank(
 
   // Score each candidate
   const scored = candidates.map(candidate => {
-    const subscores = computeSubscores(candidate, brief, repoStack);
+    const facts = evidence?.[candidate.name] ?? null;
+    const subscores = computeSubscores(candidate, brief, repoStack, facts);
     const score = computeWeightedScore(subscores);
 
     return {
       candidate,
       score,
       subscores,
-      passport: createEvidencePassport(candidate, brief, subscores),
+      passport: createEvidencePassport(candidate, brief, subscores, facts),
       scaffoldAvailable: hasScaffoldTemplate(candidate, brief),
       templateId: getTemplateId(candidate, brief),
     };
@@ -70,14 +83,15 @@ export function scoreAndRank(
 function computeSubscores(
   candidate: Candidate,
   brief: IdeaBrief,
-  repoStack?: RepoStack
+  repoStack?: RepoStack,
+  facts?: CandidateFacts | null
 ): Subscores {
   return {
     goalFit: scoreGoalFit(candidate, brief),
     repoCompat: scoreRepoCompat(candidate, brief, repoStack),
-    maintenance: scoreMaintenance(candidate),
-    safety: scoreSafety(candidate),
-    community: scoreCommunity(candidate),
+    maintenance: scoreMaintenance(candidate, facts),
+    safety: scoreSafety(candidate, facts),
+    community: scoreCommunity(candidate, facts),
     docsQuality: scoreDocsQuality(candidate),
   };
 }
@@ -152,11 +166,51 @@ function scoreRepoCompat(
 }
 
 /**
- * Maintenance health: based on version and repository presence
- * 
- * In P1, we don't have live data, so use heuristics
+ * Months between two ISO timestamps, or null if either is unparseable.
+ * Deterministic — derived only from the inputs, never the wall clock.
  */
-function scoreMaintenance(candidate: Candidate): number {
+function monthsBetween(fromIso: string, toIso: string): number | null {
+  const from = Date.parse(fromIso);
+  const to = Date.parse(toIso);
+  if (Number.isNaN(from) || Number.isNaN(to)) {
+    return null;
+  }
+  return (to - from) / (1000 * 60 * 60 * 24 * 30);
+}
+
+/**
+ * Maintenance health.
+ *
+ * With real evidence: recency of the last commit (measured against when the
+ * fact was collected, so it stays deterministic for a fixed input). Without
+ * evidence: the original version/repository heuristic, byte-identical to the
+ * pre-collector behaviour.
+ */
+function scoreMaintenance(
+  candidate: Candidate,
+  facts?: CandidateFacts | null
+): number {
+  const lastCommit = facts?.lastCommit;
+  if (lastCommit && typeof lastCommit.value === 'string') {
+    let score = 50;
+    if (candidate.repositoryUrl) {
+      score += 15;
+    }
+    const months = monthsBetween(lastCommit.value, lastCommit.collectedAt);
+    if (months !== null) {
+      if (months <= 3) {
+        score += 35;
+      } else if (months <= 12) {
+        score += 25;
+      } else if (months <= 24) {
+        score += 15;
+      } else {
+        score += 5;
+      }
+    }
+    return Math.min(100, score);
+  }
+
   let score = 50; // baseline
 
   // Has repository URL
@@ -184,11 +238,28 @@ function scoreMaintenance(candidate: Candidate): number {
 }
 
 /**
- * Safety signals: license and security indicators
- * 
- * In P1, baseline score (no live OpenSSF data yet)
+ * Safety signals.
+ *
+ * With real evidence: the OpenSSF Scorecard value (0–10) is the security
+ * signal. Without it: the original repository/well-known heuristic,
+ * byte-identical to the pre-collector behaviour.
  */
-function scoreSafety(candidate: Candidate): number {
+function scoreSafety(
+  candidate: Candidate,
+  facts?: CandidateFacts | null
+): number {
+  const openssf = facts?.openssfScore;
+  if (openssf && typeof openssf.value === 'number') {
+    let score = 50; // baseline
+    if (candidate.repositoryUrl) {
+      score += 25;
+    }
+    // OpenSSF Scorecard is 0–10; scale into a 0–25 contribution
+    const clamped = Math.max(0, Math.min(10, openssf.value));
+    score += (clamped / 10) * 25;
+    return Math.min(100, score);
+  }
+
   let score = 50; // baseline
 
   // Has repository (can be audited)
@@ -206,11 +277,37 @@ function scoreSafety(candidate: Candidate): number {
 }
 
 /**
- * Community signal: popularity indicators
- * 
- * In P1, use name recognition heuristics
+ * Community signal.
+ *
+ * With real evidence: GitHub stars (preferred) or weekly npm downloads, on a
+ * log scale so popular and niche packages separate sensibly. Without it: the
+ * original name-recognition heuristic, byte-identical to the pre-collector
+ * behaviour.
  */
-function scoreCommunity(candidate: Candidate): number {
+function scoreCommunity(
+  candidate: Candidate,
+  facts?: CandidateFacts | null
+): number {
+  const stars = facts?.stars;
+  const downloads = facts?.weeklyDownloads;
+  const popularitySignal =
+    stars && typeof stars.value === 'number'
+      ? stars.value
+      : downloads && typeof downloads.value === 'number'
+        ? downloads.value
+        : null;
+
+  if (popularitySignal !== null) {
+    let score = 50; // baseline
+    // log10(signal+1) * 10, capped at a 40-point contribution
+    const contribution = Math.min(40, Math.log10(popularitySignal + 1) * 10);
+    score += contribution;
+    if (candidate.homepageUrl) {
+      score += 10;
+    }
+    return Math.min(100, score);
+  }
+
   let score = 50; // baseline
 
   // Well-known packages
@@ -264,15 +361,20 @@ function computeWeightedScore(subscores: Subscores): number {
 }
 
 /**
- * Create evidence passport with null facts (P1 - no collectors yet)
+ * Create the evidence passport.
+ *
+ * `facts` is injected by the I/O layer (collectors live in the CLI). When it
+ * is absent every fact stays an explicit `null` — missing evidence is labelled,
+ * never invented — and the output is byte-identical to the pre-collector path.
  */
 function createEvidencePassport(
   candidate: Candidate,
   brief: IdeaBrief,
-  subscores: Subscores
+  subscores: Subscores,
+  facts?: CandidateFacts | null
 ) {
   return {
-    facts: {
+    facts: facts ?? {
       license: null,
       weeklyDownloads: null,
       lastCommit: null,
@@ -377,7 +479,8 @@ function generateRecommendedAlongside(candidate: Candidate, brief: IdeaBrief): s
     alongside.push('typescript');
   }
 
-  return alongside;
+  // De-duplicate while preserving first-seen order
+  return [...new Set(alongside)];
 }
 
 /**

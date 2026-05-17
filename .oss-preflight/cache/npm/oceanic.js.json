@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "oceanic.js",
+      "version": "1.14.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/oceanic.js/-/oceanic.js-1.14.0.tgz"
+      },
+      "description": "A NodeJS library for interfacing with Discord.",
+      "license": "MIT",
+      "homepage": "https://github.com/OceanicJS/Oceanic#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/OceanicJS/Oceanic.git"
+      }
+    },
+    "weeklyDownloads": 1379,
+    "sourceUrl": "https://registry.npmjs.org/oceanic.js/latest",
+    "collectedAt": "2026-05-17T09:01:35.873Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T09:01:35.876Z",
+  "source": "live"
+}

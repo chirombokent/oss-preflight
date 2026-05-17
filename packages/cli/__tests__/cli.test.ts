@@ -323,6 +323,22 @@ describe('Environment and Configuration', () => {
     expect(() => checkEnvironment()).toThrow();
   });
 
+  it('GAP4: runRecommendPipeline degrades to keyword parsing when ANTHROPIC_API_KEY is unset', async () => {
+    const { runRecommendPipeline } = await import('../src/recommend-command.js');
+
+    delete process.env.ANTHROPIC_API_KEY;
+
+    // No API key and no claude adapter supplied: must not throw, must fall
+    // back to keyword parsing and still return recommendations.
+    const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
+      collectEvidence: false,
+    });
+
+    expect(result.recommendations.length).toBe(3);
+    expect(result.brief.ecosystem).toBe('npm');
+    expect(result.brief.domain).toContain('discord');
+  });
+
   it('AC7: --refresh flag forces live collector calls', async () => {
     // This is tested via integration - verifying the flag exists
     const { program } = await import('../src/index.js');
@@ -397,6 +413,76 @@ describe('Exit Codes', () => {
     } catch (error: any) {
       expect(error.message).toContain('ANTHROPIC_API_KEY');
     }
+  });
+});
+
+describe('buildCandidateFacts (GAP 1 wiring)', () => {
+  it('maps npm + github + openssf collected data into sourced EvidenceFacts', async () => {
+    const { buildCandidateFacts } = await import('../src/recommend-command.js');
+
+    const facts = buildCandidateFacts({
+      npm: {
+        metadata: { name: 'discord.js', version: '14.0.0', license: 'Apache-2.0', dist: { tarball: '' } },
+        weeklyDownloads: 1500000,
+        sourceUrl: 'https://registry.npmjs.org/discord.js/latest',
+        collectedAt: '2026-05-17T00:00:00Z',
+      },
+      github: {
+        repo: { stargazers_count: 26000, open_issues_count: 40, pushed_at: '2026-05-14T00:00:00Z' },
+        sourceUrl: 'https://api.github.com/repos/discordjs/discord.js',
+        collectedAt: '2026-05-17T00:01:00Z',
+      },
+      openssf: {
+        score: 6.7,
+        sourceUrl: 'https://api.securityscorecards.dev/projects/github.com/discordjs/discord.js',
+        collectedAt: '2026-05-17T00:02:00Z',
+      },
+    });
+
+    expect(facts.license).toEqual({
+      value: 'Apache-2.0',
+      source: 'https://registry.npmjs.org/discord.js/latest',
+      collectedAt: '2026-05-17T00:00:00Z',
+      sourceType: 'npm',
+    });
+    expect(facts.weeklyDownloads?.value).toBe(1500000);
+    expect(facts.weeklyDownloads?.sourceType).toBe('npm');
+    expect(facts.stars?.value).toBe(26000);
+    expect(facts.stars?.sourceType).toBe('github');
+    expect(facts.openIssues?.value).toBe(40);
+    expect(facts.lastCommit?.value).toBe('2026-05-14T00:00:00Z');
+    expect(facts.openssfScore?.value).toBe(6.7);
+    expect(facts.openssfScore?.sourceType).toBe('openssf');
+  });
+
+  it('emits explicit null for every fact when no data is collected', async () => {
+    const { buildCandidateFacts } = await import('../src/recommend-command.js');
+
+    const facts = buildCandidateFacts({});
+
+    expect(facts.license).toBe(null);
+    expect(facts.weeklyDownloads).toBe(null);
+    expect(facts.lastCommit).toBe(null);
+    expect(facts.stars).toBe(null);
+    expect(facts.openIssues).toBe(null);
+    expect(facts.openssfScore).toBe(null);
+  });
+
+  it('emits null for individually-missing npm fields (no invented evidence)', async () => {
+    const { buildCandidateFacts } = await import('../src/recommend-command.js');
+
+    const facts = buildCandidateFacts({
+      npm: {
+        metadata: { name: 'x', version: '1.0.0', dist: { tarball: '' } },
+        weeklyDownloads: null,
+        sourceUrl: 'https://registry.npmjs.org/x/latest',
+        collectedAt: '2026-05-17T00:00:00Z',
+      },
+    });
+
+    expect(facts.license).toBe(null);
+    expect(facts.weeklyDownloads).toBe(null);
+    expect(facts.stars).toBe(null);
   });
 });
 

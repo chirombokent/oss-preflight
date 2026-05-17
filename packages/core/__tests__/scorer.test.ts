@@ -245,6 +245,28 @@ describe('scorer.ts', () => {
       expect(recommendations[0].subscores.repoCompat).toBeGreaterThan(0);
     });
 
+    it('emits recommendedAlongside without duplicate entries', () => {
+      const brief: IdeaBrief = {
+        capabilities: ['bot'],
+        domain: 'discord',
+        ecosystem: 'npm',
+      };
+
+      const candidates: Candidate[] = [
+        {
+          name: 'discord.js',
+          version: '14.11.0',
+          ecosystem: 'npm',
+          repositoryUrl: 'https://github.com/discordjs/discord.js',
+        },
+      ];
+
+      const recommendations = scoreAndRank(candidates, brief);
+      const alongside = recommendations[0].passport.interpretation.recommendedAlongside;
+
+      expect(alongside).toEqual([...new Set(alongside)]);
+    });
+
     it('sets scaffoldAvailable and templateId', () => {
       const brief: IdeaBrief = {
         capabilities: ['bot'],

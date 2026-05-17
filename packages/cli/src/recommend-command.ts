@@ -1,7 +1,92 @@
 import Anthropic from '@anthropic-ai/sdk';
-import type { IdeaBrief, Candidate, Recommendation } from '@oss-preflight/core';
+import type {
+  IdeaBrief,
+  Candidate,
+  Recommendation,
+  CandidateFacts,
+  EvidenceMap,
+} from '@oss-preflight/core';
 import { discoverCandidates, scoreAndRank } from '@oss-preflight/core';
-import { collectNpmData } from '@oss-preflight/collectors';
+import {
+  collectNpmData,
+  collectGitHubData,
+  collectOpenSSFData,
+} from '@oss-preflight/collectors';
+
+type EvidenceFact = CandidateFacts['license'];
+type SourceType = NonNullable<EvidenceFact>['sourceType'];
+
+/**
+ * Collected-data inputs for a single candidate, as returned by the collectors.
+ * Kept structural so {@link buildCandidateFacts} stays a pure, I/O-free mapper.
+ */
+export interface CollectedInputs {
+  npm?: {
+    metadata: { license?: string | null };
+    weeklyDownloads: number | null;
+    sourceUrl: string;
+    collectedAt: string;
+  };
+  github?: {
+    repo: {
+      stargazers_count: number | null;
+      open_issues_count: number | null;
+      pushed_at: string | null;
+    };
+    sourceUrl: string;
+    collectedAt: string;
+  };
+  openssf?: {
+    score: number | null;
+    sourceUrl: string;
+    collectedAt: string;
+  };
+}
+
+/**
+ * Build one `EvidenceFact`, or `null` when the value is missing. Missing
+ * evidence is always an explicit `null` — never invented, never omitted.
+ */
+function makeFact(
+  value: string | number | null | undefined,
+  source: string,
+  collectedAt: string,
+  sourceType: SourceType
+): EvidenceFact {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+  return { value, source, collectedAt, sourceType };
+}
+
+/**
+ * Pure mapper: collected registry/repo data → the passport `facts` block.
+ * No I/O; deterministic for a fixed input.
+ */
+export function buildCandidateFacts(inputs: CollectedInputs): CandidateFacts {
+  const { npm, github, openssf } = inputs;
+
+  return {
+    license: npm
+      ? makeFact(npm.metadata.license ?? null, npm.sourceUrl, npm.collectedAt, 'npm')
+      : null,
+    weeklyDownloads: npm
+      ? makeFact(npm.weeklyDownloads, npm.sourceUrl, npm.collectedAt, 'npm')
+      : null,
+    lastCommit: github
+      ? makeFact(github.repo.pushed_at ?? null, github.sourceUrl, github.collectedAt, 'github')
+      : null,
+    stars: github
+      ? makeFact(github.repo.stargazers_count ?? null, github.sourceUrl, github.collectedAt, 'github')
+      : null,
+    openIssues: github
+      ? makeFact(github.repo.open_issues_count ?? null, github.sourceUrl, github.collectedAt, 'github')
+      : null,
+    openssfScore: openssf
+      ? makeFact(openssf.score, openssf.sourceUrl, openssf.collectedAt, 'openssf')
+      : null,
+  };
+}
 
 /**
  * Recommend Command - Phase P3
@@ -33,6 +118,21 @@ function normalizeRepositoryUrl(repositoryUrl?: string): string | null {
     .replace(/^git\+/, '')
     .replace(/^git:\/\//, 'https://')
     .replace(/\.git$/, '');
+}
+
+/**
+ * Extract `owner/repo` from a GitHub URL, or null if it is not a GitHub repo.
+ */
+function parseGitHubRepo(repositoryUrl?: string | null): string | null {
+  const normalized = normalizeRepositoryUrl(repositoryUrl ?? undefined);
+  if (!normalized) {
+    return null;
+  }
+  const match = normalized.match(/github\.com[/:]([^/]+)\/([^/]+?)\/?$/i);
+  if (!match) {
+    return null;
+  }
+  return `${match[1]}/${match[2]}`;
 }
 
 /**
@@ -185,36 +285,86 @@ export async function parseIntentWithFallback(
 }
 
 /**
- * Gather evidence for candidates using collectors
+ * Gather evidence for candidates using the collectors.
+ *
+ * Returns enriched candidates plus an {@link EvidenceMap} of sourced facts.
+ * Every collector call is best-effort: a failure degrades that fact to an
+ * explicit `null` (see {@link buildCandidateFacts}) and never aborts the
+ * pipeline — the live demo must never break on a flaky upstream API.
  */
 async function gatherEvidence(
   candidates: Candidate[],
   forceRefresh: boolean
-): Promise<Candidate[]> {
-  return Promise.all(candidates.map(async (candidate) => {
+): Promise<{ candidates: Candidate[]; evidence: EvidenceMap }> {
+  const evidence: EvidenceMap = {};
+
+  const enriched = await Promise.all(candidates.map(async (candidate) => {
     if (candidate.ecosystem !== 'npm') {
       return candidate;
     }
 
+    let resolved: Candidate;
+    const inputs: CollectedInputs = {};
+
     try {
       const npmData = await collectNpmData(candidate.name, forceRefresh);
-
-      return {
+      resolved = {
         ...candidate,
         version: npmData.metadata.version,
         homepageUrl: npmData.metadata.homepage ?? candidate.homepageUrl,
-        repositoryUrl: normalizeRepositoryUrl(npmData.metadata.repository?.url) ?? candidate.repositoryUrl,
+        repositoryUrl:
+          normalizeRepositoryUrl(npmData.metadata.repository?.url) ?? candidate.repositoryUrl,
+      };
+      inputs.npm = {
+        metadata: { license: npmData.metadata.license ?? null },
+        weeklyDownloads: npmData.weeklyDownloads,
+        sourceUrl: npmData.sourceUrl,
+        collectedAt: npmData.collectedAt,
       };
     } catch {
       const fallback = DEMO_PACKAGE_FALLBACKS[candidate.name.toLowerCase()];
-
-      return {
+      resolved = {
         ...candidate,
         ...fallback,
         version: fallback?.version ?? candidate.version,
       };
     }
+
+    // Repo-derived evidence (GitHub + OpenSSF), best-effort.
+    const ownerRepo = parseGitHubRepo(resolved.repositoryUrl);
+    if (ownerRepo) {
+      try {
+        const gh = await collectGitHubData(ownerRepo, forceRefresh);
+        inputs.github = {
+          repo: {
+            stargazers_count: gh.repo.stargazers_count ?? null,
+            open_issues_count: gh.repo.open_issues_count ?? null,
+            pushed_at: gh.repo.pushed_at ?? null,
+          },
+          sourceUrl: gh.sourceUrl,
+          collectedAt: gh.collectedAt,
+        };
+      } catch {
+        // Rate limited / unavailable → GitHub facts stay null.
+      }
+
+      try {
+        const ossf = await collectOpenSSFData(ownerRepo, forceRefresh);
+        inputs.openssf = {
+          score: ossf.score,
+          sourceUrl: ossf.sourceUrl,
+          collectedAt: ossf.collectedAt,
+        };
+      } catch {
+        // Unavailable → OpenSSF fact stays null.
+      }
+    }
+
+    evidence[candidate.name] = buildCandidateFacts(inputs);
+    return resolved;
   }));
+
+  return { candidates: enriched, evidence };
 }
 
 /**
@@ -231,13 +381,14 @@ export async function runRecommendPipeline(
 ): Promise<{ recommendations: Recommendation[]; brief: IdeaBrief }> {
   // Validate input
   validateInput(idea);
-  
-  // Check environment
-  checkEnvironment();
-  
-  // Parse intent with Claude (or fallback)
-  const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY!;
-  const claudeAdapter = options.claudeAdapter || createClaudeAdapter(apiKey);
+
+  // Claude is the preferred intent parser but it is optional: when no API key
+  // is available we degrade to keyword parsing (reduced capability) instead of
+  // failing the whole pipeline. `checkEnvironment` remains the strict gate for
+  // callers that require Claude.
+  const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
+  const claudeAdapter =
+    options.claudeAdapter || (apiKey ? createClaudeAdapter(apiKey) : undefined);
   const brief = await parseIntentWithFallback(idea, claudeAdapter);
   
   // Discover candidates
@@ -254,12 +405,16 @@ export async function runRecommendPipeline(
   }));
   
   // Gather evidence (collectors integration)
-  const enrichedCandidates = options.collectEvidence === false
-    ? candidates
-    : await gatherEvidence(candidates, options.refresh || false);
-  
-  // Score and rank
-  const recommendations = scoreAndRank(enrichedCandidates, brief);
+  let enrichedCandidates = candidates;
+  let evidence: EvidenceMap | undefined;
+  if (options.collectEvidence !== false) {
+    const gathered = await gatherEvidence(candidates, options.refresh || false);
+    enrichedCandidates = gathered.candidates;
+    evidence = gathered.evidence;
+  }
+
+  // Score and rank (evidence-aware when collectors returned facts)
+  const recommendations = scoreAndRank(enrichedCandidates, brief, undefined, evidence);
   
   // Return top 3
   return {
