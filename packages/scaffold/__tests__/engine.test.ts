@@ -103,12 +103,12 @@ describe('Scaffold Engine', () => {
     const report = fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'ADOPTION_REPORT.md'), 'utf-8');
 
     // Check metadata
-    expect(report).toMatch(/Generated:/);
+    expect(report).toContain('**Generated**:');
     expect(report).toContain('discord.js');
     expect(report).toContain('14.14.1');
     expect(report).toContain('https://github.com/discordjs/discord.js');
-    expect(report).toContain('Smoke test:');
-    expect(report).toContain('Next steps:');
+    expect(report).toContain('## Smoke Test');
+    expect(report).toContain('## Next Steps');
   });
 
   it('is idempotent - skips generation if version hash matches', async () => {
