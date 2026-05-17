@@ -35,6 +35,19 @@ describe('discovery.ts', () => {
       expect(candidates).toContain('fastify');
     });
 
+    it('returns weather packages for weather forecasting domain aliases', () => {
+      const brief: IdeaBrief = {
+        capabilities: ['weather data', 'forecasting'],
+        domain: 'weather forecasting',
+        ecosystem: 'npm',
+      };
+
+      const candidates = discoverCandidates(brief);
+
+      expect(candidates).toContain('openmeteo');
+      expect(candidates).toContain('openweather-api-node');
+    });
+
     it('returns empty array for unknown domain', () => {
       const brief: IdeaBrief = {
         capabilities: ['unknown'],
@@ -172,6 +185,26 @@ describe('discovery.ts', () => {
       expect(result.method).toBe('search');
       expect(result.fallbackUsed).toBe(false);
       expect(mockSearch).toHaveBeenCalledWith('discord bot client bot message processing', 'npm');
+    });
+
+    it('builds weather-specific search terms from weather domain aliases', async () => {
+      const brief: IdeaBrief = {
+        capabilities: ['weather data', 'forecasting'],
+        domain: 'weather forecasting',
+        ecosystem: 'npm',
+      };
+      const mockSearch = vi.fn().mockResolvedValue([
+        { name: 'unrelated-result', source: 'npm-search' },
+      ] as DiscoveredCandidate[]);
+
+      const result = await discoverCandidatesWithSearch(brief, mockSearch);
+
+      expect(mockSearch).toHaveBeenCalledWith(
+        'weather forecast forecasting openmeteo openweather weather data forecasting',
+        'npm'
+      );
+      expect(result.candidates.map((candidate) => candidate.name)).toContain('openmeteo');
+      expect(result.fallbackUsed).toBe(true);
     });
 
     it('falls back to catalog when search returns < 3 candidates', async () => {

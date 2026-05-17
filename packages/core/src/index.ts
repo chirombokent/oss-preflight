@@ -10,6 +10,7 @@ export type {
   DiscoveryResult,
   DiscoveryOptions,
 } from './discovery.js';
+export { canonicalizeDomain, isGenericDomain } from './domain.js';
 export { scoreAndRank } from './scorer.js';
 export { normalizePackageName } from './normalizer.js';
 export {

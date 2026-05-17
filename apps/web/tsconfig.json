@@ -19,8 +19,14 @@
     "types": ["vite/client", "node"],
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src", "server.ts"],
-  "references": [{ "path": "../../packages/core" }]
+  "include": ["src", "api", "server.ts"],
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/collectors" },
+    { "path": "../../packages/repo-analyser" },
+    { "path": "../../packages/scaffold" },
+    { "path": "../../packages/cli" }
+  ]
 }
 
 // Made with Bob

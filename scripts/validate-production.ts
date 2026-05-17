@@ -225,11 +225,22 @@ function checkArbitraryIdeaRecommendations(tmp: string): ValidationResult {
     return fail('P9: arbitrary idea recommendations', `Python data idea exited ${py.code}: ${py.stderr.slice(-300)}`);
   }
 
+  const weather = runCli(
+    ['recommend', '--idea', 'A weather forecasting app', '--json'],
+    180_000,
+    tmp
+  );
+  if (weather.code !== 0) {
+    return fail('P9: arbitrary idea recommendations', `Weather idea exited ${weather.code}: ${weather.stderr.slice(-300)}`);
+  }
+
   try {
     const webNames = parseRecommendationNames(web.stdout);
     const pyNames = parseRecommendationNames(py.stdout);
+    const weatherNames = parseRecommendationNames(weather.stdout);
     const hasWebFramework = webNames.some((name) => ['express', 'fastify', 'koa', 'hapi'].includes(name));
     const hasDataScience = pyNames.some((name) => ['pandas', 'numpy', 'scikit-learn', 'matplotlib'].includes(name));
+    const hasWeather = weatherNames.some((name) => ['openmeteo', 'openweather-api-node', 'weather-js', 'openweather-apis'].includes(name));
 
     if (!hasWebFramework) {
       return fail('P9: arbitrary idea recommendations', `Web API recommendations were ${webNames.join(', ')}`);
@@ -237,13 +248,19 @@ function checkArbitraryIdeaRecommendations(tmp: string): ValidationResult {
     if (!hasDataScience) {
       return fail('P9: arbitrary idea recommendations', `Python data recommendations were ${pyNames.join(', ')}`);
     }
+    if (!hasWeather) {
+      return fail('P9: arbitrary idea recommendations', `Weather recommendations were ${weatherNames.join(', ')}`);
+    }
     if (webNames[0] === 'pdfjs-dist') {
       return fail('P9: arbitrary idea recommendations', 'pdfjs-dist still outranked web frameworks');
+    }
+    if (weatherNames.some((name) => ['@matter/general', '@sentry/core', '@sentry/react'].includes(name))) {
+      return fail('P9: arbitrary idea recommendations', `Weather recommendations included broad hits: ${weatherNames.join(', ')}`);
     }
 
     return ok(
       'P9: arbitrary idea recommendations',
-      `Node web: ${webNames.join(', ')}; Python data: ${pyNames.join(', ')}`
+      `Node web: ${webNames.join(', ')}; Python data: ${pyNames.join(', ')}; Weather: ${weatherNames.join(', ')}`
     );
   } catch (e) {
     return fail('P9: arbitrary idea recommendations', `Unparseable recommendation output: ${(e as Error).message}`);
@@ -319,26 +336,35 @@ function checkAuditPython(tmp: string): ValidationResult {
 }
 
 /**
- * AC8 + AC9: Web bridge exposes the real CLI endpoints (recommend, scaffold,
- * audit). We assert the routes are wired to the spawned CLI, not mocked.
+ * AC8 + AC9: Production web exposes Vercel serverless endpoints that run the
+ * in-memory recommend/audit/scaffold paths. The old Express spawn bridge may
+ * remain for local compatibility, but it is not the production deploy path.
  */
 function checkWebBridge(): ValidationResult {
-  const serverPath = path.join(repoRoot, 'apps/web/server.ts');
-  if (!fs.existsSync(serverPath)) {
-    return fail('AC8/9: web CLI bridge', 'apps/web/server.ts not found');
+  const analyzePath = path.join(repoRoot, 'apps/web/api/analyze.ts');
+  const scaffoldPath = path.join(repoRoot, 'apps/web/api/scaffold.ts');
+  const vercelPath = path.join(repoRoot, 'vercel.json');
+  if (!fs.existsSync(analyzePath) || !fs.existsSync(scaffoldPath) || !fs.existsSync(vercelPath)) {
+    return fail('AC8/9: web serverless API', 'Missing analyze/scaffold function or vercel.json');
   }
-  const src = fs.readFileSync(serverPath, 'utf-8');
-  const hasRecommend = src.includes("'/api/recommend'");
-  const hasScaffold = src.includes("'/api/scaffold'");
-  const hasAudit = src.includes("'/api/audit'");
-  const spawnsCli = src.includes('createCliInvocation') && src.includes('spawn(');
-  if (!(hasRecommend && hasScaffold && hasAudit && spawnsCli)) {
+
+  const analyzeSrc = fs.readFileSync(analyzePath, 'utf-8');
+  const scaffoldSrc = fs.readFileSync(scaffoldPath, 'utf-8');
+  const vercelSrc = fs.readFileSync(vercelPath, 'utf-8');
+  const hasAnalyze = analyzeSrc.includes('runRecommendAnalysis') && analyzeSrc.includes('runAuditPipeline');
+  const hasPublicRepoCheck = analyzeSrc.includes('api.github.com/repos') && analyzeSrc.includes('GITHUB_TOKEN');
+  const hasZipScaffold = scaffoldSrc.includes('generateScaffoldFiles') && scaffoldSrc.includes('application/zip');
+  const hasMaxDuration = vercelSrc.includes('"maxDuration": 60');
+  const noSpawnInFunctions = !analyzeSrc.includes('spawn(') && !scaffoldSrc.includes('spawn(');
+
+  if (!(hasAnalyze && hasPublicRepoCheck && hasZipScaffold && hasMaxDuration && noSpawnInFunctions)) {
     return fail(
-      'AC8/9: web CLI bridge',
-      `recommend=${hasRecommend} scaffold=${hasScaffold} audit=${hasAudit} spawnsCli=${spawnsCli}`
+      'AC8/9: web serverless API',
+      `analyze=${hasAnalyze} publicRepo=${hasPublicRepoCheck} zip=${hasZipScaffold} maxDuration=${hasMaxDuration} noSpawn=${noSpawnInFunctions}`
     );
   }
-  return ok('AC8/9: web CLI bridge', '/api/recommend, /api/scaffold, /api/audit all spawn the real CLI');
+
+  return ok('AC8/9: web serverless API', '/api/analyze and /api/scaffold use in-process pipelines with zip output');
 }
 
 /**

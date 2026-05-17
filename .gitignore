@@ -22,3 +22,8 @@ test-results/
 oss-preflight-output/
 packages/scaffold/packages/
 packages/scaffold/__tests__/.tmp/
+**/temp-scaffold/**
+**/.oss-preflight/
+**/.oss-preflight/cache/tmp/
+**/.oss-preflight/cache/tmp/temp-scaffold/
+**/.oss-preflight/cache/tmp/temp-scaffold/**

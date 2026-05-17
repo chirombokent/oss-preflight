@@ -1,4 +1,4 @@
-import type { IdeaBrief } from '@oss-preflight/core';
+import { canonicalizeDomain, type IdeaBrief } from '@oss-preflight/core';
 import type { IntentParser } from './types.js';
 
 export function keywordParser(idea: string): IdeaBrief {
@@ -27,6 +27,8 @@ export function keywordParser(idea: string): IdeaBrief {
   let domain = 'general';
   if (lowerIdea.includes('discord')) {
     domain = 'discord';
+  } else if (includesAny(lowerIdea, ['weather', 'forecast', 'forecasting', 'meteorology', 'climate', 'openweather', 'open-meteo', 'openmeteo'])) {
+    domain = 'weather';
   } else if (includesAny(lowerIdea, ['data science', 'data analysis', 'analytics', 'csv', 'notebook', 'jupyter', 'pandas', 'numpy', 'machine learning', 'ml'])) {
     domain = 'data-science';
   } else if (includesAny(lowerIdea, ['test', 'testing', 'unit test', 'pytest', 'vitest', 'jest'])) {
@@ -65,6 +67,10 @@ export function keywordParser(idea: string): IdeaBrief {
   if (includesAny(lowerIdea, ['test', 'testing', 'unit test'])) {
     capabilities.push('testing');
   }
+  if (includesAny(lowerIdea, ['weather', 'forecast', 'forecasting', 'meteorology', 'climate'])) {
+    capabilities.push('weather data');
+    capabilities.push('forecasting');
+  }
 
   if (capabilities.length === 0) {
     if (domain === 'web-framework') {
@@ -73,12 +79,14 @@ export function keywordParser(idea: string): IdeaBrief {
       capabilities.push('data analysis', 'csv processing');
     } else if (domain === 'testing') {
       capabilities.push('testing');
+    } else if (domain === 'weather') {
+      capabilities.push('weather data', 'forecasting');
     }
   }
 
   return {
     capabilities: capabilities.length > 0 ? capabilities : ['general functionality'],
-    domain,
+    domain: canonicalizeDomain(domain),
     ecosystem,
     constraints: {},
   };

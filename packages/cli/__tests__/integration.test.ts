@@ -146,6 +146,24 @@ describe.skipIf(!distBuilt)('CLI integration (real execution, no mocks)', () => 
     expect(parsed.ideas_parsed.domain).toBe('data-science');
     expect(names.some((name: string) => ['pandas', 'numpy', 'scikit-learn', 'matplotlib'].includes(name))).toBe(true);
   });
+
+  it('recommend ranks weather packages for a forecasting app idea', () => {
+    const result = runCli([
+      'recommend',
+      '--idea',
+      'A weather forecasting app',
+      '--json',
+    ]);
+
+    expect(result.status).toBe(0);
+
+    const parsed = JSON.parse(result.stdout);
+    const names = parsed.recommendations.map((r: { candidate: { name: string } }) => r.candidate.name);
+    expect(parsed.ideas_parsed.domain).toBe('weather');
+    expect(names.some((name: string) => ['openmeteo', 'openweather-api-node', 'weather-js', 'openweather-apis'].includes(name))).toBe(true);
+    expect(names).not.toContain('@matter/general');
+    expect(names).not.toContain('@sentry/core');
+  });
 });
 
 // Made with Bob

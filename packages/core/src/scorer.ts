@@ -7,6 +7,7 @@ import type {
   RepoStack,
   Subscores,
 } from './types.js';
+import { canonicalizeDomain, isGenericDomain } from './domain.js';
 
 /**
  * Scoring weights (must sum to 1.0)
@@ -22,6 +23,16 @@ const WEIGHTS = {
 
 const DOMAIN_PACKAGE_MATCHES: Record<string, string[]> = {
   discord: ['discord.js', 'eris', 'oceanic.js', 'discord.py', 'py-cord', 'nextcord'],
+  weather: [
+    'openmeteo',
+    'openweather-api-node',
+    'weather-js',
+    'openweather-apis',
+    'openmeteo-requests',
+    'python-weather',
+    'pyowm',
+    'meteostat',
+  ],
   'web-framework': ['express', 'fastify', 'koa', 'hapi', 'hono', 'flask', 'django', 'fastapi', 'tornado'],
   'data-science': ['numpy', 'pandas', 'scikit-learn', 'matplotlib'],
   testing: ['vitest', 'jest', 'mocha', 'chai', 'pytest', 'unittest', 'nose2'],
@@ -30,6 +41,7 @@ const DOMAIN_PACKAGE_MATCHES: Record<string, string[]> = {
 
 const DOMAIN_NAME_TOKENS: Record<string, string[]> = {
   discord: ['discord'],
+  weather: ['weather', 'forecast', 'openmeteo', 'openweather', 'meteostat', 'meteorology', 'climate'],
   'web-framework': ['express', 'fastify', 'koa', 'hapi', 'hono', 'web', 'http', 'server', 'router', 'routing', 'flask', 'django', 'fastapi', 'tornado'],
   'data-science': ['data', 'science', 'numpy', 'pandas', 'scikit', 'matplotlib', 'csv', 'notebook'],
   testing: ['test', 'testing', 'jest', 'vitest', 'mocha', 'chai', 'pytest'],
@@ -119,7 +131,7 @@ function computeSubscores(
  */
 function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
   const candidateLower = candidate.name.toLowerCase();
-  const domainLower = brief.domain.toLowerCase();
+  const domainLower = canonicalizeDomain(brief.domain);
   const knownDomainPackages = DOMAIN_PACKAGE_MATCHES[domainLower];
   const knownDomainPackage = knownDomainPackages?.includes(candidateLower) ?? false;
 
@@ -137,15 +149,19 @@ function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
 
   if (tokenMatch) {
     score += 20;
-  } else if (!recognizedDomain && candidateLower.includes(domainLower)) {
+  } else if (!recognizedDomain && !isGenericDomain(domainLower) && candidateLower.includes(domainLower)) {
     score += 20;
   }
 
   for (const capability of brief.capabilities) {
-    if (capabilityMatchesName(candidateLower, capability)) {
+    if (!isGenericCapability(capability) && capabilityMatchesName(candidateLower, capability)) {
       score += 10;
       break;
     }
+  }
+
+  if (isGenericDomain(domainLower)) {
+    return Math.min(score, 50);
   }
 
   if (recognizedDomain) {
@@ -168,6 +184,16 @@ function capabilityMatchesName(candidateName: string, capability: string): boole
     .filter((token) => token.length >= 3);
 
   return tokens.some((token) => candidateName.includes(token));
+}
+
+function isGenericCapability(capability: string): boolean {
+  const genericTokens = new Set(['general', 'functionality', 'feature', 'features', 'app', 'application', 'software', 'tool']);
+  const tokens = capability
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+
+  return tokens.length === 0 || tokens.every((token) => genericTokens.has(token));
 }
 
 /**

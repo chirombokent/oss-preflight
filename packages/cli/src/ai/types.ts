@@ -17,6 +17,7 @@ export interface AiConfigOptions {
   apiKey?: string;
   cwd?: string;
   env?: NodeJS.ProcessEnv;
+  ignoreConfig?: boolean;
 }
 
 export interface ResolvedAiConfig {
@@ -31,4 +32,3 @@ export interface ProviderDefaults {
   model?: string;
   baseUrl?: string;
 }
-

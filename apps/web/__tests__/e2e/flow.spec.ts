@@ -8,11 +8,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('OSS Preflight Full Flow', () => {
   test('should complete full idea-to-scaffold flow', async ({ page }) => {
-    await page.route('/api/recommend', (route) => {
+    await page.route('/api/analyze', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
+          mode: 'recommend',
+          detectedMode: 'recommend',
+          input: 'Discord bot that summarizes channel activity',
+          provider: 'keyword',
           ideas_parsed: {
             capabilities: ['message processing', 'summarization'],
             domain: 'discord',
@@ -140,6 +144,34 @@ test.describe('OSS Preflight Full Flow', () => {
               templateId: null,
             },
           ],
+          brief: {
+            capabilities: ['message processing', 'summarization'],
+            domain: 'discord',
+            ecosystem: 'npm',
+          },
+          workflow: {
+            workflowId: 'workflow-1',
+            mode: 'idea',
+            timestamp: '2026-05-17T00:00:00Z',
+            input: { idea: 'Discord bot that summarizes channel activity' },
+            repoContext: null,
+            discoveryPlan: {
+              ecosystem: 'npm',
+              domain: 'discord',
+              searchQuery: 'message processing, summarization',
+              searchMethod: 'registry-search',
+            },
+            candidates: [
+              { name: 'discord.js', source: 'npm-search', discoveredAt: '2026-05-17T00:00:00Z' },
+              { name: 'discord.py', source: 'pypi-search', discoveredAt: '2026-05-17T00:00:00Z' },
+              { name: 'eris', source: 'npm-search', discoveredAt: '2026-05-17T00:00:00Z' },
+            ],
+            recommendations: [],
+            evidenceGaps: [],
+            actions: [],
+            verification: { smokeTestPassed: null, validationErrors: [] },
+            generatedArtifacts: [],
+          },
         }),
       });
     });
@@ -147,12 +179,13 @@ test.describe('OSS Preflight Full Flow', () => {
     await page.route('/api/scaffold', (route) => {
       route.fulfill({
         status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          files: ['package.json', 'src/index.ts', 'src/summarizer.ts', 'smoke-test.ts', 'README.md', 'ADOPTION_REPORT.md'],
-          passed: true,
-          output: 'Smoke test passed',
-        }),
+        contentType: 'application/zip',
+        headers: {
+          'Content-Disposition': 'attachment; filename="discord.js-starter.zip"',
+          'X-OSS-Preflight-Scaffold-Type': 'template',
+          'X-OSS-Preflight-Message': 'Scaffold generated successfully',
+        },
+        body: 'zip-content',
       });
     });
 
@@ -173,10 +206,10 @@ test.describe('OSS Preflight Full Flow', () => {
     await page.waitForTimeout(1000);
 
     // Step 3: Assert 3 recommendation cards render
-    await expect(page.locator('h1')).toContainText('Recommendations');
-    await expect(page.locator('text=discord.js')).toBeVisible();
-    await expect(page.locator('text=discord.py')).toBeVisible();
-    await expect(page.locator('text=eris')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Recommendations' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'discord.js' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'discord.py' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'eris' })).toBeVisible();
 
     // Step 4: Click "Open Passport" on first card
     const passportButton = page.locator('button:has-text("Open Passport")').first();
@@ -194,7 +227,7 @@ test.describe('OSS Preflight Full Flow', () => {
     await closeButton.click();
 
     // Step 6: Click "Generate Scaffold" (if available)
-    const scaffoldButton = page.locator('button:has-text("Generate Scaffold")').first();
+    const scaffoldButton = page.locator('button:has-text("Download starter")').first();
     if (await scaffoldButton.isVisible()) {
       await scaffoldButton.click();
 
@@ -202,29 +235,40 @@ test.describe('OSS Preflight Full Flow', () => {
       await page.waitForTimeout(2000);
 
       // Step 7: Assert files render
-      await expect(page.locator('h1')).toContainText('Scaffold Generated');
-      await expect(page.locator('h2:has-text("Generated Files")')).toBeVisible();
-      await expect(page.locator('h2:has-text("Smoke Test")')).toBeVisible();
+      await expect(page.locator('h2:has-text("Download ready")')).toBeVisible();
+      await expect(page.getByText('package.json')).toBeVisible();
+      await expect(page.getByText('discord.js-starter.zip')).toBeVisible();
     }
   });
 
-  test('should display error when API fails', async ({ page }) => {
+  test('should display dismissible API errors as auto-expiring toasts', async ({ page }) => {
     await page.goto('/');
 
     // Mock API failure
-    await page.route('/api/recommend', (route) => {
+    await page.route('/api/analyze', (route) => {
       route.fulfill({
-        status: 500,
-        body: JSON.stringify({ error: 'API error' }),
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'API error', hint: 'Try keyword mode.', mode: 'recommend' }),
       });
     });
 
     await page.locator('textarea').fill('test idea');
     await page.locator('button[type="submit"]').click();
 
-    // Assert error is displayed
-    await expect(page.locator('.bg-pf-error-bg')).toBeVisible();
+    // Assert error toast is displayed with the hint and can be closed manually.
+    const alert = page.locator('[role="alert"]');
+    await expect(alert).toBeVisible();
     await expect(page.getByText('API error')).toBeVisible();
+    await expect(page.getByText('Try keyword mode.')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Close notification' }).click();
+    await expect(alert).toBeHidden();
+
+    // Trigger another error and assert it expires without manual dismissal.
+    await page.locator('button[type="submit"]').click();
+    await expect(alert).toBeVisible();
+    await expect(alert).toBeHidden({ timeout: 10000 });
   });
 
   test('should toggle dark mode', async ({ page }) => {
@@ -232,14 +276,22 @@ test.describe('OSS Preflight Full Flow', () => {
 
     // Find dark mode toggle button
     const darkModeButton = page.locator('button[aria-label="Toggle dark mode"]');
-    await darkModeButton.click();
-
-    // Assert dark class is applied
     const html = page.locator('html');
+
+    // Light is the default when the user has not chosen a theme.
+    await expect(html).not.toHaveClass(/dark/);
+
+    await darkModeButton.click();
     await expect(html).toHaveClass(/dark/);
 
-    // Toggle back
+    // User choice is inherited on reload.
+    await page.reload();
+    await expect(html).toHaveClass(/dark/);
+
     await darkModeButton.click();
+    await expect(html).not.toHaveClass(/dark/);
+
+    await page.reload();
     await expect(html).not.toHaveClass(/dark/);
   });
 
@@ -254,6 +306,21 @@ test.describe('OSS Preflight Full Flow', () => {
     await expect(page.locator('h1')).toContainText('Build Proof');
     await expect(page.locator('h2:has-text("Bob Configuration")')).toBeVisible();
     await expect(page.locator('h2:has-text("Bob Session Exports")')).toBeVisible();
+  });
+
+  test('should navigate to the usage guide page', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByRole('button', { name: 'Guide' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Use OSS Preflight from the web app, CLI, or Bob IDE' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Product Modes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'CLI Quickstart' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'OSS Preflight In Bob IDE' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Run The Workflow In Bob IDE' })).toBeVisible();
+    await expect(page.getByText('node packages/cli/dist/index.js recommend')).toBeVisible();
+    await expect(page.getByText('Use oss-preflight-advisor for this idea:')).toBeVisible();
+    await expect(page.getByText('review the Evidence Passport, then approve scaffolding')).toBeVisible();
   });
 });
 

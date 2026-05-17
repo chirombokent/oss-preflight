@@ -1,4 +1,5 @@
 import type { IdeaBrief } from './types.js';
+import { canonicalizeDomain } from './domain.js';
 import discoveryCatalog from '../fixtures/discovery-catalog.json' with { type: 'json' };
 
 type CatalogDomain = Record<string, string[]>;
@@ -50,7 +51,8 @@ export interface DiscoveryOptions {
  * @returns Array of candidate package names
  */
 export function discoverCandidates(brief: IdeaBrief): string[] {
-  const { ecosystem, domain } = brief;
+  const { ecosystem } = brief;
+  const domain = canonicalizeDomain(brief.domain);
 
   // Get catalog for the ecosystem
   const catalog = discoveryCatalog as Catalog;
@@ -173,6 +175,7 @@ export async function discoverCandidatesWithSearch(
 function buildSearchQuery(brief: IdeaBrief): string {
   const domainQueries: Record<string, string[]> = {
     discord: ['discord', 'bot', 'client'],
+    weather: ['weather', 'forecast', 'forecasting', 'openmeteo', 'openweather'],
     'web-framework': ['web', 'framework', 'http', 'server', 'routing'],
     'data-science': ['data', 'science', 'dataframe', 'csv', 'notebook'],
     testing: ['testing', 'unit', 'test', 'runner'],
@@ -180,7 +183,7 @@ function buildSearchQuery(brief: IdeaBrief): string {
   };
 
   const parts = [
-    ...(domainQueries[brief.domain] ?? [brief.domain]),
+    ...(domainQueries[canonicalizeDomain(brief.domain)] ?? [brief.domain]),
     ...brief.capabilities,
   ];
   return parts.join(' ');

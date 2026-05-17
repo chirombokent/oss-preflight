@@ -4,6 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as fs from 'fs';
 import * as fsp from 'fs/promises';
+import { handleAnalyze } from './api/analyze.js';
+import { handleScaffold } from './api/scaffold.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,6 +16,10 @@ app.use(express.json());
 
 // Serve bob_sessions/ directory for BuildProof page
 app.use('/bob_sessions', express.static(path.join(__dirname, '../../bob_sessions')));
+
+// Vercel-compatible local routes for the production web flow.
+app.post('/api/analyze', handleAnalyze);
+app.post('/api/scaffold', handleScaffold);
 
 function createCliInvocation(args: string[]): { command: string; args: string[] } {
   const localCli = path.join(repoRoot, 'packages/cli/dist/index.js');

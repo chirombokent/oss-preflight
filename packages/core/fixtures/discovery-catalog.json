@@ -1,6 +1,7 @@
 {
   "npm": {
     "discord": ["discord.js", "eris", "oceanic.js"],
+    "weather": ["openmeteo", "openweather-api-node", "weather-js", "openweather-apis"],
     "web-framework": ["express", "fastify", "koa", "hapi"],
     "react": ["react", "preact", "inferno"],
     "testing": ["vitest", "jest", "mocha", "chai"],
@@ -8,12 +9,15 @@
   },
   "pypi": {
     "discord": ["discord.py", "py-cord", "nextcord"],
+    "weather": ["openmeteo-requests", "python-weather", "pyowm", "meteostat"],
     "web-framework": ["flask", "django", "fastapi", "tornado"],
     "data-science": ["numpy", "pandas", "scikit-learn", "matplotlib"],
     "testing": ["pytest", "unittest", "nose2"]
   },
   "github": {
+    "discord": ["discordjs/discord.js", "Rapptz/discord.py", "abalabahaha/eris"],
     "discord-bot": ["discordjs/discord.js", "Rapptz/discord.py", "abalabahaha/eris"],
+    "weather": ["open-meteo/typescript", "open-meteo/python-requests", "csparpa/pyowm"],
     "web-framework": ["expressjs/express", "fastify/fastify", "koajs/koa"],
     "starter": ["microsoft/typescript-starter", "facebook/create-react-app"]
   }

@@ -18,6 +18,7 @@ export interface AuditOptions {
   repo?: string;
   manifest?: string;
   out?: string;
+  refresh?: boolean;
   /**
    * Emit a single machine-readable JSON object on stdout. All progress logs
    * are redirected to stderr so stdout stays parseable (used by the web API).
@@ -34,6 +35,36 @@ interface DependencyRisk {
   risks: string[];
   score: number;
   recommendation?: Recommendation;
+}
+
+export interface AuditDependencyResult {
+  name: string;
+  version: string;
+  score: number;
+  risks: string[];
+  facts: CandidateFacts | null;
+  suggestedAlternative: { name: string; version: string; score: number } | null;
+}
+
+export interface AuditSummary {
+  total: number;
+  highRisk: number;
+  mediumRisk: number;
+  lowRisk: number;
+  noRisk: number;
+}
+
+export interface AuditPipelineResult {
+  mode: 'audit';
+  input: string;
+  repoContext: RepoContext;
+  summary: AuditSummary;
+  dependencies: AuditDependencyResult[];
+  evidenceGaps: WorkflowTrace['evidenceGaps'];
+  workflowId: string;
+  workflow: WorkflowTrace;
+  report: string;
+  artifacts: { report?: string; workflow?: string };
 }
 
 /**
@@ -284,6 +315,124 @@ ${highRisk.length > 0 ? `1. **Address high-risk dependencies immediately** - Rev
 `;
 
   return report;
+}
+
+export async function runAuditPipeline(options: AuditOptions): Promise<AuditPipelineResult> {
+  if (!options.repo && !options.manifest) {
+    throw new Error('Either repo or manifest is required');
+  }
+
+  const input = options.repo || options.manifest!;
+  const workflow: WorkflowTrace = createWorkflowTrace('repo-audit', {
+    repoPath: options.repo,
+    manifestPath: options.manifest,
+  });
+
+  const repoContext = await detectRepoContext(input);
+  workflow.repoContext = repoContext;
+  workflow.discoveryPlan = {
+    ecosystem: repoContext.ecosystem,
+    domain: repoContext.framework || 'general',
+    searchQuery: '',
+    searchMethod: 'manifest',
+  };
+
+  const allDeps = { ...repoContext.dependencies, ...repoContext.devDependencies };
+  const depCount = Object.keys(allDeps).length;
+  const dependencyRisks: DependencyRisk[] = [];
+  const evidence: EvidenceMap = {};
+
+  const manifestDiscoveredAt = new Date().toISOString();
+  workflow.candidates = Object.keys(allDeps).map((name) => ({
+    name,
+    source: 'manifest' as const,
+    discoveredAt: manifestDiscoveredAt,
+  }));
+
+  for (const [name, version] of Object.entries(allDeps)) {
+    const candidate: Candidate = {
+      name,
+      version: String(version),
+      ecosystem: repoContext.ecosystem,
+      homepageUrl: null,
+      repositoryUrl: null,
+    };
+
+    const inputs = await collectDependencyEvidence(
+      name,
+      repoContext.ecosystem as 'npm' | 'pypi',
+      options.refresh ?? false
+    );
+    const facts = buildCandidateFacts(inputs);
+    evidence[name] = facts;
+
+    const recommendations = scoreAndRank([candidate], {
+      capabilities: [],
+      domain: repoContext.framework || 'general',
+      ecosystem: repoContext.ecosystem,
+    }, undefined, evidence);
+
+    const recommendation = recommendations[0];
+    const risks = assessRisks(name, facts, recommendation);
+
+    dependencyRisks.push({
+      name,
+      version: String(version),
+      risks,
+      score: recommendation?.score || 0,
+      recommendation: risks.length >= 3 ? recommendation : undefined,
+    });
+
+    const missingFields = Object.entries(facts)
+      .filter(([, fact]) => fact === null)
+      .map(([field]) => field);
+
+    if (missingFields.length > 0) {
+      workflow.evidenceGaps.push({
+        candidate: name,
+        missingFields,
+        reason: 'Collector returned no fact for this field',
+      });
+    }
+  }
+
+  const highRisk = dependencyRisks.filter((d) => d.risks.length >= 3).length;
+  const mediumRisk = dependencyRisks.filter((d) => d.risks.length === 2).length;
+  const lowRisk = dependencyRisks.filter((d) => d.risks.length === 1).length;
+  const noRisk = dependencyRisks.filter((d) => d.risks.length === 0).length;
+  const report = generateAuditReport(repoContext, dependencyRisks, workflow);
+
+  return {
+    mode: 'audit',
+    input,
+    repoContext,
+    summary: {
+      total: depCount,
+      highRisk,
+      mediumRisk,
+      lowRisk,
+      noRisk,
+    },
+    dependencies: dependencyRisks.map((dependency) => ({
+      name: dependency.name,
+      version: dependency.version,
+      score: dependency.score,
+      risks: dependency.risks,
+      facts: evidence[dependency.name] ?? null,
+      suggestedAlternative: dependency.recommendation
+        ? {
+            name: dependency.recommendation.candidate.name,
+            version: dependency.recommendation.candidate.version,
+            score: dependency.recommendation.score,
+          }
+        : null,
+    })),
+    evidenceGaps: workflow.evidenceGaps,
+    workflowId: workflow.workflowId,
+    workflow,
+    report,
+    artifacts: {},
+  };
 }
 
 /**

@@ -23,9 +23,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@oss-preflight/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@oss-preflight/collectors':
+        specifier: workspace:*
+        version: link:../../packages/collectors
       '@oss-preflight/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@oss-preflight/repo-analyser':
+        specifier: workspace:*
+        version: link:../../packages/repo-analyser
+      '@oss-preflight/scaffold':
+        specifier: workspace:*
+        version: link:../../packages/scaffold
       express:
         specifier: ^4.18.2
         version: 4.22.2

@@ -74,6 +74,10 @@ function assertNoSecrets(value: unknown, trail: string[] = []): void {
 }
 
 function readFileConfig(options: AiConfigOptions): FileAiConfig {
+  if (options.ignoreConfig) {
+    return {};
+  }
+
   const cwd = options.cwd ?? process.cwd();
   const configPath = options.config
     ? path.resolve(cwd, options.config)

@@ -1,4 +1,4 @@
-import { IdeaBriefSchema, type Ecosystem, type IdeaBrief } from '@oss-preflight/core';
+import { canonicalizeDomain, IdeaBriefSchema, type Ecosystem, type IdeaBrief } from '@oss-preflight/core';
 
 const ECOSYSTEMS: readonly Ecosystem[] = ['npm', 'pypi', 'github'];
 
@@ -32,12 +32,13 @@ export function normalizeBriefJson(text: string): IdeaBrief {
 
   return IdeaBriefSchema.parse({
     capabilities: asStringArray(parsed.capabilities),
-    domain: typeof parsed.domain === 'string' && parsed.domain.trim().length > 0
-      ? parsed.domain
-      : 'general',
+    domain: canonicalizeDomain(
+      typeof parsed.domain === 'string' && parsed.domain.trim().length > 0
+        ? parsed.domain
+        : 'general'
+    ),
     ...(targetUser ? { targetUser } : {}),
     ecosystem: asEcosystem(parsed.ecosystem),
     constraints: asRecord(parsed.constraints),
   });
 }
-

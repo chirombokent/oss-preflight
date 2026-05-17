@@ -551,6 +551,39 @@ describe('AI Provider Integration', () => {
     );
   });
 
+  it('keyword fallback recognizes weather forecasting ideas', async () => {
+    const { parseIntentWithFallback } = await import('../src/recommend-command.js');
+
+    const result = await parseIntentWithFallback('A weather forecasting app');
+
+    expect(result.ecosystem).toBe('npm');
+    expect(result.domain).toBe('weather');
+    expect(result.capabilities).toEqual(expect.arrayContaining(['weather data', 'forecasting']));
+  });
+
+  it('reports when provider parsing falls back to keyword parsing', async () => {
+    const { parseIntentWithFallbackResult } = await import('../src/recommend-command.js');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await parseIntentWithFallbackResult(
+      'A weather forecasting app',
+      {
+        provider: 'gemini',
+        parse: async () => {
+          throw new Error('Gemini provider returned 401');
+        },
+      }
+    );
+
+    expect(result.brief.domain).toBe('weather');
+    expect(result.intent).toMatchObject({
+      provider: 'keyword',
+      requestedProvider: 'gemini',
+      fallbackUsed: true,
+    });
+    consoleSpy.mockRestore();
+  });
+
   it('AC11: provider request builders use deterministic settings where supported', async () => {
     const {
       buildAnthropicMessageRequest,
@@ -580,6 +613,14 @@ describe('AI Provider Integration', () => {
       constraints: {},
     });
     expect(() => normalizeBriefJson('not json')).toThrow(/No JSON/);
+  });
+
+  it('canonicalizes provider weather domain variants before discovery', async () => {
+    const { normalizeBriefJson } = await import('../src/ai/index.js');
+
+    const brief = normalizeBriefJson('{"capabilities":["forecasting"],"domain":"weather forecasting app","ecosystem":"npm"}');
+
+    expect(brief.domain).toBe('weather');
   });
 
   it('OpenAI-compatible adapter calls /chat/completions and normalizes the response', async () => {

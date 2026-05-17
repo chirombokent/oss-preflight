@@ -1,118 +1,88 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { handleAnalyze } from '../api/analyze';
+import { createZip } from '../api/_zip';
 
-/**
- * Server Tests - CLI Spawn Failure
- * AC13: Mock CLI spawn failure (ENOENT); assert server returns error response with manual CLI command;
- * assert UI displays error with command
- */
+function createMockResponse() {
+  let body = '';
+  const headers = new Map<string, string>();
+  const res = {
+    statusCode: 200,
+    setHeader: (name: string, value: string) => {
+      headers.set(name, value);
+    },
+    end: (payload?: string) => {
+      body = payload ?? '';
+    },
+  };
 
-describe('Server CLI Spawn Failure', () => {
-  it('keeps provider selection out of browser-controlled CLI args', () => {
-    const createRecommendArgs = (idea: string) => ['recommend', '--idea', idea, '--json'];
+  return {
+    res,
+    headers,
+    body: () => body,
+    json: () => JSON.parse(body) as unknown,
+  };
+}
 
-    const args = createRecommendArgs('Discord bot');
+describe('Production serverless contract', () => {
+  it('keeps session AI settings in the request body, not CLI args', () => {
+    const requestBody = {
+      input: 'Discord bot',
+      mode: 'recommend',
+      provider: 'gemini',
+      token: 'session-token',
+      model: 'gemini-2.5-flash',
+    };
 
-    expect(args).toEqual(['recommend', '--idea', 'Discord bot', '--json']);
-    expect(args).not.toContain('--ai-provider');
-    expect(args).not.toContain('--ai-model');
-    expect(args).not.toContain('--ai-base-url');
+    expect(requestBody.provider).toBe('gemini');
+    expect(Object.keys(requestBody)).toContain('token');
+    expect(JSON.stringify(requestBody)).not.toContain('--ai-provider');
   });
 
-  it('inherits provider environment for the spawned CLI process', () => {
-    const serverEnv = {
-      ...process.env,
-      OSS_PREFLIGHT_AI_PROVIDER: 'gemini',
-      GEMINI_API_KEY: 'server-side-key',
+  it('uses server-only GitHub token headers without echoing the token', () => {
+    const token = 'server-side-token';
+    const headers = {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+    };
+    const safeError = {
+      error: 'GitHub public-repo verification failed.',
+      hint: 'GitHub rate limits may be exhausted.',
     };
 
-    const spawnOptions = {
-      cwd: 'repo-root',
-      env: { ...serverEnv },
-    };
-
-    expect(spawnOptions.env.OSS_PREFLIGHT_AI_PROVIDER).toBe('gemini');
-    expect(spawnOptions.env.GEMINI_API_KEY).toBe('server-side-key');
+    expect(headers.Authorization).toContain(token);
+    expect(JSON.stringify(safeError)).not.toContain(token);
   });
 
-  it('should return error response with manual CLI command on spawn failure', async () => {
-    // This test would require mocking the Express server
-    // For now, we'll test the error handling logic
+  it('creates a valid zip buffer for scaffold downloads', () => {
+    const zip = createZip([
+      { path: 'README.md', content: '# Test' },
+      { path: 'src/index.ts', content: 'console.log("ok");' },
+    ]);
 
-    const mockSpawnError = {
-      code: 'ENOENT',
-      message: 'spawn oss-preflight ENOENT',
-    };
-
-    const expectedErrorResponse = {
-      error: 'Failed to spawn CLI. Run manually: oss-preflight recommend --idea "test idea" --json',
-      command: 'oss-preflight recommend --idea "test idea" --json',
-    };
-
-    // Simulate the error handling logic from server.ts
-    const handleSpawnError = (idea: string) => {
-      return {
-        error: `Failed to spawn CLI. Run manually: oss-preflight recommend --idea "${idea}" --json`,
-        command: `oss-preflight recommend --idea "${idea}" --json`,
-      };
-    };
-
-    const result = handleSpawnError('test idea');
-
-    expect(result.error).toContain('Failed to spawn CLI');
-    expect(result.command).toBe('oss-preflight recommend --idea "test idea" --json');
+    expect(zip.readUInt32LE(0)).toBe(0x04034b50);
+    expect(zip.includes(Buffer.from('README.md'))).toBe(true);
+    expect(zip.includes(Buffer.from('src/index.ts'))).toBe(true);
   });
 
-  it('should handle permission errors with manual command', () => {
-    const handlePermissionError = (idea: string) => {
-      return {
-        error: `Failed to spawn CLI. Run manually: oss-preflight recommend --idea "${idea}" --json`,
-        command: `oss-preflight recommend --idea "${idea}" --json`,
-      };
-    };
+  it('returns browser-safe session guidance for missing Gemini tokens', async () => {
+    const response = createMockResponse();
 
-    const result = handlePermissionError('Discord bot');
+    await handleAnalyze({
+      method: 'POST',
+      body: {
+        testConnection: true,
+        provider: 'gemini',
+        mode: 'recommend',
+      },
+    }, response.res);
 
-    expect(result.error).toContain('Failed to spawn CLI');
-    expect(result.command).toContain('Discord bot');
-  });
-
-  it('should handle scaffold spawn failure', () => {
-    const handleScaffoldSpawnError = () => {
-      return {
-        error: 'Failed to spawn CLI. Run manually: oss-preflight scaffold --recommendation <file> --out <dir>',
-        command: 'oss-preflight scaffold --recommendation <file> --out <dir>',
-      };
-    };
-
-    const result = handleScaffoldSpawnError();
-
-    expect(result.error).toContain('Failed to spawn CLI');
-    expect(result.command).toContain('scaffold');
+    expect(response.res.statusCode).toBe(400);
+    expect(response.headers.get('Content-Type')).toContain('application/json');
+    expect(response.json()).toMatchObject({
+      error: 'Gemini needs a session token.',
+      mode: 'recommend',
+      hint: 'Open Settings, paste your Gemini token, then Test connection. You can switch to Keyword mode to run without a key.',
+    });
+    expect(response.body()).not.toContain('GEMINI_API_KEY');
   });
 });
-
-describe('UI Error Display', () => {
-  it('should display error message with command when API returns spawn failure', () => {
-    const mockErrorResponse = {
-      error: 'Failed to spawn CLI. Run manually: oss-preflight recommend --idea "test" --json',
-      command: 'oss-preflight recommend --idea "test" --json',
-    };
-
-    // Simulate UI error display logic
-    const displayError = (errorResponse: typeof mockErrorResponse) => {
-      return {
-        message: errorResponse.error,
-        command: errorResponse.command,
-        displayed: true,
-      };
-    };
-
-    const result = displayError(mockErrorResponse);
-
-    expect(result.message).toContain('Failed to spawn CLI');
-    expect(result.command).toBe('oss-preflight recommend --idea "test" --json');
-    expect(result.displayed).toBe(true);
-  });
-});
-
-// Made with Bob

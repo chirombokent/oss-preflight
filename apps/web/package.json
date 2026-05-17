@@ -13,7 +13,11 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@oss-preflight/cli": "workspace:*",
+    "@oss-preflight/collectors": "workspace:*",
     "@oss-preflight/core": "workspace:*",
+    "@oss-preflight/repo-analyser": "workspace:*",
+    "@oss-preflight/scaffold": "workspace:*",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

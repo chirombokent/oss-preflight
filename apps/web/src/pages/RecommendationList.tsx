@@ -5,98 +5,98 @@ interface RecommendationListProps {
   recommendations: Recommendation[];
   onOpenPassport: (recommendation: Recommendation) => void;
   onScaffold: (recommendation: Recommendation) => void;
+  activeScaffoldName?: string | null;
 }
 
-/**
- * RecommendationList - displays exactly 3 recommendation cards
- * AC3: 3 cards with rank, name, score, goal-fit, maintenance, safety
- * Each card has "Open Passport" button
- */
 export function RecommendationList({
   recommendations,
   onOpenPassport,
   onScaffold,
+  activeScaffoldName = null,
 }: RecommendationListProps) {
   return (
-    <div className="min-h-screen bg-pf-ivory dark:bg-[#171613] p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-pf-slate-deep dark:text-pf-ivory mb-2">
+    <section className="mx-auto max-w-6xl px-6 py-10">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-normal text-[#17191F] dark:text-white md:text-4xl">
             Recommendations
           </h1>
-          <p className="text-pf-stone dark:text-[#D3D0C8]">
-            Evidence-backed package recommendations for your idea
+          <p className="mt-2 max-w-2xl text-base text-[#687083] dark:text-[#AEB6C7]">
+            Ranked packages with sourced facts separated from interpretation.
           </p>
         </div>
+        <span className="rounded-lg border border-[#DCE3ED] bg-white px-3 py-2 text-sm font-semibold text-[#4F7CAC] dark:border-white/10 dark:bg-white/[0.05] dark:text-[#7EC8E3]">
+          {recommendations.length} ranked
+        </span>
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-          {recommendations.slice(0, 3).map((rec) => (
-            <div
-              key={rec.rank}
-              className="bg-white dark:bg-[#282722] rounded-2xl shadow-card p-6 flex flex-col"
+      <div className="grid gap-4 lg:grid-cols-3">
+        {recommendations.slice(0, 3).map((rec, index) => {
+          const isPreparing = activeScaffoldName === rec.candidate.name;
+          return (
+            <article
+              key={`${rec.rank}-${rec.candidate.name}`}
+              className="surface-card group relative overflow-hidden rounded-lg border border-[#DCE3ED] bg-white p-5 shadow-[0_12px_36px_rgba(26,31,44,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_56px_rgba(26,31,44,0.12)] dark:border-white/10 dark:bg-white/[0.04]"
+              style={{ animationDelay: `${index * 80}ms` }}
             >
-              {/* Rank badge */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-pf-slate-deep text-white flex items-center justify-center font-bold text-lg">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#4F7CAC] via-[#2E8B57] to-[#D88B31]" />
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#17191F] text-base font-semibold text-white dark:bg-white dark:text-[#17191F]">
                     {rec.rank}
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-pf-charcoal dark:text-pf-ivory">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-xl font-semibold text-[#17191F] dark:text-white">
                       {rec.candidate.name}
-                    </h3>
-                    <p className="text-sm text-pf-stone-mid">
-                      v{rec.candidate.version}
+                    </h2>
+                    <p className="mt-1 text-sm text-[#687083] dark:text-[#AEB6C7]">
+                      {rec.candidate.ecosystem} · {rec.candidate.version}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-pf-slate-deep dark:text-pf-ivory">
+                  <span className="block text-3xl font-semibold text-[#17191F] dark:text-white">
                     {rec.score.toFixed(0)}
-                  </div>
-                  <div className="text-xs text-pf-stone-mid">Overall</div>
+                  </span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#687083] dark:text-[#AEB6C7]">
+                    score
+                  </span>
                 </div>
               </div>
 
-              {/* Subscores */}
-              <div className="space-y-3 mb-6 flex-grow">
-                <ScoreBar
-                  score={rec.subscores.goalFit}
-                  label="Goal Fit"
-                />
-                <ScoreBar
-                  score={rec.subscores.maintenance}
-                  label="Maintenance"
-                />
-                <ScoreBar
-                  score={rec.subscores.safety}
-                  label="Safety"
-                />
+              <div className="mb-5 space-y-3">
+                <ScoreBar score={rec.subscores.goalFit} label="Goal fit" />
+                <ScoreBar score={rec.subscores.maintenance} label="Maintenance" />
+                <ScoreBar score={rec.subscores.safety} label="Safety" />
               </div>
 
-              {/* Actions */}
+              <p className="mb-5 min-h-[72px] text-sm leading-6 text-[#4D5566] dark:text-[#D7DDEA]">
+                {rec.passport.interpretation.goalFit || 'No interpretation available.'}
+              </p>
+
               <div className="flex flex-col gap-2">
                 <button
                   onClick={() => onOpenPassport(rec)}
-                  className="w-full bg-pf-slate-deep hover:bg-pf-slate-mid text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                  className="rounded-lg border border-[#C9D3E2] px-4 py-2.5 text-sm font-semibold text-[#303541] transition hover:border-[#4F7CAC] hover:bg-[#F0F6FB] focus:outline-none focus:ring-2 focus:ring-[#4F7CAC] dark:border-white/10 dark:text-white dark:hover:bg-white/10"
                 >
                   Open Passport
                 </button>
-                {rec.scaffoldAvailable && (
-                  <button
-                    onClick={() => onScaffold(rec)}
-                    className="w-full bg-pf-copper-warm hover:bg-pf-copper-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    Generate Scaffold
-                  </button>
-                )}
+                <button
+                  onClick={() => onScaffold(rec)}
+                  disabled={isPreparing}
+                  className="rounded-lg bg-[#17191F] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#303541] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-white dark:text-[#17191F]"
+                >
+                  {isPreparing
+                    ? 'Preparing zip...'
+                    : rec.scaffoldAvailable
+                      ? 'Download starter'
+                      : 'Download adoption pack'}
+                </button>
               </div>
-            </div>
-          ))}
-        </div>
+            </article>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 }
-
-// Made with Bob

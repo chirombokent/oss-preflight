@@ -4,8 +4,10 @@ import type {
   Recommendation,
   CandidateFacts,
   EvidenceMap,
+  WorkflowTrace,
 } from '@oss-preflight/core';
 import {
+  createWorkflowTrace,
   discoverCandidatesWithSearch,
   scoreAndRank,
   type DiscoveredCandidate,
@@ -259,12 +261,31 @@ export interface RecommendPipelineOptions extends AiConfigOptions {
   searchFn?: SearchFn;
 }
 
+export interface IntentParseMetadata {
+  provider: string;
+  fallbackUsed: boolean;
+  requestedProvider?: string;
+  warning?: string;
+}
+
+export interface IntentParseResult {
+  brief: IdeaBrief;
+  intent: IntentParseMetadata;
+}
+
 function parseWith(parser: IntentParser | IntentParserFn, idea: string): Promise<IdeaBrief> {
   return typeof parser === 'function' ? parser(idea) : parser.parse(idea);
 }
 
 function parserName(parser: IntentParser | IntentParserFn): string {
   return typeof parser === 'function' ? 'AI provider' : `${parser.provider} provider`;
+}
+
+function parserProvider(parser: IntentParser | IntentParserFn | undefined): string {
+  if (!parser) {
+    return 'keyword';
+  }
+  return typeof parser === 'function' ? 'ai-provider' : parser.provider;
 }
 
 /**
@@ -306,18 +327,46 @@ export async function parseIntentWithFallback(
   idea: string,
   intentParser?: IntentParser | IntentParserFn
 ): Promise<IdeaBrief> {
+  return (await parseIntentWithFallbackResult(idea, intentParser)).brief;
+}
+
+export async function parseIntentWithFallbackResult(
+  idea: string,
+  intentParser?: IntentParser | IntentParserFn
+): Promise<IntentParseResult> {
   if (!intentParser) {
-    return keywordParser(idea);
+    return {
+      brief: keywordParser(idea),
+      intent: {
+        provider: 'keyword',
+        fallbackUsed: false,
+      },
+    };
   }
   
   try {
-    return await parseWith(intentParser, idea);
+    return {
+      brief: await parseWith(intentParser, idea),
+      intent: {
+        provider: parserProvider(intentParser),
+        fallbackUsed: false,
+      },
+    };
   } catch (error) {
+    const message = (error as Error).message;
     console.error(
       `${parserName(intentParser)} error, falling back to keyword intent parsing:`,
-      (error as Error).message
+      message
     );
-    return keywordParser(idea);
+    return {
+      brief: keywordParser(idea),
+      intent: {
+        provider: 'keyword',
+        fallbackUsed: true,
+        requestedProvider: parserProvider(intentParser),
+        warning: `${parserName(intentParser)} failed: ${message}`,
+      },
+    };
   }
 }
 
@@ -479,13 +528,14 @@ export async function runRecommendPipeline(
   recommendations: Recommendation[];
   brief: IdeaBrief;
   discovery: DiscoveryResult;
+  intent: IntentParseMetadata;
 }> {
   // Validate input
   validateInput(idea);
 
   const suppliedParser = options.intentParser ?? options.claudeAdapter;
   const intentParser = suppliedParser ?? createIntentParser(resolveAiConfig(options));
-  const brief = await parseIntentWithFallback(idea, intentParser);
+  const { brief, intent } = await parseIntentWithFallbackResult(idea, intentParser);
 
   // Discover candidates via live registry search, falling back to the curated
   // catalog only when search yields too few results (or catalogOnly is set).
@@ -528,7 +578,85 @@ export async function runRecommendPipeline(
   return {
     recommendations: topRecommendations,
     brief,
-    discovery
+    discovery,
+    intent,
+  };
+}
+
+export interface RecommendAnalysisResult {
+  mode: 'recommend';
+  input: string;
+  recommendations: Recommendation[];
+  ideas_parsed: IdeaBrief;
+  brief: IdeaBrief;
+  discovery: DiscoveryResult;
+  intent: IntentParseMetadata;
+  workflow: WorkflowTrace;
+}
+
+function missingFactNames(recommendation: Recommendation): string[] {
+  return Object.entries(recommendation.passport.facts)
+    .filter(([, fact]) => fact === null)
+    .map(([name]) => name);
+}
+
+export function buildRecommendWorkflowTrace(
+  idea: string,
+  brief: IdeaBrief,
+  discovery: DiscoveryResult,
+  recommendations: Recommendation[]
+): WorkflowTrace {
+  const workflow = createWorkflowTrace('idea', { idea });
+  const searchMethod =
+    discovery.method === 'search'
+      ? 'registry-search'
+      : discovery.method === 'search-with-catalog-fallback'
+        ? 'search-with-catalog-fallback'
+        : 'catalog-fallback';
+
+  workflow.discoveryPlan = {
+    ecosystem: brief.ecosystem,
+    domain: brief.domain,
+    searchQuery: brief.capabilities.join(', '),
+    searchMethod,
+  };
+
+  const discoveredAt = new Date().toISOString();
+  workflow.candidates = discovery.candidates.map((candidate) => ({
+    name: candidate.name,
+    source: candidate.source,
+    discoveredAt,
+  }));
+  workflow.recommendations = recommendations;
+  workflow.evidenceGaps = recommendations
+    .map((recommendation) => ({
+      candidate: recommendation.candidate.name,
+      missingFields: missingFactNames(recommendation),
+      reason: 'Collector returned no fact for this field',
+    }))
+    .filter((gap) => gap.missingFields.length > 0);
+
+  return workflow;
+}
+
+export async function runRecommendAnalysis(
+  idea: string,
+  options: RecommendPipelineOptions = {}
+): Promise<RecommendAnalysisResult> {
+  const { recommendations, brief, discovery, intent } = await runRecommendPipeline(idea, {
+    ...options,
+    save: false,
+  });
+
+  return {
+    mode: 'recommend',
+    input: idea,
+    recommendations,
+    ideas_parsed: brief,
+    brief,
+    discovery,
+    intent,
+    workflow: buildRecommendWorkflowTrace(idea, brief, discovery, recommendations),
   };
 }
 
