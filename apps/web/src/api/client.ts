@@ -1,0 +1,54 @@
+import type { Recommendation, IdeaBrief } from '@oss-preflight/core';
+
+export interface RecommendResponse {
+  recommendations: Recommendation[];
+  ideas_parsed: IdeaBrief;
+  error?: string;
+}
+
+export interface ScaffoldResponse {
+  files: string[];
+  passed: boolean;
+  output: string;
+  error?: string;
+}
+
+/**
+ * API Client - fetch wrappers for /api/recommend and /api/scaffold
+ */
+
+export async function recommend(idea: string): Promise<RecommendResponse> {
+  const response = await fetch('/api/recommend', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ idea }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to get recommendations');
+  }
+
+  return response.json();
+}
+
+export async function scaffold(recommendation: Recommendation): Promise<ScaffoldResponse> {
+  const response = await fetch('/api/scaffold', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ recommendation }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to generate scaffold');
+  }
+
+  return response.json();
+}
+
+// Made with Bob
