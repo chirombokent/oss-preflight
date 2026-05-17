@@ -18,9 +18,6 @@ export interface NpmMetadata {
   dist: {
     tarball: string;
   };
-  _npmUser?: {
-    name: string;
-  };
 }
 
 /**
@@ -67,7 +64,52 @@ async function fetchNpmMetadata(packageName: string): Promise<NpmMetadata> {
     throw new Error(`npm registry returned ${response.status}: ${response.statusText}`);
   }
   
-  return await response.json() as NpmMetadata;
+  const metadata = await response.json() as NpmMetadata;
+  return sanitizeNpmMetadata(metadata);
+}
+
+function sanitizeNpmMetadata(metadata: NpmMetadata): NpmMetadata {
+  const sanitized: NpmMetadata = {
+    name: metadata.name,
+    version: metadata.version,
+    dist: {
+      tarball: metadata.dist?.tarball ?? ''
+    }
+  };
+
+  if (metadata.description) {
+    sanitized.description = metadata.description;
+  }
+
+  if (metadata.license) {
+    sanitized.license = metadata.license;
+  }
+
+  if (metadata.homepage) {
+    sanitized.homepage = metadata.homepage;
+  }
+
+  if (metadata.repository?.url) {
+    sanitized.repository = {
+      type: metadata.repository.type ?? 'git',
+      url: metadata.repository.url
+    };
+  }
+
+  return sanitized;
+}
+
+function sanitizeNpmCollectedData(
+  data: NpmCollectedData,
+  collectedAt: string,
+  source: CollectorResultSource
+): NpmCollectedData {
+  return {
+    ...data,
+    metadata: sanitizeNpmMetadata(data.metadata),
+    collectedAt,
+    source
+  };
 }
 
 /**
@@ -108,11 +150,7 @@ export async function collectNpmData(
         throw new CollectorError('npm', packageName, new Error('Cached error'));
       }
       // Cached success data
-      return {
-        ...cached.data,
-        collectedAt: cached.collectedAt,
-        source: 'cache'
-      };
+      return sanitizeNpmCollectedData(cached.data, cached.collectedAt, 'cache');
     }
   }
   
@@ -148,11 +186,7 @@ export async function collectNpmData(
     const cached = await readCache<NpmCollectedData>('npm', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       // Return stale cache as fallback
-      return {
-        ...cached.data,
-        collectedAt: cached.collectedAt,
-        source: 'cache-fallback'
-      };
+      return sanitizeNpmCollectedData(cached.data, cached.collectedAt, 'cache-fallback');
     }
     
     // Cache the error

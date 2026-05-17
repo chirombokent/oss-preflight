@@ -22,20 +22,67 @@ interface MockMessage {
   channelId: string;
 }
 
+const fallbackMessages: MockMessage[] = [
+  {
+    id: '1234567890',
+    content: 'Hey team, just deployed the new feature to staging!',
+    author: { username: 'alice', id: '111' },
+    timestamp: '2026-05-16T10:30:00Z',
+    channelId: 'general',
+  },
+  {
+    id: '1234567891',
+    content: "Great work! I'll test it this afternoon.",
+    author: { username: 'bob', id: '222' },
+    timestamp: '2026-05-16T11:15:00Z',
+    channelId: 'general',
+  },
+  {
+    id: '1234567892',
+    content: 'Found a small bug in the login flow, creating a ticket.',
+    author: { username: 'charlie', id: '333' },
+    timestamp: '2026-05-16T14:20:00Z',
+    channelId: 'general',
+  },
+  {
+    id: '1234567893',
+    content: 'Fixed! PR is up for review.',
+    author: { username: 'alice', id: '111' },
+    timestamp: '2026-05-16T16:45:00Z',
+    channelId: 'general',
+  },
+  {
+    id: '1234567894',
+    content: 'LGTM, merging now.',
+    author: { username: 'bob', id: '222' },
+    timestamp: '2026-05-16T17:30:00Z',
+    channelId: 'general',
+  },
+];
+
+function loadMockMessages(): MockMessage[] {
+  const fixturePaths = [
+    join(__dirname, 'fixtures/smoke-test-messages.json'),
+    join(__dirname, '../fixtures/smoke-test-messages.json'),
+    join(__dirname, '../../packages/scaffold/fixtures/smoke-test-messages.json'),
+  ];
+
+  for (const fixturePath of fixturePaths) {
+    try {
+      return JSON.parse(readFileSync(fixturePath, 'utf-8')) as MockMessage[];
+    } catch {
+      // Try the next known location before falling back to embedded data.
+    }
+  }
+
+  return fallbackMessages;
+}
+
 async function runSmokeTest(): Promise<void> {
   console.log('🧪 Running smoke test...\n');
 
   try {
-    // Load mocked messages from fixture
-    const fixturePathLocal = join(__dirname, '../fixtures/smoke-test-messages.json');
-    const fixturePathInstalled = join(__dirname, '../../scaffold/fixtures/smoke-test-messages.json');
-    
-    let messages: MockMessage[];
-    try {
-      messages = JSON.parse(readFileSync(fixturePathLocal, 'utf-8'));
-    } catch {
-      messages = JSON.parse(readFileSync(fixturePathInstalled, 'utf-8'));
-    }
+    const messages = loadMockMessages();
 
     console.log(`✓ Loaded ${messages.length} mocked messages`);
 

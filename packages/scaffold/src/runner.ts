@@ -6,6 +6,7 @@ export interface SmokeTestResult {
   pass: boolean;
   output: string;
   duration: number;
+  installedDependencies: boolean;
 }
 
 /**
@@ -13,7 +14,6 @@ export interface SmokeTestResult {
  */
 function runCommand(command: string, args: string[], cwd: string): Promise<{ exitCode: number; output: string }> {
   return new Promise((resolve) => {
-    const startTime = Date.now();
     let output = '';
 
     const proc = spawn(command, args, {
@@ -69,6 +69,7 @@ export async function runSmokeTest(scaffoldDir: string): Promise<SmokeTestResult
           pass: false,
           output: `npm install failed:\n${installOutput}`,
           duration: Date.now() - startTime,
+          installedDependencies: true,
         };
       }
     }
@@ -80,14 +81,19 @@ export async function runSmokeTest(scaffoldDir: string): Promise<SmokeTestResult
 
     return {
       pass: testResult.exitCode === 0,
-      output: testResult.output,
+      output: [
+        needsInstall ? `[npm install]\n${installOutput.trim() || '(no output)'}` : '',
+        `[npm test]\n${testResult.output.trim() || '(no output)'}`,
+      ].filter(Boolean).join('\n\n'),
       duration,
+      installedDependencies: needsInstall,
     };
   } catch (error) {
     return {
       pass: false,
       output: error instanceof Error ? error.message : 'Unknown error',
       duration: Date.now() - startTime,
+      installedDependencies: false,
     };
   }
 }

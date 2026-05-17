@@ -1,4 +1,3 @@
-import React from 'react';
 import { FactBadge } from '../components/FactBadge';
 import type { Recommendation } from '@oss-preflight/core';
 

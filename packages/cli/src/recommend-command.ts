@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { IdeaBrief, Candidate, Recommendation } from '@oss-preflight/core';
 import { discoverCandidates, scoreAndRank } from '@oss-preflight/core';
+import { collectNpmData } from '@oss-preflight/collectors';
 
 /**
  * Recommend Command - Phase P3
@@ -10,6 +11,29 @@ import { discoverCandidates, scoreAndRank } from '@oss-preflight/core';
  * 
  * On Claude API error: falls back to keyword-based intent parsing
  */
+
+const DEMO_PACKAGE_FALLBACKS: Record<string, Partial<Candidate>> = {
+  'discord.js': {
+    version: '14.14.1',
+    homepageUrl: 'https://discord.js.org',
+    repositoryUrl: 'https://github.com/discordjs/discord.js',
+  },
+  eris: {
+    version: '0.17.2',
+    repositoryUrl: 'https://github.com/abalabahaha/eris',
+  },
+};
+
+function normalizeRepositoryUrl(repositoryUrl?: string): string | null {
+  if (!repositoryUrl) {
+    return null;
+  }
+
+  return repositoryUrl
+    .replace(/^git\+/, '')
+    .replace(/^git:\/\//, 'https://')
+    .replace(/\.git$/, '');
+}
 
 /**
  * Check environment variables
@@ -165,12 +189,32 @@ export async function parseIntentWithFallback(
  */
 async function gatherEvidence(
   candidates: Candidate[],
-  _forceRefresh: boolean
+  forceRefresh: boolean
 ): Promise<Candidate[]> {
-  // For P3, we return candidates as-is
-  // P2 collectors are integrated but evidence gathering is enhanced in later phases
-  // The scorer will use available data from collectors
-  return candidates;
+  return Promise.all(candidates.map(async (candidate) => {
+    if (candidate.ecosystem !== 'npm') {
+      return candidate;
+    }
+
+    try {
+      const npmData = await collectNpmData(candidate.name, forceRefresh);
+
+      return {
+        ...candidate,
+        version: npmData.metadata.version,
+        homepageUrl: npmData.metadata.homepage ?? candidate.homepageUrl,
+        repositoryUrl: normalizeRepositoryUrl(npmData.metadata.repository?.url) ?? candidate.repositoryUrl,
+      };
+    } catch {
+      const fallback = DEMO_PACKAGE_FALLBACKS[candidate.name.toLowerCase()];
+
+      return {
+        ...candidate,
+        ...fallback,
+        version: fallback?.version ?? candidate.version,
+      };
+    }
+  }));
 }
 
 /**
@@ -181,6 +225,8 @@ export async function runRecommendPipeline(
   options: {
     refresh?: boolean;
     apiKey?: string;
+    claudeAdapter?: (idea: string) => Promise<IdeaBrief>;
+    collectEvidence?: boolean;
   } = {}
 ): Promise<{ recommendations: Recommendation[]; brief: IdeaBrief }> {
   // Validate input
@@ -191,7 +237,7 @@ export async function runRecommendPipeline(
   
   // Parse intent with Claude (or fallback)
   const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY!;
-  const claudeAdapter = createClaudeAdapter(apiKey);
+  const claudeAdapter = options.claudeAdapter || createClaudeAdapter(apiKey);
   const brief = await parseIntentWithFallback(idea, claudeAdapter);
   
   // Discover candidates
@@ -208,7 +254,9 @@ export async function runRecommendPipeline(
   }));
   
   // Gather evidence (collectors integration)
-  const enrichedCandidates = await gatherEvidence(candidates, options.refresh || false);
+  const enrichedCandidates = options.collectEvidence === false
+    ? candidates
+    : await gatherEvidence(candidates, options.refresh || false);
   
   // Score and rank
   const recommendations = scoreAndRank(enrichedCandidates, brief);

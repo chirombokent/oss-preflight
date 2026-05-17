@@ -1,6 +1,6 @@
 ---
 name: oss-preflight-advisor
-description: Help a developer choose a stack, evaluate packages, find open-source starters, or scaffold an OSS Preflight recommendation inside their repo.
+description: Recommend packages, evaluate stacks, or scaffold OSS Preflight recommendations. Activate with: "run OSS Preflight", "oss-preflight", "package recommendation", "stack recommendation", or "OSS starter".
 ---
 
 # OSS Preflight Advisor

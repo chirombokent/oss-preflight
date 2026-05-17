@@ -2,15 +2,34 @@ import express from 'express';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as fs from 'fs';
+import * as fsp from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, '../..');
 
 const app = express();
 app.use(express.json());
 
 // Serve bob_sessions/ directory for BuildProof page
 app.use('/bob_sessions', express.static(path.join(__dirname, '../../bob_sessions')));
+
+function createCliInvocation(args: string[]): { command: string; args: string[] } {
+  const localCli = path.join(repoRoot, 'packages/cli/dist/index.js');
+
+  if (fs.existsSync(localCli)) {
+    return {
+      command: process.execPath,
+      args: [localCli, ...args],
+    };
+  }
+
+  return {
+    command: process.platform === 'win32' ? 'oss-preflight.cmd' : 'oss-preflight',
+    args,
+  };
+}
 
 /**
  * Express server - thin bridge that spawns CLI
@@ -29,8 +48,9 @@ app.post('/api/recommend', async (req, res) => {
 
   try {
     // Spawn CLI process
-    const child = spawn('oss-preflight', ['recommend', '--idea', idea, '--json'], {
-      cwd: path.resolve(__dirname, '../..'),
+    const cli = createCliInvocation(['recommend', '--idea', idea, '--json']);
+    const child = spawn(cli.command, cli.args, {
+      cwd: repoRoot,
       env: { ...process.env },
     });
 
@@ -97,14 +117,14 @@ app.post('/api/scaffold', async (req, res) => {
   try {
     // Write recommendation to temp file
     const tempFile = path.join(__dirname, 'temp-recommendation.json');
-    const fs = await import('fs/promises');
-    await fs.writeFile(tempFile, JSON.stringify(recommendation));
+    await fsp.writeFile(tempFile, JSON.stringify(recommendation));
 
     // Spawn CLI process
     const outputDir = path.join(__dirname, 'temp-scaffold');
     
-    const child = spawn('oss-preflight', ['scaffold', '--recommendation', tempFile, '--out', outputDir], {
-      cwd: path.resolve(__dirname, '../..'),
+    const cli = createCliInvocation(['scaffold', '--recommendation', tempFile, '--out', outputDir]);
+    const child = spawn(cli.command, cli.args, {
+      cwd: repoRoot,
       env: { ...process.env },
     });
 
@@ -130,8 +150,8 @@ app.post('/api/scaffold', async (req, res) => {
     child.on('close', async (code) => {
       // Clean up temp file
       try {
-        await fs.unlink(tempFile);
-      } catch (e) {
+        await fsp.unlink(tempFile);
+      } catch {
         // Ignore cleanup errors
       }
 
@@ -146,9 +166,9 @@ app.post('/api/scaffold', async (req, res) => {
 
       // Read generated files
       try {
-        const files = await fs.readdir(outputDir, { recursive: true });
+        const files = await fsp.readdir(outputDir, { recursive: true });
         const fileList = files.filter((f: any) => {
-          const stat = require('fs').statSync(path.join(outputDir, f));
+          const stat = fs.statSync(path.join(outputDir, f));
           return stat.isFile();
         });
 

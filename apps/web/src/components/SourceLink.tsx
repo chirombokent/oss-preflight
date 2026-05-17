@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface SourceLinkProps {
   url: string;
   label?: string;

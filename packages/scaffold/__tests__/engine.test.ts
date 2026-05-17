@@ -3,8 +3,10 @@ import { generateScaffold } from '../src/engine.js';
 import type { Recommendation } from '@oss-preflight/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-const TEST_OUTPUT_DIR = path.join(process.cwd(), 'packages/scaffold/__tests__/test-output');
+const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
+const TEST_TMP_ROOT = path.join(TEST_DIR, '.tmp', 'engine');
 
 // Mock recommendation for testing
 const mockRecommendation: Recommendation = {
@@ -47,40 +49,43 @@ const mockRecommendation: Recommendation = {
 };
 
 describe('Scaffold Engine', () => {
-  beforeEach(() => {
-    // Clean test output directory
-    if (fs.existsSync(TEST_OUTPUT_DIR)) {
-      fs.rmSync(TEST_OUTPUT_DIR, { recursive: true, force: true });
+  let testOutputDir: string;
+
+  function removeDirIfExists(dir: string): void {
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     }
+  }
+
+  beforeEach(() => {
+    fs.mkdirSync(TEST_TMP_ROOT, { recursive: true });
+    testOutputDir = fs.mkdtempSync(path.join(TEST_TMP_ROOT, 'case-'));
   });
 
   afterEach(() => {
-    // Clean up after tests
-    if (fs.existsSync(TEST_OUTPUT_DIR)) {
-      fs.rmSync(TEST_OUTPUT_DIR, { recursive: true, force: true });
-    }
+    removeDirIfExists(testOutputDir);
   });
 
   it('generates scaffold files from template', async () => {
-    const result = await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    const result = await generateScaffold(mockRecommendation, testOutputDir);
 
     expect(result.success).toBe(true);
-    expect(fs.existsSync(TEST_OUTPUT_DIR)).toBe(true);
+    expect(fs.existsSync(testOutputDir)).toBe(true);
     
     // Check required files exist
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'src/index.ts'))).toBe(true);
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'src/summarizer.ts'))).toBe(true);
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'package.json'))).toBe(true);
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'README.md'))).toBe(true);
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'ADOPTION_REPORT.md'))).toBe(true);
-    expect(fs.existsSync(path.join(TEST_OUTPUT_DIR, 'smoke-test.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'src/index.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'src/summarizer.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'package.json'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'README.md'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'ADOPTION_REPORT.md'))).toBe(true);
+    expect(fs.existsSync(path.join(testOutputDir, 'smoke-test.ts'))).toBe(true);
   });
 
   it('interpolates package name in generated files', async () => {
-    await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    await generateScaffold(mockRecommendation, testOutputDir);
 
     const packageJson = JSON.parse(
-      fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'package.json'), 'utf-8')
+      fs.readFileSync(path.join(testOutputDir, 'package.json'), 'utf-8')
     );
 
     // Check that package name was interpolated
@@ -88,9 +93,9 @@ describe('Scaffold Engine', () => {
   });
 
   it('generates README with install and run commands', async () => {
-    await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    await generateScaffold(mockRecommendation, testOutputDir);
 
-    const readme = fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'README.md'), 'utf-8');
+    const readme = fs.readFileSync(path.join(testOutputDir, 'README.md'), 'utf-8');
 
     expect(readme).toContain('npm install');
     expect(readme).toContain('npm test');
@@ -98,9 +103,9 @@ describe('Scaffold Engine', () => {
   });
 
   it('generates ADOPTION_REPORT with timestamp, packages, and source URLs', async () => {
-    await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    await generateScaffold(mockRecommendation, testOutputDir);
 
-    const report = fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'ADOPTION_REPORT.md'), 'utf-8');
+    const report = fs.readFileSync(path.join(testOutputDir, 'ADOPTION_REPORT.md'), 'utf-8');
 
     // Check metadata
     expect(report).toContain('**Generated**:');
@@ -113,21 +118,21 @@ describe('Scaffold Engine', () => {
 
   it('is idempotent - skips generation if version hash matches', async () => {
     // First generation
-    const result1 = await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    const result1 = await generateScaffold(mockRecommendation, testOutputDir);
     expect(result1.success).toBe(true);
     expect(result1.skipped).toBe(false);
 
-    const firstGenTime = fs.statSync(path.join(TEST_OUTPUT_DIR, 'package.json')).mtime;
+    const firstGenTime = fs.statSync(path.join(testOutputDir, 'package.json')).mtime;
 
     // Wait a bit to ensure different timestamps
     await new Promise(resolve => setTimeout(resolve, 100));
 
     // Second generation with same recommendation
-    const result2 = await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    const result2 = await generateScaffold(mockRecommendation, testOutputDir);
     expect(result2.success).toBe(true);
     expect(result2.skipped).toBe(true);
 
-    const secondGenTime = fs.statSync(path.join(TEST_OUTPUT_DIR, 'package.json')).mtime;
+    const secondGenTime = fs.statSync(path.join(testOutputDir, 'package.json')).mtime;
 
     // File should not have been modified
     expect(secondGenTime.getTime()).toBe(firstGenTime.getTime());
@@ -135,7 +140,7 @@ describe('Scaffold Engine', () => {
 
   it('regenerates if version hash changes', async () => {
     // First generation
-    await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    await generateScaffold(mockRecommendation, testOutputDir);
 
     // Modify recommendation (different version)
     const modifiedRecommendation = {
@@ -147,21 +152,21 @@ describe('Scaffold Engine', () => {
     };
 
     // Second generation with different version
-    const result = await generateScaffold(modifiedRecommendation, TEST_OUTPUT_DIR);
+    const result = await generateScaffold(modifiedRecommendation, testOutputDir);
     expect(result.success).toBe(true);
     expect(result.skipped).toBe(false);
 
     const packageJson = JSON.parse(
-      fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'package.json'), 'utf-8')
+      fs.readFileSync(path.join(testOutputDir, 'package.json'), 'utf-8')
     );
 
     expect(packageJson.dependencies['discord.js']).toBe('14.15.0');
   });
 
   it('includes source URLs in adoption report', async () => {
-    await generateScaffold(mockRecommendation, TEST_OUTPUT_DIR);
+    await generateScaffold(mockRecommendation, testOutputDir);
 
-    const report = fs.readFileSync(path.join(TEST_OUTPUT_DIR, 'ADOPTION_REPORT.md'), 'utf-8');
+    const report = fs.readFileSync(path.join(testOutputDir, 'ADOPTION_REPORT.md'), 'utf-8');
 
     // Check that source URLs are included
     expect(report).toContain('https://registry.npmjs.org/discord.js');

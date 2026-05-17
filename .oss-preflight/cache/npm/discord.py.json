@@ -1,0 +1,19 @@
+{
+  "data": {
+    "metadata": {
+      "name": "discord.py",
+      "version": "1.0.0",
+      "description": "",
+      "license": "ISC",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/discord.py/-/discord.py-1.0.0.tgz"
+      }
+    },
+    "weeklyDownloads": 42,
+    "sourceUrl": "https://registry.npmjs.org/discord.py/latest",
+    "collectedAt": "2026-05-17T03:23:44.243Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T03:23:44.249Z",
+  "source": "live"
+}

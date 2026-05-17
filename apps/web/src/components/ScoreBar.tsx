@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ScoreBarProps {
   score: number;
   label?: string;

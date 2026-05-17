@@ -165,6 +165,14 @@ vi.mock('../src/recommend-command.js', async () => {
 // Mock environment variables
 const originalEnv = process.env;
 
+const mockClaudeAdapter = async (_idea: string): Promise<IdeaBrief> => ({
+  capabilities: ['message processing', 'scheduled summarization'],
+  domain: 'discord community management',
+  targetUser: 'solo developer',
+  ecosystem: 'npm',
+  constraints: {}
+});
+
 beforeEach(() => {
   process.env = { ...originalEnv };
   process.env.ANTHROPIC_API_KEY = 'test-key-12345';
@@ -203,7 +211,9 @@ describe('Recommend Command - Full Pipeline', () => {
     
     // Run full pipeline with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345'
+      apiKey: 'test-key-12345',
+      claudeAdapter: mockClaudeAdapter,
+      collectEvidence: false
     });
     
     // Format as JSON
@@ -236,7 +246,9 @@ describe('Recommend Command - Full Pipeline', () => {
     
     // Run full pipeline with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345'
+      apiKey: 'test-key-12345',
+      claudeAdapter: mockClaudeAdapter,
+      collectEvidence: false
     });
     
     // Format as table
@@ -331,7 +343,9 @@ describe('Exit Codes', () => {
     
     // Run pipeline - should succeed with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345'
+      apiKey: 'test-key-12345',
+      claudeAdapter: mockClaudeAdapter,
+      collectEvidence: false
     });
     
     // Verify successful execution
@@ -356,7 +370,9 @@ describe('Exit Codes', () => {
     // Should throw an error
     await expect(
       runRecommendPipeline('Discord bot that summarizes channel activity', {
-        apiKey: 'test-key-12345'
+        apiKey: 'test-key-12345',
+        claudeAdapter: mockClaudeAdapter,
+        collectEvidence: false
       })
     ).rejects.toThrow('Collector API error');
     
@@ -418,7 +434,9 @@ describe('Hour 14 Gate', () => {
     
     // Run full pipeline with Discord bot idea
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345'
+      apiKey: 'test-key-12345',
+      claudeAdapter: mockClaudeAdapter,
+      collectEvidence: false
     });
     
     // Verify 3 recommendations returned

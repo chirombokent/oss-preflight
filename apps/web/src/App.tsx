@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { IdeaInput } from './pages/IdeaInput';
 import { RecommendationList } from './pages/RecommendationList';
 import { EvidencePassport } from './pages/EvidencePassport';
 import { ScaffoldProgress } from './pages/ScaffoldProgress';
 import { BuildProof } from './pages/BuildProof';
 import { recommend, scaffold } from './api/client';
-import type { Recommendation, IdeaBrief } from '@oss-preflight/core';
+import type { Recommendation } from '@oss-preflight/core';
 
 type Page = 'idea' | 'recommendations' | 'scaffold' | 'build-proof';
 
@@ -21,7 +21,6 @@ function App() {
   
   // State
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [brief, setBrief] = useState<IdeaBrief | null>(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation | null>(null);
   const [passportOpen, setPassportOpen] = useState(false);
   
@@ -70,7 +69,6 @@ function App() {
     try {
       const result = await recommend(idea);
       setRecommendations(result.recommendations);
-      setBrief(result.ideas_parsed);
       setPage('recommendations');
     } catch (err) {
       const error = err as Error;
@@ -104,7 +102,7 @@ function App() {
       // Parse adoption report from output if available
       const adoptionMatch = result.output.match(/ADOPTION_REPORT\.md:\n([\s\S]*?)(?=\n\n|$)/);
       if (adoptionMatch) {
-        setAdoptionReport(adoptionMatch[1]);
+        setAdoptionReport(adoptionMatch[1] ?? '');
       }
     } catch (err) {
       const error = err as Error;

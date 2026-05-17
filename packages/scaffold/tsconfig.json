@@ -4,9 +4,11 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "module": "ES2022",
-    "target": "ES2022"
+    "target": "ES2022",
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*", "__tests__/**/*", "fixtures/**/*"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "fixtures"],
   "references": [
     { "path": "../core" }
   ]

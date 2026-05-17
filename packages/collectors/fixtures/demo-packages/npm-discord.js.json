@@ -11,9 +11,6 @@
     },
     "dist": {
       "tarball": "https://registry.npmjs.org/discord.js/-/discord.js-14.11.0.tgz"
-    },
-    "_npmUser": {
-      "name": "discordjs"
     }
   },
   "weeklyDownloads": 1200000,

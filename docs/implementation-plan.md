@@ -60,7 +60,7 @@ Ten concrete checks, in order. Each has an exact action, a pass criterion, and a
 | 3 | Overrides load **and the whole file parses with `skill` present** | Open mode dropdown | All five appear: `📝 Plan`, `💻 Code`, `🔀 Orchestrator` (our descriptions, not stock), `reviewer`, `oss-preflight-scaffolder`. If *any* are missing, `custom_modes.yaml` failed to parse — likely the `skill` group on `reviewer` is unsupported by this Bob build | Slugs must match defaults exactly (`plan`/`code`/`orchestrator`). If parse failed: see row 6 fallback (remove `skill` from `reviewer`) and reload |
 | 4 | Always-on rules inject | In `/code`, ask "what are your rules?" | Bob recites evidence/engineering/scope/claims from `.bob/rules/` | Confirm `.bob/rules/` files are committed and non-empty |
 | 5 | `fileRegex` fence holds | In overridden `plan`, ask Bob to edit `packages/core/x.ts` | Bob is **blocked** (plan = markdown only) | Fence misconfigured — fix regex (unquoted single-backslash) |
-| 6 | Skill activates + `skill`-group fallback ready | In **Advanced**, trigger `oss-preflight-advisor`; separately confirm row 3 showed all five modes | Skill activates in the guaranteed Advanced runtime; `reviewer` also declares the official `skill` group where the build supports it | **If `custom_modes.yaml` failed to parse (row 3) or `reviewer` rejects `skill`:** edit `.bob/custom_modes.yaml`, delete the `- skill` line under `reviewer`'s `groups`, reload Bob, confirm all five modes load. Then the loop's REVIEW recipe runs in **Advanced** instead of `reviewer` (the always-on rules floor still applies in `reviewer`). Record the decision in `bob_sessions/build-report.md` → Export Notes |
+| 6 | Skill activates + `skill`-group fallback ready | In **Advanced**, trigger `oss-preflight-advisor`; separately confirm row 3 showed all five modes | Skill activates in the documented Advanced runtime; `reviewer` also declares the official `skill` group where the build supports it | **If `custom_modes.yaml` failed to parse (row 3) or `reviewer` rejects `skill`:** edit `.bob/custom_modes.yaml`, delete the `- skill` line under `reviewer`'s `groups`, reload Bob, confirm all five modes load. Then the loop's REVIEW recipe runs in **Advanced** instead of `reviewer` (the always-on rules floor still applies in `reviewer`). Record the decision in `bob_sessions/build-report.md` → Export Notes |
 | 7 | Bob commit message | Stage a file, click the sparkle icon | A conventional-commit message generates | Note as manual-commit fallback in build report |
 | 8 | Checkpoints | Start a task, watch for the checkpoint marker; test "Restore Files & Task" | Checkpoint appears at task start/before edits; restore works | Lean on git commits as the safety net instead |
 | 9 | Secret guard | Confirm `.env` is ignored by git and excluded from Bob context; run the secret scan before committing exports | `.gitignore` and `.bobignore` exist; scan finds no committed/exported secrets | Stop and sanitize before making the repo public |
@@ -248,7 +248,7 @@ Uncommon, high-leverage, learned-the-hard-way:
 5. **Explicit nulls beat clean objects.** Omitting a missing field looks tidy and reads as a hallucination risk. Emit `null` and label it `(not available)`.
 6. **Evidence ordering in git is evidence.** Commit `.bob/` first, then build. The history itself shows a governed process.
 7. **Build the safest page early.** `/build-proof` has no external deps and carries the entire Bob narrative — front-load it.
-8. **Banned-words lint.** A tiny grep test failing on "guaranteed/perfect/proves best" in user-facing copy prevents the single worst class of overclaim in front of judges.
+8. **Banned-words lint.** A tiny grep test using the presentation-claims rule prevents the single worst class of overclaim in front of judges.
 9. **Mock at the network boundary, never above it.** Smoke tests mock Discord messages, not the summariser interface — you still exercise real code paths.
 10. **Time-box every "should".** A should-ship feature gets a hard clock. When it rings, it degrades to a fixture and you move on. No exceptions.
 
@@ -303,36 +303,37 @@ Uncommon, high-leverage, learned-the-hard-way:
 
 ## 9. Risk register
 
-| Risk | Impact | Mitigation |
-|---|---|---|
-| Bob session export format unclear | High | Test in Hour 0; document exact format in `bob_sessions/build-report.md` |
-| Official `bob_sessions/` deliverable missing | High | Export every relevant Bob task directly into `bob_sessions/S<id>-<slug>/` with task-history markdown + consumption-summary screenshot |
-| Bob skill activation fails live | Medium | Skill file is itself the artifact; demo standalone + show intended workflow + recorded clip |
-| Live APIs fail during demo | Medium | Pre-warm + commit cache; label cached facts honestly |
-| Scaffold smoke test fails live | High | Mocked Discord messages; keep known-good generated scaffold committed |
-| Recommendation looks arbitrary | High | Show scoring weights + fact/inference split in UI |
-| Scope creep | High | Cut Hugging Face, MCP, multi-template, repo audit first; enforce gates |
-| Scorer non-determinism | High | Determinism snapshot test written before scorer logic |
-| Plan has build gaps / not reproducible | High | Plan Council (S01.5): 5 adversarial teams gate at ≥9/10, zero blockers, before any phase builds; failed rounds trigger scoped plan revisions and re-council until measurable refinements produce a real PASS or progress stalls |
-| Skill won't activate outside Advanced mode | Medium | Verified constraint — demo skill in Advanced mode; see [bob-build-guide.md](./bob-build-guide.md) |
+| Risk | Impact | Mitigation | Status |
+|---|---|---|---|
+| Bob session export format unclear | High | Test in Hour 0; document exact format in `bob_sessions/build-report.md` | [RESOLVED] S00 includes `task-history.md` and `consumption-summary.png`; build-report records the export procedure. |
+| Official `bob_sessions/` deliverable missing | High | Export every relevant Bob task directly into `bob_sessions/S<id>-<slug>/` with task-history markdown + consumption-summary screenshot | [MITIGATED] Session folders exist and the remaining S06/S07 export gaps are explicit P7 blockers in `docs/submission-readiness.md`; no placeholder evidence is accepted. |
+| Bob skill activation fails live | Medium | Skill file is itself the artifact; demo standalone + show intended workflow + recorded clip | [MITIGATED] `.bob/skills/oss-preflight-advisor/SKILL.md` has explicit keyword triggers; S07 task history documents the activation protocol; live clip remains optional. |
+| Live APIs fail during demo | Medium | Pre-warm + commit cache; label cached facts honestly | [MITIGATED] CLI falls back from Claude errors to keyword parsing; npm collection falls back to deterministic demo metadata; collectors have cache-fallback tests. |
+| Scaffold smoke test fails live | High | Mocked Discord messages; keep known-good generated scaffold committed | [RESOLVED] Generated scaffold smoke test passed in P7; template and committed example now include embedded mock-message fallback data. |
+| Recommendation looks arbitrary | High | Show scoring weights + fact/inference split in UI | [RESOLVED] `ScoreBar`, `EvidencePassport`, and scorer tests expose subscores, fact/inference split, and deterministic ranking. |
+| Scope creep | High | Cut Hugging Face, MCP, multi-template, repo audit first; enforce gates | [MITIGATED] P7 changes stayed inside demo hardening, docs, tests, packaging, and submission evidence; no new templates or live repo audit were added. |
+| Scorer non-determinism | High | Determinism snapshot test written before scorer logic | [RESOLVED] `packages/core/__tests__/determinism.test.ts` is part of the green root suite. |
+| Plan has build gaps / not reproducible | High | Plan Council (S01.5): 5 adversarial teams gate at ≥9/10, zero blockers, before any phase builds; failed rounds trigger scoped plan revisions and re-council until measurable refinements produce a real PASS or progress stalls | [RESOLVED] S01.5 includes two Plan Council rounds with final PASS artifacts in `bob_sessions/S01.5-plan-council/`. |
+| Skill won't activate outside Advanced mode | Medium | Verified constraint — demo skill in Advanced mode; see [bob-build-guide.md](./bob-build-guide.md) | [ACCEPTED] Advanced mode is the documented skill runtime; S07 evidence uses that constraint rather than requiring custom-mode skill activation. |
 
 ---
 
 ## 10. Final submission checklist
 
-- [ ] Public GitHub repo, MIT licence
-- [ ] Working prototype usable online
-- [ ] Video presentation + pitch deck
-- [ ] Official Bob export/report included
-- [ ] Root `bob_sessions/` folder exists with all relevant task-history markdown files
-- [ ] Root `bob_sessions/` folder includes task-session consumption-summary screenshots
-- [ ] `bob_sessions/build-report.md` complete
-- [ ] ≥ 3 exported sessions: planning, implementation, review
-- [ ] Runtime skill activation evidence (if skill demo used)
-- [ ] Custom modes + skills committed
-- [ ] Secret scan completed (no tokens/keys in exports or `.env`)
-- [ ] `docs/source-ledger.md` complete for every public data source used
-- [ ] README links to `bob_sessions/build-report.md`
+- [x] Public GitHub repo, MIT licence
+- [ ] Working prototype usable online (local fallback documented in `README.md`; public URL still absent)
+- [ ] Video presentation
+- [x] Pitch deck exists at `docs/oss-preflight-submission-deck.pdf`
+- [x] Official Bob export/report included
+- [ ] Root `bob_sessions/` folder exists with all relevant task-history markdown files (S06 task history still missing)
+- [ ] Root `bob_sessions/` folder includes task-session consumption-summary screenshots (S06 and S07 screenshots still missing)
+- [x] `bob_sessions/build-report.md` complete with a row for every required session
+- [x] ≥ 3 exported sessions: planning, implementation, review
+- [x] Runtime skill activation evidence (if skill demo used)
+- [x] Custom modes + skills committed
+- [x] Secret scan completed (no tokens/keys in exports or `.env`)
+- [x] `docs/source-ledger.md` complete for every public data source used
+- [x] README links to `bob_sessions/build-report.md`
 - [ ] Demo video shows Bob evidence
 
 ---

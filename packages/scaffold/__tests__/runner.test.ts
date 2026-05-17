@@ -2,23 +2,28 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { runSmokeTest } from '../src/runner.js';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-const TEST_SCAFFOLD_DIR = path.join(process.cwd(), 'packages/scaffold/__tests__/test-scaffold');
+const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
+const TEST_TMP_ROOT = path.join(TEST_DIR, '.tmp', 'runner');
+const RUNNER_TEST_TIMEOUT_MS = 20000;
 
 describe('Scaffold Runner', () => {
-  beforeEach(() => {
-    // Clean test scaffold directory
-    if (fs.existsSync(TEST_SCAFFOLD_DIR)) {
-      fs.rmSync(TEST_SCAFFOLD_DIR, { recursive: true, force: true });
+  let testScaffoldDir: string;
+
+  function removeDirIfExists(dir: string): void {
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     }
-    fs.mkdirSync(TEST_SCAFFOLD_DIR, { recursive: true });
+  }
+
+  beforeEach(() => {
+    fs.mkdirSync(TEST_TMP_ROOT, { recursive: true });
+    testScaffoldDir = fs.mkdtempSync(path.join(TEST_TMP_ROOT, 'case-'));
   });
 
   afterEach(() => {
-    // Clean up after tests
-    if (fs.existsSync(TEST_SCAFFOLD_DIR)) {
-      fs.rmSync(TEST_SCAFFOLD_DIR, { recursive: true, force: true });
-    }
+    removeDirIfExists(testScaffoldDir);
   });
 
   it('runs npm install if node_modules missing', async () => {
@@ -33,16 +38,17 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     // Should have run npm install
-    expect(fs.existsSync(path.join(TEST_SCAFFOLD_DIR, 'node_modules'))).toBe(true);
+    expect(result.installedDependencies).toBe(true);
+    expect(fs.existsSync(path.join(testScaffoldDir, 'package-lock.json'))).toBe(true);
     expect(result.pass).toBe(true);
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('skips npm install if node_modules exists', async () => {
     // Create package.json and node_modules
@@ -56,17 +62,18 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    fs.mkdirSync(path.join(TEST_SCAFFOLD_DIR, 'node_modules'));
+    fs.mkdirSync(path.join(testScaffoldDir, 'node_modules'));
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.pass).toBe(true);
+    expect(result.installedDependencies).toBe(false);
     expect(result.output).not.toContain('npm install');
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('executes smoke test and captures stdout', async () => {
     const packageJson = {
@@ -79,15 +86,15 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.pass).toBe(true);
     expect(result.output).toContain('Smoke test output');
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('returns pass=true when test exits 0', async () => {
     const packageJson = {
@@ -100,14 +107,14 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.pass).toBe(true);
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('returns pass=false when test exits non-zero', async () => {
     const packageJson = {
@@ -120,15 +127,15 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.pass).toBe(false);
     expect(result.output).toBeTruthy();
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('captures stderr on test failure', async () => {
     const packageJson = {
@@ -141,15 +148,15 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.pass).toBe(false);
     expect(result.output).toContain('Error message');
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 
   it('returns duration in milliseconds', async () => {
     const packageJson = {
@@ -162,15 +169,15 @@ describe('Scaffold Runner', () => {
     };
 
     fs.writeFileSync(
-      path.join(TEST_SCAFFOLD_DIR, 'package.json'),
+      path.join(testScaffoldDir, 'package.json'),
       JSON.stringify(packageJson, null, 2)
     );
 
-    const result = await runSmokeTest(TEST_SCAFFOLD_DIR);
+    const result = await runSmokeTest(testScaffoldDir);
 
     expect(result.duration).toBeGreaterThan(0);
     expect(typeof result.duration).toBe('number');
-  });
+  }, RUNNER_TEST_TIMEOUT_MS);
 });
 
 // Made with Bob

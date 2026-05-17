@@ -8,6 +8,9 @@ build/
 coverage/
 .turbo/
 .vite/
+*.tsbuildinfo
+playwright-report/
+test-results/
 
 .DS_Store
 *.log
@@ -16,4 +19,5 @@ coverage/
 
 .oss-preflight/cache/tmp/
 oss-preflight-output/
-
+packages/scaffold/packages/
+packages/scaffold/__tests__/.tmp/

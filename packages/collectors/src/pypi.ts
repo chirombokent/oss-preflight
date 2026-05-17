@@ -10,12 +10,9 @@ export interface PyPIMetadata {
     name: string;
     version: string;
     summary?: string;
-    description?: string;
     license?: string;
     home_page?: string;
     project_urls?: Record<string, string>;
-    author?: string;
-    author_email?: string;
   };
   urls: Array<{
     packagetype: string;
@@ -58,7 +55,39 @@ async function fetchPyPIMetadata(packageName: string): Promise<PyPIMetadata> {
     throw new Error(`PyPI API returned ${response.status}: ${response.statusText}`);
   }
   
-  return await response.json() as PyPIMetadata;
+  const metadata = await response.json() as PyPIMetadata;
+  return sanitizePyPIMetadata(metadata);
+}
+
+function sanitizePyPIMetadata(metadata: PyPIMetadata): PyPIMetadata {
+  return {
+    info: {
+      name: metadata.info.name,
+      version: metadata.info.version,
+      summary: metadata.info.summary,
+      license: metadata.info.license,
+      home_page: metadata.info.home_page,
+      project_urls: metadata.info.project_urls
+    },
+    urls: metadata.urls.map((url) => ({
+      packagetype: url.packagetype,
+      url: url.url
+    })),
+    releases: {}
+  };
+}
+
+function sanitizePyPICollectedData(
+  data: PyPICollectedData,
+  collectedAt: string,
+  source: CollectorResultSource
+): PyPICollectedData {
+  return {
+    ...data,
+    metadata: sanitizePyPIMetadata(data.metadata),
+    collectedAt,
+    source
+  };
 }
 
 /**
@@ -74,11 +103,7 @@ export async function collectPyPIData(
   if (!forceRefresh) {
     const cached = await readCache<PyPICollectedData>('pypi', canonicalId);
     if (cached && !cached.error) {
-      return {
-        ...cached.data,
-        collectedAt: cached.collectedAt,
-        source: 'cache'
-      };
+      return sanitizePyPICollectedData(cached.data, cached.collectedAt, 'cache');
     }
   }
   
@@ -110,11 +135,7 @@ export async function collectPyPIData(
     const cached = await readCache<PyPICollectedData>('pypi', canonicalId, { allowExpired: true });
     if (cached && !cached.error) {
       // Return stale cache as fallback
-      return {
-        ...cached.data,
-        collectedAt: cached.collectedAt,
-        source: 'cache-fallback'
-      };
+      return sanitizePyPICollectedData(cached.data, cached.collectedAt, 'cache-fallback');
     }
     
     // Cache the error

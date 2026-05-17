@@ -1,4 +1,3 @@
-import React from 'react';
 import { ScoreBar } from '../components/ScoreBar';
 import type { Recommendation } from '@oss-preflight/core';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { SourceLink } from './SourceLink';
 import type { EvidenceFact } from '@oss-preflight/core';
 
@@ -21,7 +20,6 @@ export function FactBadge({ label, fact, className = '' }: FactBadgeProps) {
     );
   }
 
-  const isLive = fact.sourceType !== 'inferred';
   const isCached = fact.source.includes('cache') || fact.sourceType === 'inferred';
 
   return (

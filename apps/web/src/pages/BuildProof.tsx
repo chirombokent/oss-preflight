@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { HighlightCode } from '../components/HighlightCode';
+import buildReport from '../../../../bob_sessions/build-report.md?raw';
 
 /**
  * BuildProof - renders Bob evidence
@@ -7,24 +7,6 @@ import { HighlightCode } from '../components/HighlightCode';
  * bob_sessions/build-report.md content, git log showing Bob-assisted commits
  */
 export function BuildProof() {
-  const [buildReport, setBuildReport] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // In a real implementation, this would fetch from the server
-    // For now, we'll show placeholder content
-    fetch('/bob_sessions/build-report.md')
-      .then((res) => res.text())
-      .then((text) => {
-        setBuildReport(text);
-        setLoading(false);
-      })
-      .catch(() => {
-        setBuildReport('Build report not available');
-        setLoading(false);
-      });
-  }, []);
-
   return (
     <div className="min-h-screen bg-pf-ivory dark:bg-[#171613] p-6">
       <div className="max-w-6xl mx-auto">
@@ -99,6 +81,16 @@ export function BuildProof() {
                   </a>
                 </li>
                 <li>
+                  <a href="/bob_sessions/S01-plan-architecture/" className="text-pf-slate-mid hover:text-pf-copper-warm underline">
+                    S01: Plan architecture
+                  </a>
+                </li>
+                <li>
+                  <a href="/bob_sessions/S01.5-plan-council/" className="text-pf-slate-mid hover:text-pf-copper-warm underline">
+                    S01.5: Plan Council
+                  </a>
+                </li>
+                <li>
                   <a href="/bob_sessions/S03-core-schemas-scoring/" className="text-pf-slate-mid hover:text-pf-copper-warm underline">
                     S03: Core schemas + scoring (P1)
                   </a>
@@ -118,6 +110,16 @@ export function BuildProof() {
                     S06: Web UI + build-proof (P5)
                   </a>
                 </li>
+                <li>
+                  <a href="/bob_sessions/S07-runtime-skill-demo/" className="text-pf-slate-mid hover:text-pf-copper-warm underline">
+                    S07: Runtime skill demo (P6)
+                  </a>
+                </li>
+                <li>
+                  <a href="/bob_sessions/S08-review-submission/" className="text-pf-slate-mid hover:text-pf-copper-warm underline">
+                    S08: Review + submission (P7)
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -132,11 +134,7 @@ export function BuildProof() {
                 bob_sessions/build-report.md
               </code> — Phase-by-phase summary of work completed, acceptance criteria met, and test results
             </p>
-            {loading ? (
-              <p className="text-pf-stone-mid">Loading build report...</p>
-            ) : (
-              <HighlightCode code={buildReport} language="markdown" />
-            )}
+            <HighlightCode code={buildReport} language="markdown" />
           </div>
 
           {/* Git Log */}

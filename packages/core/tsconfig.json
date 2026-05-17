@@ -2,10 +2,12 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "resolveJsonModule": true
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*", "__tests__/**/*", "fixtures/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "fixtures"]
 }
 
 // Made with Bob

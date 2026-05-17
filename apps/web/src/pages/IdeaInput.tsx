@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
 interface IdeaInputProps {
   onSubmit: (idea: string) => void;
@@ -12,7 +12,7 @@ interface IdeaInputProps {
 export function IdeaInput({ onSubmit, loading = false }: IdeaInputProps) {
   const [idea, setIdea] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (idea.trim()) {
       onSubmit(idea.trim());

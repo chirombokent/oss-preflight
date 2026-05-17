@@ -1,4 +1,3 @@
-import React from 'react';
 import { HighlightCode } from '../components/HighlightCode';
 
 interface ScaffoldProgressProps {

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "eris",
+      "version": "0.18.0",
+      "description": "A NodeJS Discord library",
+      "license": "MIT",
+      "homepage": "https://abal.moe/Eris/",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/abalabahaha/eris.git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/eris/-/eris-0.18.0.tgz"
+      }
+    },
+    "weeklyDownloads": 2985,
+    "sourceUrl": "https://registry.npmjs.org/eris/latest",
+    "collectedAt": "2026-05-17T03:23:44.623Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T03:23:44.624Z",
+  "source": "live"
+}

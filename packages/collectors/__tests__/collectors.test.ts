@@ -46,7 +46,17 @@ const npmMetadata = {
   },
   dist: {
     tarball: 'https://registry.npmjs.org/discord.js/-/discord.js-14.11.0.tgz'
-  }
+  },
+  _npmUser: {
+    name: 'maintainer',
+    email: 'maintainer@example.com'
+  },
+  maintainers: [
+    { name: 'maintainer', email: 'maintainer@example.com' }
+  ],
+  contributors: [
+    { name: 'contributor', email: 'contributor@example.com' }
+  ]
 };
 
 const githubRepo = {
@@ -116,10 +126,14 @@ describe('Collectors', () => {
       expect(result.weeklyDownloads).toBe(1200000);
       expect(result.sourceUrl).toContain('registry.npmjs.org');
       expect(result.source).toBe('live');
+      expect(JSON.stringify(result.metadata)).not.toContain('email');
+      expect(JSON.stringify(result.metadata)).not.toContain('maintainers');
+      expect(JSON.stringify(result.metadata)).not.toContain('contributors');
 
       const cached = await readCache<NpmCollectedData>('npm', 'discord.js');
       expect(cached?.source).toBe('live');
       expect(cached?.data.metadata.name).toBe('discord.js');
+      expect(JSON.stringify(cached?.data.metadata)).not.toContain('email');
 
       mockFetch.mockClear();
       const cachedResult = await collectNpmData('discord.js');
@@ -247,7 +261,9 @@ describe('Collectors', () => {
         info: {
           name: 'discord.py',
           version: '2.5.2',
-          summary: 'A Python wrapper for the Discord API'
+          summary: 'A Python wrapper for the Discord API',
+          author: 'Maintainer Name',
+          author_email: 'maintainer@example.com'
         },
         urls: [],
         releases: {}
@@ -257,6 +273,7 @@ describe('Collectors', () => {
 
       expect(result.metadata.info.name).toBe('discord.py');
       expect(result.metadata.info.version).toBe('2.5.2');
+      expect(JSON.stringify(result.metadata)).not.toContain('maintainer@example.com');
       expect(result.source).toBe('live');
     });
 
