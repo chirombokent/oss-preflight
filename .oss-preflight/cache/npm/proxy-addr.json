@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "proxy-addr",
+      "version": "2.0.7",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz"
+      },
+      "description": "Determine address of proxied request",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/proxy-addr#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/proxy-addr.git"
+      }
+    },
+    "weeklyDownloads": 60392376,
+    "sourceUrl": "https://registry.npmjs.org/proxy-addr/latest",
+    "collectedAt": "2026-05-17T12:01:16.057Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:16.058Z",
+  "source": "live"
+}

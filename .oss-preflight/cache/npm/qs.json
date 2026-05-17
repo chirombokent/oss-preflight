@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "qs",
+      "version": "6.15.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/qs/-/qs-6.15.2.tgz"
+      },
+      "description": "A querystring parser that supports nesting and arrays, with a depth limit",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/ljharb/qs",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ljharb/qs.git"
+      }
+    },
+    "weeklyDownloads": 161796703,
+    "sourceUrl": "https://registry.npmjs.org/qs/latest",
+    "collectedAt": "2026-05-17T12:01:17.551Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:17.552Z",
+  "source": "live"
+}

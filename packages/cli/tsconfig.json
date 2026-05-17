@@ -3,13 +3,15 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
+    "moduleResolution": "node"
   },
   "include": ["src/**/*"],
   "references": [
     { "path": "../core" },
     { "path": "../collectors" },
-    { "path": "../scaffold" }
+    { "path": "../scaffold" },
+    { "path": "../repo-analyser" }
   ]
 }
 

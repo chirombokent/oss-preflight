@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "after",
+      "version": "0.8.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/after/-/after-0.8.2.tgz"
+      },
+      "description": "after - tiny flow control",
+      "license": "MIT",
+      "homepage": "https://github.com/Raynos/after#readme",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/Raynos/after.git"
+      }
+    },
+    "weeklyDownloads": 1692877,
+    "sourceUrl": "https://registry.npmjs.org/after/latest",
+    "collectedAt": "2026-05-17T12:01:25.969Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:25.970Z",
+  "source": "live"
+}

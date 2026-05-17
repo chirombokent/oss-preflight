@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "vhost",
+      "version": "3.0.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/vhost/-/vhost-3.0.2.tgz"
+      },
+      "description": "virtual domain hosting",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/vhost",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/expressjs/vhost"
+      }
+    },
+    "weeklyDownloads": 197821,
+    "sourceUrl": "https://registry.npmjs.org/vhost/latest",
+    "collectedAt": "2026-05-17T12:01:36.997Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:36.997Z",
+  "source": "live"
+}

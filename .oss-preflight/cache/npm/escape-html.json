@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "escape-html",
+      "version": "1.0.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz"
+      },
+      "description": "Escape string for use in HTML",
+      "license": "MIT",
+      "homepage": "https://github.com/component/escape-html",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/component/escape-html"
+      }
+    },
+    "weeklyDownloads": 68177734,
+    "sourceUrl": "https://registry.npmjs.org/escape-html/latest",
+    "collectedAt": "2026-05-17T12:01:01.823Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:01.824Z",
+  "source": "live"
+}

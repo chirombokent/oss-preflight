@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "http-errors",
+      "version": "2.0.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.1.tgz"
+      },
+      "description": "Create HTTP error objects",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/http-errors#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/http-errors.git"
+      }
+    },
+    "weeklyDownloads": 138597054,
+    "sourceUrl": "https://registry.npmjs.org/http-errors/latest",
+    "collectedAt": "2026-05-17T12:01:07.259Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:07.260Z",
+  "source": "live"
+}

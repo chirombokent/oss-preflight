@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "morgan",
+      "version": "1.10.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/morgan/-/morgan-1.10.1.tgz"
+      },
+      "description": "HTTP request logger middleware for node.js",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/morgan#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/morgan.git"
+      }
+    },
+    "weeklyDownloads": 11204433,
+    "sourceUrl": "https://registry.npmjs.org/morgan/latest",
+    "collectedAt": "2026-05-17T12:01:33.106Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:33.107Z",
+  "source": "live"
+}

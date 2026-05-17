@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "supertest",
+      "version": "7.2.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/supertest/-/supertest-7.2.2.tgz"
+      },
+      "description": "SuperAgent driven library for testing HTTP servers",
+      "license": "MIT",
+      "homepage": "https://github.com/ladjs/supertest#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ladjs/supertest.git"
+      }
+    },
+    "weeklyDownloads": 14566417,
+    "sourceUrl": "https://registry.npmjs.org/supertest/latest",
+    "collectedAt": "2026-05-17T12:01:35.471Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:35.472Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "serve-static",
+      "version": "2.2.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/serve-static/-/serve-static-2.2.1.tgz"
+      },
+      "description": "Serve static files",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/serve-static#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/serve-static.git"
+      }
+    },
+    "weeklyDownloads": 104310733,
+    "sourceUrl": "https://registry.npmjs.org/serve-static/latest",
+    "collectedAt": "2026-05-17T12:01:22.847Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:22.848Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "express-session",
+      "version": "1.19.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/express-session/-/express-session-1.19.0.tgz"
+      },
+      "description": "Simple session middleware for Express",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/session#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/session.git"
+      }
+    },
+    "weeklyDownloads": 3961231,
+    "sourceUrl": "https://registry.npmjs.org/express-session/latest",
+    "collectedAt": "2026-05-17T12:01:30.242Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:30.243Z",
+  "source": "live"
+}

@@ -7,6 +7,18 @@ export const SourceTypeSchema = z.enum(['npm', 'pypi', 'github', 'openssf', 'inf
 export type SourceType = z.infer<typeof SourceTypeSchema>;
 
 /**
+ * Retrieval source for evidence facts
+ */
+export const RetrievalSourceSchema = z.enum([
+  'live',
+  'cache',
+  'cache-fallback',
+  'fixture',
+  'not-available'
+]);
+export type RetrievalSource = z.infer<typeof RetrievalSourceSchema>;
+
+/**
  * Ecosystem type for packages
  */
 export const EcosystemSchema = z.enum(['npm', 'pypi', 'github']);
@@ -17,9 +29,10 @@ export type Ecosystem = z.infer<typeof EcosystemSchema>;
  */
 export const EvidenceFactSchema = z.object({
   value: z.union([z.string(), z.number()]),
-  source: z.string(),
-  collectedAt: z.string(),
-  sourceType: SourceTypeSchema,
+  source: z.string(),                    // URL or 'not-available'
+  collectedAt: z.string(),               // ISO-8601 or 'not-available'
+  sourceType: SourceTypeSchema,          // npm, github, pypi, openssf, inferred
+  retrievalSource: RetrievalSourceSchema, // live, cache, cache-fallback, fixture, not-available
 }).nullable();
 
 export type EvidenceFact = z.infer<typeof EvidenceFactSchema>;

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "ejs",
+      "version": "5.0.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/ejs/-/ejs-5.0.2.tgz"
+      },
+      "description": "Embedded JavaScript templates",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/mde/ejs",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/mde/ejs.git"
+      }
+    },
+    "weeklyDownloads": 33112896,
+    "sourceUrl": "https://registry.npmjs.org/ejs/latest",
+    "collectedAt": "2026-05-17T12:01:29.069Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:29.070Z",
+  "source": "live"
+}

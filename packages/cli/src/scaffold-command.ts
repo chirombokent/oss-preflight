@@ -1,17 +1,70 @@
 /**
- * Scaffold Command - Phase P4
- * 
+ * Scaffold Command - Phase P4 + P9 Phase 2
+ *
  * Generates a working starter from a recommendation JSON
+ * Supports three input formats:
+ * 1. Full recommend --json --save wrapper (extract by rank)
+ * 2. Array of recommendations (select by rank)
+ * 3. Single recommendation object (ignore rank)
  */
 
 import { generateScaffold, runSmokeTest } from '@oss-preflight/scaffold';
-import type { Recommendation } from '@oss-preflight/core';
+import type { Recommendation, IdeaBrief } from '@oss-preflight/core';
 import * as fs from 'fs';
 import * as path from 'path';
 
 export interface ScaffoldOptions {
   recommendation?: string;
   out?: string;
+  rank?: string;
+}
+
+/**
+ * Response wrapper format from recommend --save
+ */
+interface RecommendationWrapper {
+  workflowId: string;
+  timestamp: string;
+  idea: string;
+  brief: IdeaBrief;
+  recommendations: Recommendation[];
+}
+
+/**
+ * Extract recommendation from various input formats
+ */
+function extractRecommendation(data: any, rank: number): Recommendation {
+  // Format 1: Full wrapper from recommend --save
+  if (data.workflowId && data.recommendations && Array.isArray(data.recommendations)) {
+    const wrapper = data as RecommendationWrapper;
+    if (rank < 1 || rank > wrapper.recommendations.length) {
+      throw new Error(`Rank ${rank} is out of bounds. Available recommendations: ${wrapper.recommendations.length}`);
+    }
+    const recommendation = wrapper.recommendations[rank - 1];
+    if (!recommendation) {
+      throw new Error(`Recommendation at rank ${rank} not found`);
+    }
+    return recommendation;
+  }
+
+  // Format 2: Array of recommendations
+  if (Array.isArray(data)) {
+    if (rank < 1 || rank > data.length) {
+      throw new Error(`Rank ${rank} is out of bounds. Available recommendations: ${data.length}`);
+    }
+    const recommendation = data[rank - 1];
+    if (!recommendation) {
+      throw new Error(`Recommendation at rank ${rank} not found`);
+    }
+    return recommendation;
+  }
+
+  // Format 3: Single recommendation object (ignore rank)
+  if (data.candidate) {
+    return data as Recommendation;
+  }
+
+  throw new Error('Invalid recommendation format');
 }
 
 /**
@@ -22,13 +75,20 @@ export async function scaffoldCommand(options: ScaffoldOptions): Promise<void> {
     // Validate options
     if (!options.recommendation) {
       console.error('Error: --recommendation flag is required');
-      console.error('Usage: oss-preflight scaffold --recommendation <path> --out <directory>');
+      console.error('Usage: oss-preflight scaffold --recommendation <path> --out <directory> [--rank <number>]');
       process.exit(2);
     }
 
     if (!options.out) {
       console.error('Error: --out flag is required');
-      console.error('Usage: oss-preflight scaffold --recommendation <path> --out <directory>');
+      console.error('Usage: oss-preflight scaffold --recommendation <path> --out <directory> [--rank <number>]');
+      process.exit(2);
+    }
+
+    // Parse rank (1-indexed, default 1)
+    const rank = options.rank ? parseInt(options.rank, 10) : 1;
+    if (isNaN(rank) || rank < 1) {
+      console.error('Error: --rank must be a positive integer (1, 2, or 3)');
       process.exit(2);
     }
 
@@ -43,10 +103,14 @@ export async function scaffoldCommand(options: ScaffoldOptions): Promise<void> {
       fs.readFileSync(recommendationPath, 'utf-8')
     );
 
-    // Handle both single recommendation and array of recommendations
-    const recommendation: Recommendation = Array.isArray(recommendationData)
-      ? recommendationData[0]
-      : recommendationData;
+    // Extract recommendation based on format and rank
+    let recommendation: Recommendation;
+    try {
+      recommendation = extractRecommendation(recommendationData, rank);
+    } catch (error) {
+      console.error(`Error: ${(error as Error).message}`);
+      process.exit(2);
+    }
 
     if (!recommendation || !recommendation.candidate) {
       console.error('Error: Invalid recommendation format');

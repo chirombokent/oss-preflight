@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "vary",
+      "version": "1.1.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
+      },
+      "description": "Manipulate the HTTP Vary header",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/vary#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/vary.git"
+      }
+    },
+    "weeklyDownloads": 66205300,
+    "sourceUrl": "https://registry.npmjs.org/vary/latest",
+    "collectedAt": "2026-05-17T12:01:25.202Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:25.202Z",
+  "source": "live"
+}

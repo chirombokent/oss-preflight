@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "type-is",
+      "version": "2.1.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/type-is/-/type-is-2.1.0.tgz"
+      },
+      "description": "Infer the content-type of a request.",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/type-is#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/type-is.git"
+      }
+    },
+    "weeklyDownloads": 104335040,
+    "sourceUrl": "https://registry.npmjs.org/type-is/latest",
+    "collectedAt": "2026-05-17T12:01:24.380Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:24.381Z",
+  "source": "live"
+}

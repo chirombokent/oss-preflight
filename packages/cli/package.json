@@ -15,6 +15,7 @@
     "@anthropic-ai/sdk": "^0.20.0",
     "@oss-preflight/core": "workspace:*",
     "@oss-preflight/collectors": "workspace:*",
+    "@oss-preflight/repo-analyser": "workspace:*",
     "@oss-preflight/scaffold": "workspace:*",
     "commander": "^11.1.0"
   },

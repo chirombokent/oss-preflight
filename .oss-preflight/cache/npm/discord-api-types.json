@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "discord-api-types",
+      "version": "0.38.47",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.38.47.tgz"
+      },
+      "description": "Discord API typings that are kept up to date for use in bot library creation.",
+      "license": "MIT",
+      "homepage": "https://discord-api-types.dev",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/discordjs/discord-api-types"
+      }
+    },
+    "weeklyDownloads": 2212526,
+    "sourceUrl": "https://registry.npmjs.org/discord-api-types/latest",
+    "collectedAt": "2026-05-17T12:24:08.659Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.660Z",
+  "source": "live"
+}

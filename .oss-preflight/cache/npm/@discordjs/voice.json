@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@discordjs/voice",
+      "version": "0.19.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@discordjs/voice/-/voice-0.19.2.tgz"
+      },
+      "description": "Implementation of the Discord Voice API for Node.js",
+      "license": "Apache-2.0",
+      "homepage": "https://discord.js.org",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/discordjs/discord.js.git"
+      }
+    },
+    "weeklyDownloads": 401919,
+    "sourceUrl": "https://registry.npmjs.org/%40discordjs%2Fvoice/latest",
+    "collectedAt": "2026-05-17T12:24:08.550Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.555Z",
+  "source": "live"
+}

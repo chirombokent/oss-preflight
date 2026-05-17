@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "hbs",
+      "version": "4.2.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/hbs/-/hbs-4.2.1.tgz"
+      },
+      "description": "Express.js template engine plugin for Handlebars",
+      "license": "MIT",
+      "homepage": "https://github.com/pillarjs/hbs#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pillarjs/hbs.git"
+      }
+    },
+    "weeklyDownloads": 307366,
+    "sourceUrl": "https://registry.npmjs.org/hbs/latest",
+    "collectedAt": "2026-05-17T12:01:30.998Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:30.999Z",
+  "source": "live"
+}

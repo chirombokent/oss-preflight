@@ -1,0 +1,36 @@
+{
+  "data": {
+    "metadata": {
+      "info": {
+        "name": "Flask",
+        "version": "3.1.3",
+        "summary": "A simple framework for building complex web applications.",
+        "license": null,
+        "home_page": null,
+        "project_urls": {
+          "Changes": "https://flask.palletsprojects.com/page/changes/",
+          "Chat": "https://discord.gg/pallets",
+          "Documentation": "https://flask.palletsprojects.com/",
+          "Donate": "https://palletsprojects.com/donate",
+          "Source": "https://github.com/pallets/flask/"
+        }
+      },
+      "urls": [
+        {
+          "packagetype": "bdist_wheel",
+          "url": "https://files.pythonhosted.org/packages/7f/9c/34f6962f9b9e9c71f6e5ed806e0d0ff03c9d1b0b2340088a0cf4bce09b18/flask-3.1.3-py3-none-any.whl"
+        },
+        {
+          "packagetype": "sdist",
+          "url": "https://files.pythonhosted.org/packages/26/00/35d85dcce6c57fdc871f3867d465d780f302a175ea360f62533f12b27e2b/flask-3.1.3.tar.gz"
+        }
+      ],
+      "releases": {}
+    },
+    "sourceUrl": "https://pypi.org/pypi/flask/json",
+    "collectedAt": "2026-05-17T12:24:06.471Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:06.473Z",
+  "source": "live"
+}

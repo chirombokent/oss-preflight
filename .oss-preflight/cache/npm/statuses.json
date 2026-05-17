@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "statuses",
+      "version": "2.0.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz"
+      },
+      "description": "HTTP status utility",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/statuses#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/statuses.git"
+      }
+    },
+    "weeklyDownloads": 124466577,
+    "sourceUrl": "https://registry.npmjs.org/statuses/latest",
+    "collectedAt": "2026-05-17T12:01:23.612Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:23.613Z",
+  "source": "live"
+}

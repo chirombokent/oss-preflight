@@ -1,0 +1,238 @@
+{
+  "workflowId": "5d988e13-5943-450a-a43f-e49c81cf9b6e",
+  "timestamp": "2026-05-17T11:58:12.854Z",
+  "idea": "Discord bot that summarizes channel activity",
+  "brief": {
+    "capabilities": [
+      "summarization"
+    ],
+    "domain": "discord",
+    "ecosystem": "npm",
+    "constraints": {}
+  },
+  "recommendations": [
+    {
+      "rank": 1,
+      "score": 92.1,
+      "candidate": {
+        "name": "discord.js",
+        "version": "14.26.4",
+        "ecosystem": "npm",
+        "homepageUrl": "https://discord.js.org",
+        "repositoryUrl": "https://github.com/discordjs/discord.js"
+      },
+      "subscores": {
+        "goalFit": 100,
+        "repoCompat": 75,
+        "maintenance": 100,
+        "safety": 89.25,
+        "community": 100,
+        "docsQuality": 100
+      },
+      "passport": {
+        "facts": {
+          "license": {
+            "value": "Apache-2.0",
+            "source": "https://registry.npmjs.org/discord.js/latest",
+            "collectedAt": "2026-05-17T09:01:36.647Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "weeklyDownloads": {
+            "value": 805337,
+            "source": "https://registry.npmjs.org/discord.js/latest",
+            "collectedAt": "2026-05-17T09:01:36.647Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "lastCommit": {
+            "value": "2026-05-14T08:37:24Z",
+            "source": "https://api.github.com/repos/discordjs/discord.js",
+            "collectedAt": "2026-05-17T11:56:59.114Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "stars": {
+            "value": 26712,
+            "source": "https://api.github.com/repos/discordjs/discord.js",
+            "collectedAt": "2026-05-17T11:56:59.114Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openIssues": {
+            "value": 158,
+            "source": "https://api.github.com/repos/discordjs/discord.js",
+            "collectedAt": "2026-05-17T11:56:59.114Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openssfScore": {
+            "value": 5.7,
+            "source": "https://api.securityscorecards.dev/projects/github.com/discordjs/discord.js",
+            "collectedAt": "2026-05-17T09:01:37.474Z",
+            "sourceType": "openssf",
+            "retrievalSource": "cache"
+          }
+        },
+        "interpretation": {
+          "goalFit": "Excellent match for discord in npm",
+          "compatibility": "Compatible with Node.js and TypeScript projects",
+          "tradeoffs": [],
+          "warnings": [],
+          "recommendedAlongside": [
+            "dotenv",
+            "typescript"
+          ]
+        }
+      },
+      "scaffoldAvailable": true,
+      "templateId": "discord-summary-bot"
+    },
+    {
+      "rank": 2,
+      "score": 79.8,
+      "candidate": {
+        "name": "eris",
+        "version": "0.18.0",
+        "ecosystem": "npm",
+        "homepageUrl": "https://abal.moe/Eris/",
+        "repositoryUrl": "https://github.com/abalabahaha/eris"
+      },
+      "subscores": {
+        "goalFit": 70,
+        "repoCompat": 75,
+        "maintenance": 90,
+        "safety": 82.75,
+        "community": 91.79551791165187,
+        "docsQuality": 100
+      },
+      "passport": {
+        "facts": {
+          "license": {
+            "value": "MIT",
+            "source": "https://registry.npmjs.org/eris/latest",
+            "collectedAt": "2026-05-17T09:01:36.656Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "weeklyDownloads": {
+            "value": 3080,
+            "source": "https://registry.npmjs.org/eris/latest",
+            "collectedAt": "2026-05-17T09:01:36.656Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "lastCommit": {
+            "value": "2025-09-28T22:14:27Z",
+            "source": "https://api.github.com/repos/abalabahaha/eris",
+            "collectedAt": "2026-05-17T11:56:59.158Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "stars": {
+            "value": 1511,
+            "source": "https://api.github.com/repos/abalabahaha/eris",
+            "collectedAt": "2026-05-17T11:56:59.158Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openIssues": {
+            "value": 46,
+            "source": "https://api.github.com/repos/abalabahaha/eris",
+            "collectedAt": "2026-05-17T11:56:59.158Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openssfScore": {
+            "value": 3.1,
+            "source": "https://api.securityscorecards.dev/projects/github.com/abalabahaha/eris",
+            "collectedAt": "2026-05-17T09:01:37.699Z",
+            "sourceType": "openssf",
+            "retrievalSource": "cache"
+          }
+        },
+        "interpretation": {
+          "goalFit": "Good fit for discord development",
+          "compatibility": "Compatible with Node.js and TypeScript projects",
+          "tradeoffs": [],
+          "warnings": [],
+          "recommendedAlongside": [
+            "typescript"
+          ]
+        }
+      },
+      "scaffoldAvailable": false,
+      "templateId": null
+    },
+    {
+      "rank": 3,
+      "score": 79.5,
+      "candidate": {
+        "name": "oceanic.js",
+        "version": "1.14.0",
+        "ecosystem": "npm",
+        "homepageUrl": "https://github.com/OceanicJS/Oceanic#readme",
+        "repositoryUrl": "https://github.com/OceanicJS/Oceanic"
+      },
+      "subscores": {
+        "goalFit": 70,
+        "repoCompat": 75,
+        "maintenance": 100,
+        "safety": 75,
+        "community": 84.95544337546448,
+        "docsQuality": 100
+      },
+      "passport": {
+        "facts": {
+          "license": {
+            "value": "MIT",
+            "source": "https://registry.npmjs.org/oceanic.js/latest",
+            "collectedAt": "2026-05-17T09:01:35.876Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "weeklyDownloads": {
+            "value": 1379,
+            "source": "https://registry.npmjs.org/oceanic.js/latest",
+            "collectedAt": "2026-05-17T09:01:35.876Z",
+            "sourceType": "npm",
+            "retrievalSource": "cache"
+          },
+          "lastCommit": {
+            "value": "2026-05-11T14:20:04Z",
+            "source": "https://api.github.com/repos/OceanicJS/Oceanic",
+            "collectedAt": "2026-05-17T11:56:59.135Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "stars": {
+            "value": 312,
+            "source": "https://api.github.com/repos/OceanicJS/Oceanic",
+            "collectedAt": "2026-05-17T11:56:59.135Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openIssues": {
+            "value": 4,
+            "source": "https://api.github.com/repos/OceanicJS/Oceanic",
+            "collectedAt": "2026-05-17T11:56:59.135Z",
+            "sourceType": "github",
+            "retrievalSource": "cache"
+          },
+          "openssfScore": null
+        },
+        "interpretation": {
+          "goalFit": "Good fit for discord development",
+          "compatibility": "Compatible with Node.js and TypeScript projects",
+          "tradeoffs": [],
+          "warnings": [],
+          "recommendedAlongside": [
+            "typescript"
+          ]
+        }
+      },
+      "scaffoldAvailable": false,
+      "templateId": null
+    }
+  ]
+}

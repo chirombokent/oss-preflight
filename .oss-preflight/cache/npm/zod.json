@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "zod",
+      "version": "4.4.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/zod/-/zod-4.4.3.tgz"
+      },
+      "description": "TypeScript-first schema declaration and validation library with static type inference",
+      "license": "MIT",
+      "homepage": "https://zod.dev",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/colinhacks/zod.git"
+      }
+    },
+    "weeklyDownloads": 143156167,
+    "sourceUrl": "https://registry.npmjs.org/zod/latest",
+    "collectedAt": "2026-05-17T12:24:08.086Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.092Z",
+  "source": "live"
+}

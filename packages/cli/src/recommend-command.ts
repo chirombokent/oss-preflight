@@ -5,11 +5,19 @@ import type {
   CandidateFacts,
   EvidenceMap,
 } from '@oss-preflight/core';
-import { discoverCandidates, scoreAndRank } from '@oss-preflight/core';
+import {
+  discoverCandidatesWithSearch,
+  scoreAndRank,
+  type DiscoveredCandidate,
+  type DiscoveryResult,
+} from '@oss-preflight/core';
 import {
   collectNpmData,
   collectGitHubData,
   collectOpenSSFData,
+  searchNpm,
+  searchPyPI,
+  searchGitHub,
 } from '@oss-preflight/collectors';
 import {
   createAnthropicIntentParser,
@@ -21,9 +29,13 @@ import {
   type IntentParser,
   type IntentParserFn,
 } from './ai/index.js';
+import { randomUUID } from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 type EvidenceFact = CandidateFacts['license'];
 type SourceType = NonNullable<EvidenceFact>['sourceType'];
+type RetrievalSource = NonNullable<EvidenceFact>['retrievalSource'];
 
 /**
  * Collected-data inputs for a single candidate, as returned by the collectors.
@@ -35,6 +47,13 @@ export interface CollectedInputs {
     weeklyDownloads: number | null;
     sourceUrl: string;
     collectedAt: string;
+    retrievalSource: RetrievalSource;
+  };
+  pypi?: {
+    metadata: { license?: string | null };
+    sourceUrl: string;
+    collectedAt: string;
+    retrievalSource: RetrievalSource;
   };
   github?: {
     repo: {
@@ -44,11 +63,13 @@ export interface CollectedInputs {
     };
     sourceUrl: string;
     collectedAt: string;
+    retrievalSource: RetrievalSource;
   };
   openssf?: {
     score: number | null;
     sourceUrl: string;
     collectedAt: string;
+    retrievalSource: RetrievalSource;
   };
 }
 
@@ -60,12 +81,13 @@ function makeFact(
   value: string | number | null | undefined,
   source: string,
   collectedAt: string,
-  sourceType: SourceType
+  sourceType: SourceType,
+  retrievalSource: RetrievalSource
 ): EvidenceFact {
   if (value === null || value === undefined || value === '') {
     return null;
   }
-  return { value, source, collectedAt, sourceType };
+  return { value, source, collectedAt, sourceType, retrievalSource };
 }
 
 /**
@@ -73,26 +95,28 @@ function makeFact(
  * No I/O; deterministic for a fixed input.
  */
 export function buildCandidateFacts(inputs: CollectedInputs): CandidateFacts {
-  const { npm, github, openssf } = inputs;
+  const { npm, pypi, github, openssf } = inputs;
 
   return {
     license: npm
-      ? makeFact(npm.metadata.license ?? null, npm.sourceUrl, npm.collectedAt, 'npm')
-      : null,
+      ? makeFact(npm.metadata.license ?? null, npm.sourceUrl, npm.collectedAt, 'npm', npm.retrievalSource)
+      : pypi
+        ? makeFact(pypi.metadata.license ?? null, pypi.sourceUrl, pypi.collectedAt, 'pypi', pypi.retrievalSource)
+        : null,
     weeklyDownloads: npm
-      ? makeFact(npm.weeklyDownloads, npm.sourceUrl, npm.collectedAt, 'npm')
+      ? makeFact(npm.weeklyDownloads, npm.sourceUrl, npm.collectedAt, 'npm', npm.retrievalSource)
       : null,
     lastCommit: github
-      ? makeFact(github.repo.pushed_at ?? null, github.sourceUrl, github.collectedAt, 'github')
+      ? makeFact(github.repo.pushed_at ?? null, github.sourceUrl, github.collectedAt, 'github', github.retrievalSource)
       : null,
     stars: github
-      ? makeFact(github.repo.stargazers_count ?? null, github.sourceUrl, github.collectedAt, 'github')
+      ? makeFact(github.repo.stargazers_count ?? null, github.sourceUrl, github.collectedAt, 'github', github.retrievalSource)
       : null,
     openIssues: github
-      ? makeFact(github.repo.open_issues_count ?? null, github.sourceUrl, github.collectedAt, 'github')
+      ? makeFact(github.repo.open_issues_count ?? null, github.sourceUrl, github.collectedAt, 'github', github.retrievalSource)
       : null,
     openssfScore: openssf
-      ? makeFact(openssf.score, openssf.sourceUrl, openssf.collectedAt, 'openssf')
+      ? makeFact(openssf.score, openssf.sourceUrl, openssf.collectedAt, 'openssf', openssf.retrievalSource)
       : null,
   };
 }
@@ -144,6 +168,41 @@ function parseGitHubRepo(repositoryUrl?: string | null): string | null {
   return `${match[1]}/${match[2]}`;
 }
 
+/**
+ * Search adapter signature consumed by core's `discoverCandidatesWithSearch`.
+ */
+export type SearchFn = (
+  query: string,
+  ecosystem: string
+) => Promise<DiscoveredCandidate[]>;
+
+/**
+ * Live registry search adapter.
+ *
+ * Routes the query to the ecosystem-appropriate registry search and maps
+ * results to source-labelled discovered candidates. Every search is
+ * best-effort (the underlying collectors degrade to `[]` on failure), so a
+ * flaky upstream never aborts discovery — core then falls back to the catalog.
+ */
+export async function liveSearchFn(
+  query: string,
+  ecosystem: string
+): Promise<DiscoveredCandidate[]> {
+  if (ecosystem === 'pypi') {
+    const results = await searchPyPI(query);
+    return results.map((r) => ({ name: r.name, source: 'pypi-search' as const }));
+  }
+
+  if (ecosystem === 'github') {
+    const results = await searchGitHub(query);
+    return results.map((r) => ({ name: r.name, source: 'github-search' as const }));
+  }
+
+  // Default to npm registry search.
+  const results = await searchNpm(query);
+  return results.map((r) => ({ name: r.name, source: 'npm-search' as const }));
+}
+
 export interface RecommendPipelineOptions extends AiConfigOptions {
   refresh?: boolean;
   collectEvidence?: boolean;
@@ -152,6 +211,16 @@ export interface RecommendPipelineOptions extends AiConfigOptions {
    * Backward-compatible test hook for older callers. Prefer `intentParser`.
    */
   claudeAdapter?: IntentParserFn;
+  save?: boolean;
+  /**
+   * Disable live registry search and use the catalog only. Used by tests and
+   * offline runs that need deterministic candidates.
+   */
+  catalogOnly?: boolean;
+  /**
+   * Injected search adapter (test hook). Defaults to {@link liveSearchFn}.
+   */
+  searchFn?: SearchFn;
 }
 
 function parseWith(parser: IntentParser | IntentParserFn, idea: string): Promise<IdeaBrief> {
@@ -252,6 +321,7 @@ async function gatherEvidence(
         weeklyDownloads: npmData.weeklyDownloads,
         sourceUrl: npmData.sourceUrl,
         collectedAt: npmData.collectedAt,
+        retrievalSource: npmData.source,
       };
     } catch {
       const fallback = DEMO_PACKAGE_FALLBACKS[candidate.name.toLowerCase()];
@@ -275,6 +345,7 @@ async function gatherEvidence(
           },
           sourceUrl: gh.sourceUrl,
           collectedAt: gh.collectedAt,
+          retrievalSource: gh.source,
         };
       } catch {
         // Rate limited / unavailable → GitHub facts stay null.
@@ -286,6 +357,7 @@ async function gatherEvidence(
           score: ossf.score,
           sourceUrl: ossf.sourceUrl,
           collectedAt: ossf.collectedAt,
+          retrievalSource: ossf.source,
         };
       } catch {
         // Unavailable → OpenSSF fact stays null.
@@ -300,26 +372,72 @@ async function gatherEvidence(
 }
 
 /**
+ * Response wrapper for saved recommendations
+ */
+export interface RecommendationWrapper {
+  workflowId: string;
+  timestamp: string;
+  idea: string;
+  brief: IdeaBrief;
+  recommendations: Recommendation[];
+}
+
+/**
+ * Save recommendations to .oss-preflight/recommendations/latest.json
+ */
+export function saveRecommendations(
+  idea: string,
+  brief: IdeaBrief,
+  recommendations: Recommendation[]
+): void {
+  const wrapper: RecommendationWrapper = {
+    workflowId: randomUUID(),
+    timestamp: new Date().toISOString(),
+    idea,
+    brief,
+    recommendations,
+  };
+
+  const outputDir = path.join(process.cwd(), '.oss-preflight', 'recommendations');
+  const outputPath = path.join(outputDir, 'latest.json');
+
+  // Create directory if it doesn't exist
+  fs.mkdirSync(outputDir, { recursive: true });
+
+  // Write the wrapper
+  fs.writeFileSync(outputPath, JSON.stringify(wrapper, null, 2), 'utf-8');
+}
+
+/**
  * Run the full recommendation pipeline
  */
 export async function runRecommendPipeline(
   idea: string,
   options: RecommendPipelineOptions = {}
-): Promise<{ recommendations: Recommendation[]; brief: IdeaBrief }> {
+): Promise<{
+  recommendations: Recommendation[];
+  brief: IdeaBrief;
+  discovery: DiscoveryResult;
+}> {
   // Validate input
   validateInput(idea);
 
   const suppliedParser = options.intentParser ?? options.claudeAdapter;
   const intentParser = suppliedParser ?? createIntentParser(resolveAiConfig(options));
   const brief = await parseIntentWithFallback(idea, intentParser);
-  
-  // Discover candidates
-  const candidateNames = discoverCandidates(brief);
-  
-  // Convert names to Candidate objects
-  // In P3, we use the discovery catalog which provides basic candidate info
-  const candidates: Candidate[] = candidateNames.map((name: string) => ({
-    name,
+
+  // Discover candidates via live registry search, falling back to the curated
+  // catalog only when search yields too few results (or catalogOnly is set).
+  const searchFn = options.searchFn ?? liveSearchFn;
+  const discovery = await discoverCandidatesWithSearch(brief, searchFn, {
+    searchFirst: options.catalogOnly !== true,
+    catalogFallback: true,
+  });
+
+  // Convert discovered names to Candidate objects. Versions/URLs are filled in
+  // by the collectors during evidence gathering.
+  const candidates: Candidate[] = discovery.candidates.map((c: DiscoveredCandidate) => ({
+    name: c.name,
     version: '1.0.0', // Placeholder - collectors will provide real version
     ecosystem: brief.ecosystem,
     homepageUrl: null,
@@ -339,9 +457,17 @@ export async function runRecommendPipeline(
   const recommendations = scoreAndRank(enrichedCandidates, brief, undefined, evidence);
   
   // Return top 3
+  const topRecommendations = recommendations.slice(0, 3);
+
+  // Save if requested
+  if (options.save) {
+    saveRecommendations(idea, brief, topRecommendations);
+  }
+
   return {
-    recommendations: recommendations.slice(0, 3),
-    brief
+    recommendations: topRecommendations,
+    brief,
+    discovery
   };
 }
 

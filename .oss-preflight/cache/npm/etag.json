@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "etag",
+      "version": "1.8.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
+      },
+      "description": "Create simple HTTP ETags",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/etag#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/etag.git"
+      }
+    },
+    "weeklyDownloads": 79784669,
+    "sourceUrl": "https://registry.npmjs.org/etag/latest",
+    "collectedAt": "2026-05-17T12:01:03.380Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:03.381Z",
+  "source": "live"
+}

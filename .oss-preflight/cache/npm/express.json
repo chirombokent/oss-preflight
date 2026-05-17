@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "express",
+      "version": "5.2.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/express/-/express-5.2.1.tgz"
+      },
+      "description": "Fast, unopinionated, minimalist web framework",
+      "license": "MIT",
+      "homepage": "https://expressjs.com/",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/express.git"
+      }
+    },
+    "weeklyDownloads": 104192101,
+    "sourceUrl": "https://registry.npmjs.org/express/latest",
+    "collectedAt": "2026-05-17T11:57:57.466Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T11:57:57.467Z",
+  "source": "live"
+}

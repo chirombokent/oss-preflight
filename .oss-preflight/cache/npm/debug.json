@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "debug",
+      "version": "4.4.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz"
+      },
+      "description": "Lightweight debugging utility for Node.js and the browser",
+      "license": "MIT",
+      "homepage": "https://github.com/debug-js/debug#readme",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/debug-js/debug.git"
+      }
+    },
+    "weeklyDownloads": 609544132,
+    "sourceUrl": "https://registry.npmjs.org/debug/latest",
+    "collectedAt": "2026-05-17T12:00:57.997Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:00:57.998Z",
+  "source": "live"
+}

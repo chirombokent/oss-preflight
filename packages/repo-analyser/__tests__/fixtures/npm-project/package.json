@@ -1,0 +1,19 @@
+{
+  "name": "test-npm-project",
+  "version": "1.0.0",
+  "description": "Test NPM project for repo-analyser",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "vitest": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}

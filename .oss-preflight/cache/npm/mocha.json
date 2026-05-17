@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "mocha",
+      "version": "11.7.5",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/mocha/-/mocha-11.7.5.tgz"
+      },
+      "description": "simple, flexible, fun test framework",
+      "license": "MIT",
+      "homepage": "https://mochajs.org/",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mochajs/mocha.git"
+      }
+    },
+    "weeklyDownloads": 14315758,
+    "sourceUrl": "https://registry.npmjs.org/mocha/latest",
+    "collectedAt": "2026-05-17T12:01:32.713Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:32.714Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "parseurl",
+      "version": "1.3.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz"
+      },
+      "description": "parse a url with memoization",
+      "license": "MIT",
+      "homepage": "https://github.com/pillarjs/parseurl#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pillarjs/parseurl.git"
+      }
+    },
+    "weeklyDownloads": 65392599,
+    "sourceUrl": "https://registry.npmjs.org/parseurl/latest",
+    "collectedAt": "2026-05-17T12:01:14.561Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:14.562Z",
+  "source": "live"
+}

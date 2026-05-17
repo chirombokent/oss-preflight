@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "fresh",
+      "version": "0.5.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz"
+      },
+      "description": "HTTP response freshness testing",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/fresh#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/fresh.git"
+      }
+    },
+    "weeklyDownloads": 99251062,
+    "sourceUrl": "https://registry.npmjs.org/fresh/latest",
+    "collectedAt": "2026-05-17T12:01:05.751Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:05.752Z",
+  "source": "live"
+}

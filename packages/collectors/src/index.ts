@@ -36,6 +36,7 @@ export { collectNpmData, type NpmCollectedData } from './npm.js';
 export { collectGitHubData, type GitHubCollectedData } from './github.js';
 export { collectPyPIData, type PyPICollectedData } from './pypi.js';
 export { collectOpenSSFData, type OpenSSFCollectedData } from './openssf.js';
+export { searchNpm, searchPyPI, searchGitHub, type SearchResult } from './search.js';
 export { PackageNotFoundError, CollectorError, RateLimitError } from './errors.js';
 export { readCache, writeCache, clearCache, clearAllCache, type CacheEntry } from './cache/index.js';
 

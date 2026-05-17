@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@sapphire/snowflake",
+      "version": "3.5.5",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@sapphire/snowflake/-/snowflake-3.5.5.tgz"
+      },
+      "description": "Deconstructs and generates snowflake IDs using BigInts",
+      "license": "MIT",
+      "homepage": "https://github.com/sapphiredev/utilities/tree/main/packages/snowflake",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sapphiredev/utilities.git"
+      }
+    },
+    "weeklyDownloads": 1287228,
+    "sourceUrl": "https://registry.npmjs.org/%40sapphire%2Fsnowflake/latest",
+    "collectedAt": "2026-05-17T12:24:08.543Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.546Z",
+  "source": "live"
+}

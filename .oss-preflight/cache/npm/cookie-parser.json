@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "cookie-parser",
+      "version": "1.4.7",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.7.tgz"
+      },
+      "description": "Parse HTTP request cookies",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/cookie-parser#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/cookie-parser.git"
+      }
+    },
+    "weeklyDownloads": 9567448,
+    "sourceUrl": "https://registry.npmjs.org/cookie-parser/latest",
+    "collectedAt": "2026-05-17T12:01:27.543Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:27.543Z",
+  "source": "live"
+}

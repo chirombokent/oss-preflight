@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "connect-redis",
+      "version": "9.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/connect-redis/-/connect-redis-9.0.0.tgz"
+      },
+      "description": "Redis session store for Connect",
+      "license": "MIT",
+      "homepage": "https://github.com/tj/connect-redis#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/tj/connect-redis.git"
+      }
+    },
+    "weeklyDownloads": 1271260,
+    "sourceUrl": "https://registry.npmjs.org/connect-redis/latest",
+    "collectedAt": "2026-05-17T12:01:26.734Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:26.735Z",
+  "source": "live"
+}

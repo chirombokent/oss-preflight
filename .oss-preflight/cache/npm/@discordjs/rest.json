@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@discordjs/rest",
+      "version": "2.6.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@discordjs/rest/-/rest-2.6.1.tgz"
+      },
+      "description": "The REST API for discord.js",
+      "license": "Apache-2.0",
+      "homepage": "https://discord.js.org",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/discordjs/discord.js.git"
+      }
+    },
+    "weeklyDownloads": 784649,
+    "sourceUrl": "https://registry.npmjs.org/%40discordjs%2Frest/latest",
+    "collectedAt": "2026-05-17T12:24:08.571Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.578Z",
+  "source": "live"
+}

@@ -1,6 +1,6 @@
 # OSS Preflight — Supercharged IBM Bob Prompts & Pro Tips
 
-> **Reference for [bob-build-guide.md](./bob-build-guide.md).** In the new model you hand-type **four things only**: (1) the Hour-0 test, (2) the Plan-mode phase-plan generator, (3) a one-line Orchestrator launcher per session (six launches; P3+P4 share S05 — see §5), (4) the runtime skill demo. Everything else — discipline, the loop, skill activation — is encoded in `.bob/` and fires automatically.
+> **Reference for [bob-build-guide.md](./bob-build-guide.md).** In the new model you hand-type **four things only** for the original submission build: (1) the Hour-0 test, (2) the Plan-mode phase-plan generator, (3) a one-line Orchestrator launcher per session (six launches; P3+P4 share S05 — see §5), (4) the runtime skill demo. P9 adds one post-submission production-hardening launcher from `docs/phase-plan-P9-production-readiness.md`. Everything else — discipline, the loop, skill activation — is encoded in `.bob/` and fires automatically.
 
 ---
 
@@ -189,7 +189,9 @@ folder. Running all phases in a single orchestrator task is the documented
 anti-pattern (§8: *one mega-task for the whole build*) — it produces one
 tangled task-history that cannot be split into clean per-session evidence.
 The Phase→Session map (`bob-build-guide.md` §7) collapses **P3+P4 into the
-single session S05**, so the build is **six launches**, not seven phases:
+single session S05**, so the original submission build is **six launches**,
+not seven phases. P9 is a post-submission production-readiness hardening
+launch with its own spec file:
 
 | Launch | Runs | Phase-plan target | Exports to |
 |---|---|---|---|
@@ -200,6 +202,7 @@ single session S05**, so the build is **six launches**, not seven phases:
 | 4 | P5 | Phase P5 | `bob_sessions/S06-web-build-proof/` |
 | 5 | P6 | Phase P6 | `bob_sessions/S07-runtime-skill-demo/` |
 | 6 | P7 | Phase P7 | `bob_sessions/S08-review-submission/` |
+| 7 | P9 production hardening | `docs/phase-plan-P9-production-readiness.md` | `bob_sessions/S09-production-readiness/` |
 
 Within a launch the loop is automated end to end; you do only the two things
 the agent cannot: **export** the task-history + consumption screenshot from
@@ -257,6 +260,17 @@ decision.
 
 > Skills are normally not named by you — they fire by `description` match. Advanced is the guaranteed skill runtime; `reviewer` also declares the official `skill` group so review recipes can fire where the installed Bob build supports it. On all custom-mode steps the always-on rules remain the floor.
 
+**P9 production-readiness launcher** (uses the dedicated P9 spec, not
+`docs/phase-plan.md`):
+
+```text
+/orchestrator Run Phase 9 from docs/phase-plan-P9-production-readiness.md as a single Bob session.
+Honor every acceptance criterion as binding. Do not implement hardcoded demo-only shortcuts.
+Run the full must-test list on the first pass. Any fixture or fallback must be labeled as fixture/fallback in output and UI.
+When all quality gates are green, delegate the build-report.md row to reviewer, export S09 evidence, then stop for human approval before commit.
+Never commit autonomously.
+```
+
 ---
 
 ## 6. Standalone literal prompts (not loop phases)
@@ -309,7 +323,7 @@ Each lever is active because something enforces it. Column 3 is where it lives.
 | 14 | Conventional-commit regeneration is free iteration | sparkle icon; `feat/<phase>` branch names | commit-messages |
 | 15 | Export per session, never once at the end | phase-spec **Evidence artifact** field | hackathon |
 | 15b | Export directly into official `bob_sessions/` folder with task-history markdown + consumption screenshot | bob-build-guide §8 + final checklist | hackathon guide pp. 18–19 |
-| 15c | Treat BobCoins as free but value-gated; one objective per task, no speculative loops | S00–S08 session map + measurable-progress gates | IBM clarification + hackathon guide |
+| 15c | Treat BobCoins as free but value-gated; one objective per task, no speculative loops | S00-S09 session map + measurable-progress gates | IBM clarification + hackathon guide |
 | 16 | Override the slug, don't add a parallel one | `plan`/`code`/`orchestrator` overridden | custom-modes |
 | 17 | Encode the human gate into the Orchestrator | `custom_modes.yaml` orchestrator STEP 9 | modes |
 | 18 | Keep looping while there is measurable progress; escalate stalled gaps | orchestrator STEP 7 value gate | modes |
@@ -325,7 +339,7 @@ Sources: modes/custom-modes/skills/rules/checkpoints/commit-messages/best-practi
 | Pasting whole files | §3 generator + §4 spec mandate `@/` mentions only |
 | Re-prompting bad output instead of restoring | pro tip 4; checkpoint discipline |
 | Expecting skills in `code`/`plan` | `code`/`plan` do not declare `skill`; loop §5 routes recipe steps to `reviewer` where supported or Advanced as the guaranteed runtime |
-| One mega-task for the whole build | one session = one launch (six launches; P3+P4 share S05); per-session exports |
+| One mega-task for the whole build | one session = one launch (six submission launches plus P9 hardening; P3+P4 share S05); per-session exports |
 | Writing app code in `plan`/`reviewer` | `fileRegex` fence blocks it — by design |
 | Adding a parallel custom slug | `plan`/`code`/`orchestrator` are overridden, not duplicated |
 | Orchestrator committing without human review | encoded STEP 9 — non-skippable; do not prompt around it |

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "mime-types",
+      "version": "3.0.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/mime-types/-/mime-types-3.0.2.tgz"
+      },
+      "description": "The ultimate javascript content-type utility.",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/mime-types#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/mime-types.git"
+      }
+    },
+    "weeklyDownloads": 202058335,
+    "sourceUrl": "https://registry.npmjs.org/mime-types/latest",
+    "collectedAt": "2026-05-17T12:01:10.277Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:10.278Z",
+  "source": "live"
+}

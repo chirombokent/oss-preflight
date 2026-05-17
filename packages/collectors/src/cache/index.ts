@@ -2,7 +2,7 @@ import { promises as fs } from 'node:fs';
 import { join, dirname } from 'node:path';
 
 export type CacheEntrySource = 'live' | 'cache';
-export type CollectorResultSource = CacheEntrySource | 'cache-fallback';
+export type CollectorResultSource = 'live' | 'cache' | 'cache-fallback' | 'fixture' | 'not-available';
 
 /**
  * Cache entry structure

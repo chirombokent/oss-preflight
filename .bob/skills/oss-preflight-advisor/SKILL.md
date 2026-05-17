@@ -16,44 +16,51 @@ Use this skill when the user asks:
 - Run OSS Preflight on this repo.
 - Scaffold the best option.
 
-## Workflow
+## Production Workflow
 
-1. Understand the user's idea or repo question.
-2. Inspect available repo context: package manager, language, framework, README, license, and test commands.
-3. Inspect provider config without reading secrets:
-   - `.oss-preflight/config.json` or `.oss-preflight/config.example.json` for provider/model/baseUrl
-   - environment variable names only (`OSS_PREFLIGHT_AI_PROVIDER`, `OSS_PREFLIGHT_AI_MODEL`, `OSS_PREFLIGHT_AI_BASE_URL`)
-   - provider key names only (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)
-4. Ask at most one clarification question if the goal, ecosystem, or provider choice is unclear.
-5. Run or instruct the user to run the same CLI command Bob would run:
+1. **Inspect repo context:**
+   - Read package.json, requirements.txt, or pyproject.toml
+   - Detect package manager, ecosystem, language, framework
+   - Check for .oss-preflight/config.json
 
-```text
-oss-preflight recommend --idea "<idea>"
-```
+2. **Choose workflow mode:**
+   - If user provides an idea → `run` command (idea-to-scaffold)
+   - If user asks to audit repo → `audit` command (repo analysis)
+   - If user asks for recommendations only → `recommend` command
 
-Optional BYOK examples:
+3. **Present exact CLI command:**
+   ```bash
+   # Idea flow
+   oss-preflight run --idea "Discord bot that summarizes channel activity" --out ./oss-preflight-output
 
-```text
-OSS_PREFLIGHT_AI_PROVIDER=gemini GEMINI_API_KEY=<set privately> oss-preflight recommend --idea "<idea>" --json
-OSS_PREFLIGHT_AI_PROVIDER=openai-compatible OSS_PREFLIGHT_AI_MODEL=<model> OPENAI_API_KEY=<set privately> oss-preflight recommend --idea "<idea>" --json
-```
+   # Repo audit flow
+   oss-preflight audit --repo . --out ./.oss-preflight/audits/latest
 
-If repo context is available, include the repo path or URL once the CLI supports it. If no provider is configured, OSS Preflight uses deterministic keyword intent parsing.
+   # Recommendation only
+   oss-preflight recommend --idea "..." --json --save
+   ```
 
-6. Present the top recommendations with:
-   - score
-   - Evidence Passport summary
-   - missing evidence
-   - tradeoffs
-   - scaffold availability
-7. Ask before scaffolding.
-8. If approved, use the `oss-preflight-scaffolder` mode or run:
+4. **Show workflow trace summary:**
+   - Discovery method used (search vs catalog-fallback)
+   - Number of candidates found
+   - Top 3 recommendations with scores
+   - Evidence gaps (missing license, stale commits, etc.)
+   - Scaffold availability
 
-```text
-oss-preflight scaffold --recommendation .oss-preflight/recommendations/latest.json --out oss-preflight-output/<name>
-```
+5. **Ask before writes:**
+   - "Scaffold the top recommendation to ./oss-preflight-output/scaffold/?"
+   - "Write audit report to ./.oss-preflight/audits/latest/?"
 
-9. Summarize what was created, how to run it, and what still needs human review.
+6. **Delegate writes to oss-preflight-scaffolder mode:**
+   - Never write directly into user source
+   - Use approved output directories only
+   - Confirm write locations before execution
+
+7. **Summarize results:**
+   - Files created
+   - Smoke test status
+   - Next steps (install deps, set env vars, run tests)
+   - What still needs human review
 
 ## Workflow Framing
 

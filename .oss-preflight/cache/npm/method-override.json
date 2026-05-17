@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "method-override",
+      "version": "3.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/method-override/-/method-override-3.0.0.tgz"
+      },
+      "description": "Override HTTP verbs",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/method-override#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/method-override.git"
+      }
+    },
+    "weeklyDownloads": 1876578,
+    "sourceUrl": "https://registry.npmjs.org/method-override/latest",
+    "collectedAt": "2026-05-17T12:01:32.281Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:32.282Z",
+  "source": "live"
+}

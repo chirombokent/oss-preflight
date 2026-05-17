@@ -11,9 +11,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "pnpm -r build",
-    "clean": "pnpm -r clean"
+    "clean": "pnpm -r clean",
+    "validate:production": "tsx scripts/validate-production.ts"
   },
   "devDependencies": {
+    "tsx": "^4.22.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8",
     "zod": "^3.24.1"

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "content-disposition",
+      "version": "2.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/content-disposition/-/content-disposition-2.0.0.tgz"
+      },
+      "description": "Create and parse Content-Disposition header",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/content-disposition#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/content-disposition.git"
+      }
+    },
+    "weeklyDownloads": 106866038,
+    "sourceUrl": "https://registry.npmjs.org/content-disposition/latest",
+    "collectedAt": "2026-05-17T12:00:51.945Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:00:51.947Z",
+  "source": "live"
+}

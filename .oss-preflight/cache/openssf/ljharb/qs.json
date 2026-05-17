@@ -1,0 +1,196 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/ljharb/qs",
+        "commit": "a0a81ea2071acce3eff41a040f719ac8f5c4f64c"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 5.3,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 1,
+          "reason": "Found 5/30 approved changesets -- score normalized to 1",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 10,
+          "reason": "security policy file detected",
+          "details": [
+            "Info: security policy file detected: .github/SECURITY.md:1",
+            "Info: Found linked content: .github/SECURITY.md:1",
+            "Info: Found disclosure, vulnerability, and/or timelines in security policy: .github/SECURITY.md:1",
+            "Info: Found text in security policy: .github/SECURITY.md:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": -1,
+          "reason": "packaging workflow not detected",
+          "details": [
+            "Warn: no GitHub/GitLab publishing workflow detected."
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 10,
+          "reason": "no binaries found in the repo",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 10,
+          "reason": "29 commit(s) and 9 issue activity found in the last 90 days -- score normalized to 10",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 0,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Info: jobLevel 'pull-requests' permission set to 'read': .github/workflows/require-allow-edits.yml:11",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/node-aught.yml:6",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/node-pretest.yml:6",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/node-tens.yml:6",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/node-twenties.yml:6",
+            "Warn: topLevel 'contents' permission set to 'write': .github/workflows/rebase.yml:6",
+            "Info: topLevel 'pull-requests' permission set to 'read': .github/workflows/rebase.yml:7",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/require-allow-edits.yml:6",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 0,
+          "reason": "dependency not pinned by hash detected -- score normalized to 0",
+          "details": [
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/node-aught.yml:10: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/node-aught.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/node-pretest.yml:10: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/node-pretest.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/node-tens.yml:10: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/node-tens.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/node-twenties.yml:10: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/node-twenties.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/rebase.yml:11: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/rebase.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/require-allow-edits.yml:18: update your workflow using https://app.stepsecurity.io/secureworkflow/ljharb/qs/require-allow-edits.yml/main?enable=pin",
+            "Info:   0 out of   6 third-party GitHubAction dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 5,
+          "reason": "badge detected: Passing",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE.md:0",
+            "Info: FSF or OSI recognized license: BSD 3-Clause \"New\" or \"Revised\" License: LICENSE.md:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": -1,
+          "reason": "no releases found",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": -1,
+          "reason": "internal error: error during branchesHandler.setup: internal error: some github tokens can't read classic branch protection rules: https://github.com/ossf/scorecard-action/blob/main/docs/authentication/fine-grained-auth-token.md",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 0,
+          "reason": "SAST tool is not run on all commits -- score normalized to 0",
+          "details": [
+            "Warn: 0 commits out of 5 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 5.3,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/ljharb/qs",
+    "collectedAt": "2026-05-17T12:01:18.298Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:18.299Z",
+  "source": "live"
+}

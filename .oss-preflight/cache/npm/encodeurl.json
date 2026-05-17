@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "encodeurl",
+      "version": "2.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz"
+      },
+      "description": "Encode a URL to a percent-encoded form, excluding already-encoded sequences",
+      "license": "MIT",
+      "homepage": "https://github.com/pillarjs/encodeurl#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pillarjs/encodeurl.git"
+      }
+    },
+    "weeklyDownloads": 94172008,
+    "sourceUrl": "https://registry.npmjs.org/encodeurl/latest",
+    "collectedAt": "2026-05-17T12:01:00.677Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:00.677Z",
+  "source": "live"
+}

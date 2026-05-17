@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "nyc",
+      "version": "18.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/nyc/-/nyc-18.0.0.tgz"
+      },
+      "description": "the Istanbul command line interface",
+      "license": "ISC",
+      "homepage": "https://istanbul.js.org/",
+      "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/istanbuljs/nyc.git"
+      }
+    },
+    "weeklyDownloads": 8061800,
+    "sourceUrl": "https://registry.npmjs.org/nyc/latest",
+    "collectedAt": "2026-05-17T12:01:33.956Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:33.956Z",
+  "source": "live"
+}

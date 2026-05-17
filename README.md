@@ -90,10 +90,49 @@ available.
 
 ## Verification
 
-Current local verification commands:
+Production readiness validation:
 
 ```powershell
 pnpm test
 pnpm build
+pnpm validate:production
 pnpm --filter @oss-preflight/web test:e2e
 ```
+
+## CLI Commands
+
+OSS Preflight provides several CLI commands for different workflows:
+
+### Idea to Scaffold (Full Workflow)
+```powershell
+# Complete workflow: recommend -> scaffold -> smoke test -> report
+node packages/cli/dist/index.js run --idea "Discord bot that summarizes channel activity" --out ./output
+```
+
+### Recommendation Only
+```powershell
+# Get recommendations and save to file
+node packages/cli/dist/index.js recommend --idea "Discord bot that summarizes channel activity" --json --save
+
+# Recommendations saved to .oss-preflight/recommendations/latest.json
+```
+
+### Scaffold from Saved Recommendations
+```powershell
+# Scaffold the top-ranked recommendation
+node packages/cli/dist/index.js scaffold --recommendation .oss-preflight/recommendations/latest.json --rank 1 --out ./my-project
+```
+
+### Repository Audit
+```powershell
+# Audit a local repository
+node packages/cli/dist/index.js audit --repo ./path/to/repo --out ./audit-results
+
+# Audit a GitHub repository (metadata-only, no clone)
+node packages/cli/dist/index.js audit --repo https://github.com/owner/repo --out ./audit-results
+
+# Audit from a manifest file
+node packages/cli/dist/index.js audit --manifest ./package.json --out ./audit-results
+```
+
+All commands support `--json` for machine-readable output and create workflow traces in `.oss-preflight/runs/<timestamp>/workflow.json`.

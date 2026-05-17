@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "merge-descriptors",
+      "version": "2.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-2.0.0.tgz"
+      },
+      "description": "Merge objects using their property descriptors",
+      "license": "MIT",
+      "homepage": "https://github.com/sindresorhus/merge-descriptors#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sindresorhus/merge-descriptors.git"
+      }
+    },
+    "weeklyDownloads": 76067295,
+    "sourceUrl": "https://registry.npmjs.org/merge-descriptors/latest",
+    "collectedAt": "2026-05-17T12:01:08.734Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:08.735Z",
+  "source": "live"
+}

@@ -1,0 +1,224 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/axios/axios",
+        "commit": "34adfd90efc9c145488399e1cf7fa96de67080fa"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 8,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 6,
+          "reason": "Found 18/28 approved changesets -- score normalized to 6",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 10,
+          "reason": "security policy file detected",
+          "details": [
+            "Info: security policy file detected: SECURITY.md:1",
+            "Info: Found linked content: SECURITY.md:1",
+            "Info: Found disclosure, vulnerability, and/or timelines in security policy: SECURITY.md:1",
+            "Info: Found text in security policy: SECURITY.md:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 10,
+          "reason": "30 commit(s) and 17 issue activity found in the last 90 days -- score normalized to 10",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 10,
+          "reason": "no binaries found in the repo",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 9,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Info: jobLevel 'models' permission set to 'read': .github/workflows/moderator.yml:16",
+            "Info: jobLevel 'contents' permission set to 'read': .github/workflows/moderator.yml:17",
+            "Warn: jobLevel 'contents' permission set to 'write': .github/workflows/release-branch.yml:252",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/lockfile-lint.yml:16",
+            "Warn: no topLevel permission defined: .github/workflows/moderator.yml:1",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/publish.yml:9",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/release-branch.yml:20",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/run-ci.yml:8",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/verify-build-reproducibility.yml:15",
+            "Info: found token with 'none' permissions: .github/workflows/zizmor.yml:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 5,
+          "reason": "dependency not pinned by hash detected -- score normalized to 5",
+          "details": [
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:151",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:154",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:185",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:188",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:83",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:86",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:117",
+            "Warn: npmCommand not pinned by hash: .github/workflows/release-branch.yml:120",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:181",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:184",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:79",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:82",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:113",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:116",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:147",
+            "Warn: npmCommand not pinned by hash: .github/workflows/run-ci.yml:150",
+            "Info:  51 out of  51 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   6 out of   6 third-party GitHubAction dependencies pinned",
+            "Info:   6 out of  22 npmCommand dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: MIT License: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": -1,
+          "reason": "no releases found",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": 8,
+          "reason": "branch protection is not maximal on development and all release branches",
+          "details": [
+            "Info: 'allow deletion' disabled on branch 'v1.x'",
+            "Info: 'allow deletion' disabled on branch 'v0.x'",
+            "Info: 'force pushes' disabled on branch 'v1.x'",
+            "Info: 'force pushes' disabled on branch 'v0.x'",
+            "Info: 'branch protection settings apply to administrators' is required to merge on branch 'v1.x'",
+            "Info: 'branch protection settings apply to administrators' is required to merge on branch 'v0.x'",
+            "Warn: required approving review count is 1 on branch 'v1.x'",
+            "Warn: required approving review count is 1 on branch 'v0.x'",
+            "Warn: codeowners review is not required on branch 'v1.x'",
+            "Warn: codeowners review is not required on branch 'v0.x'",
+            "Info: status check found to merge onto on branch 'v1.x'",
+            "Info: status check found to merge onto on branch 'v0.x'",
+            "Info: PRs are required in order to make changes on branch 'v1.x'",
+            "Info: PRs are required in order to make changes on branch 'v0.x'"
+          ],
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": 10,
+          "reason": "packaging workflow detected",
+          "details": [
+            "Info: Project packages its releases by way of GitHub Actions.: .github/workflows/publish.yml:13"
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 9,
+          "reason": "SAST tool is not run on all commits -- score normalized to 9",
+          "details": [
+            "Warn: 28 commits out of 30 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 8,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/axios/axios",
+    "collectedAt": "2026-05-17T11:58:00.142Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T11:58:00.144Z",
+  "source": "live"
+}

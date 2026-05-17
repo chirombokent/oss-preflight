@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "axios",
+      "version": "1.16.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/axios/-/axios-1.16.1.tgz"
+      },
+      "description": "Promise based HTTP client for the browser and node.js",
+      "license": "MIT",
+      "homepage": "https://axios-http.com",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/axios/axios.git"
+      }
+    },
+    "weeklyDownloads": 108043568,
+    "sourceUrl": "https://registry.npmjs.org/axios/latest",
+    "collectedAt": "2026-05-17T11:57:59.353Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T11:57:59.353Z",
+  "source": "live"
+}

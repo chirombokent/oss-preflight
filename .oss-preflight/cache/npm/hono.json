@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "hono",
+      "version": "4.12.19",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/hono/-/hono-4.12.19.tgz"
+      },
+      "description": "Web framework built on Web Standards",
+      "license": "MIT",
+      "homepage": "https://hono.dev",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/honojs/hono.git"
+      }
+    },
+    "weeklyDownloads": 36774531,
+    "sourceUrl": "https://registry.npmjs.org/hono/latest",
+    "collectedAt": "2026-05-17T12:24:08.550Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.551Z",
+  "source": "live"
+}

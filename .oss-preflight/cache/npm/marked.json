@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "marked",
+      "version": "18.0.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/marked/-/marked-18.0.3.tgz"
+      },
+      "description": "A markdown parser built for speed",
+      "license": "MIT",
+      "homepage": "https://marked.js.org",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/markedjs/marked.git"
+      }
+    },
+    "weeklyDownloads": 42735218,
+    "sourceUrl": "https://registry.npmjs.org/marked/latest",
+    "collectedAt": "2026-05-17T12:01:31.367Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:31.367Z",
+  "source": "live"
+}

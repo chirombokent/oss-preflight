@@ -55,6 +55,59 @@ be justified by executable evidence, not narrative claims:
 
 ---
 
+## Clarification Decisions
+
+These decisions are binding for S09. Bob must not stop to ask these questions
+again unless implementation proves one impossible.
+
+1. **Fixture repositories:** create minimal fixtures in the repo under:
+   - `fixtures/npm-project/`
+   - `fixtures/python-project/`
+
+   They must be small, deterministic, and committed. Each fixture should include
+   enough metadata for repo analysis and audit validation:
+   - npm fixture: `package.json`, README, license or license field, at least two runtime dependencies, one test script.
+   - Python fixture: `pyproject.toml` or `requirements.txt`, README, license or classifier/license metadata, at least two dependencies, one test command if practical.
+
+   Do not use external repos as the only acceptance path. External repos can be
+   optional exploratory validation after fixture tests are green.
+
+2. **`pnpm validate:production`:** add a new root script that runs the complete
+   P9 production-readiness checklist. It should be implemented as a repo script
+   rather than as documentation-only instructions. It must fail non-zero when
+   any required P9 acceptance gate fails.
+
+3. **Real discovery:** implement search collectors using existing public
+   registry/search APIs where available:
+   - npm registry/search API for npm packages
+   - PyPI-supported metadata/search approach for Python packages, with clear fallback when search is unavailable or weak
+   - GitHub Search API for repositories/starters/components
+
+   Static catalog discovery remains as fallback/demo insurance only. Any
+   catalog-derived candidate must be marked `fixture` or fallback-derived and
+   must not be labeled as live-discovered.
+
+4. **Workflow trace storage:** use context-dependent local storage:
+   - idea mode writes under this repo/current working directory:
+     `.oss-preflight/runs/<timestamp>/workflow.json`
+   - repo-audit mode writes under the requested output directory, defaulting to
+     `<audited-project>/.oss-preflight/audits/<timestamp>/workflow.json` for local repos
+   - GitHub URL or pasted-manifest audits write under the current working
+     directory unless `--out` is supplied
+
+   Never write inside a user's source tree except under `.oss-preflight/`, and
+   only when the command target is that project or the user supplied an output
+   directory.
+
+5. **Bob skill evidence:** require both forms:
+   - manual S09 Bob activation evidence in `bob_sessions/S09-production-readiness/`
+   - automated/static test evidence that validates the skill file, CLI command selection, approval wording, and scaffolder fence assumptions
+
+   Manual activation is the proof that Bob really runs the workflow. Automated
+   tests are regression guardrails and do not replace the manual S09 evidence.
+
+---
+
 ## Scope
 
 ### In Scope

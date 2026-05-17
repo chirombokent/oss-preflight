@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "cookie-session",
+      "version": "2.1.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/cookie-session/-/cookie-session-2.1.1.tgz"
+      },
+      "description": "cookie session middleware",
+      "license": "MIT",
+      "homepage": "https://github.com/expressjs/cookie-session#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/expressjs/cookie-session.git"
+      }
+    },
+    "weeklyDownloads": 396488,
+    "sourceUrl": "https://registry.npmjs.org/cookie-session/latest",
+    "collectedAt": "2026-05-17T12:01:28.300Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:28.301Z",
+  "source": "live"
+}

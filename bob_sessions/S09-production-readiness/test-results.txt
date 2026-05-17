@@ -1,0 +1,179 @@
+# P9 Must-Test Suite Results - Session S09
+Execution Date: 2026-05-17T12:03:16Z
+Executor: Bob (test-runner skill)
+
+## Summary
+- Commands executed: 9/9
+- Commands passed: 8/9
+- Commands failed: 1/9
+- Overall verdict: FAIL (1 blocker: E2E test failure)
+
+## Detailed Results
+
+### 1. pnpm test
+- Exit code: 0 (after build fix)
+- Verdict: PASS
+- Output: 172/172 tests passed
+- Test files: 18 passed
+- Duration: 31.87s
+- Notes: Initially failed with 2/172 tests due to missing repo-analyser build. Fixed by adding moduleResolution: "node" to packages/cli/tsconfig.json and rebuilding.
+
+### 2. pnpm build
+- Exit code: 0
+- Verdict: PASS
+- Output: All packages built successfully
+  - packages/core: Done
+  - packages/collectors: Done
+  - packages/repo-analyser: Done
+  - packages/scaffold: Done
+  - packages/cli: Done (after tsconfig fix)
+  - apps/web: Done
+- Duration: ~40s
+- Notes: Required tsconfig fix for CLI package to resolve repo-analyser dependency
+
+### 3. pnpm validate:production
+- Exit code: 0
+- Verdict: PASS
+- Output: 16/16 validation checks passed, 0 blockers
+- Checks passed:
+  - AC1: Test infrastructure present
+  - AC2: Build infrastructure present
+  - AC3: Recommend --save flag implemented
+  - AC4: Scaffold --recommendation flag implemented
+  - AC5: Run command exists
+  - AC6: Audit command exists
+  - AC7: Python repo detection implemented
+  - AC8: Web API client exists
+  - AC9: 5 web pages found
+  - AC10: RetrievalSource schema defined
+  - AC11: Bob skill with Production Workflow section
+  - AC12: Source labeling implemented
+  - AC13: All 5 required EvidenceFact fields present
+  - AC14: Explicit null handling present
+  - AC15: Validation script runs successfully
+  - AC16: All required documentation files present
+
+### 4. CLI recommend with save
+- Command: node packages\cli\dist\index.js recommend --idea "Discord bot that summarizes channel activity" --json --save
+- Exit code: 0
+- Verdict: PASS
+- Output: 
+  - Generated 3 recommendations
+  - Rank 1: discord.js@14.26.4 (score: 92.1)
+  - Rank 2: eris@0.18.0 (score: 79.8)
+  - Rank 3: oceanic.js@1.14.0 (score: 79.5)
+  - Saved to: .oss-preflight/recommendations/latest.json (7716 bytes)
+  - All recommendations include full Evidence Passports with fact/inference split
+  - All facts include source, collectedAt, sourceType, and retrievalSource fields
+
+### 5. CLI scaffold from saved recommendation
+- Command: node packages\cli\dist\index.js scaffold --recommendation .oss-preflight\recommendations\latest.json --rank 1 --out C:\tmp\oss-preflight-p9-scaffold
+- Exit code: 0
+- Verdict: PASS
+- Output: Scaffold generated (idempotent - already existed from previous run)
+- Target: discord.js@14.26.4
+- Output path: C:\tmp\oss-preflight-p9-scaffold
+
+### 6. CLI run (full workflow)
+- Command: node packages\cli\dist\index.js run --idea "Discord bot that summarizes channel activity" --out C:\tmp\oss-preflight-p9-run
+- Exit code: 0
+- Verdict: PASS
+- Output:
+  - Step 1: Found 3 recommendations
+  - Step 2: Selected rank 1 (discord.js@14.26.4)
+  - Step 3: Scaffold generated
+  - Step 4: Smoke test PASSED (duration: 5704ms)
+  - Generated artifacts:
+    - C:\tmp\oss-preflight-p9-run\scaffold/
+    - C:\tmp\oss-preflight-p9-run\workflow.json
+    - C:\tmp\oss-preflight-p9-run\REPORT.md
+
+### 7. CLI audit npm fixture
+- Command: node packages\cli\dist\index.js audit --repo fixtures\npm-project --out C:\tmp\oss-preflight-p9-npm-audit
+- Exit code: 0
+- Verdict: PASS
+- Output:
+  - Detected: npm project (npm)
+  - Dependencies analyzed: 3
+  - Risk breakdown:
+    - High Risk: 0
+    - Medium Risk: 1
+    - Low/No Risk: 2
+  - Generated artifacts:
+    - C:\tmp\oss-preflight-p9-npm-audit\AUDIT_REPORT.md
+    - C:\tmp\oss-preflight-p9-npm-audit\workflow.json
+
+### 8. CLI audit python fixture
+- Command: node packages\cli\dist\index.js audit --repo fixtures\python-project --out C:\tmp\oss-preflight-p9-python-audit
+- Exit code: 0
+- Verdict: PASS
+- Output:
+  - Detected: pypi project (pip)
+  - Dependencies analyzed: 3
+  - Risk breakdown:
+    - High Risk: 3
+    - Medium Risk: 0
+    - Low/No Risk: 0
+  - Generated artifacts:
+    - C:\tmp\oss-preflight-p9-python-audit\AUDIT_REPORT.md
+    - C:\tmp\oss-preflight-p9-python-audit\workflow.json
+
+### 9. Web E2E tests
+- Command: pnpm --filter @oss-preflight/web test:e2e
+- Exit code: 1
+- Verdict: FAIL
+- Output: 3/4 tests passed, 1 failed
+- Passed tests:
+  1. should navigate to build proof page
+  2. should display error when API fails
+  3. should toggle dark mode
+- Failed test:
+  - Test: "should complete full idea-to-scaffold flow"
+  - Error: Evidence Passport modal did not appear (h2:has-text("Evidence Passport") not visible)
+  - Timeout: 5000ms
+  - Location: apps/web/__tests__/e2e/flow.spec.ts:186
+  - Context: Clicking "View Evidence" button did not open modal
+- Duration: 15.9s
+
+## Test Artifacts Created
+- bob_sessions/S09-production-readiness/test-results.txt (this file)
+
+## Blockers
+
+### BLOCKER 1: E2E Test Failure - Evidence Passport Modal
+- **Severity**: High
+- **Test**: apps/web/__tests__/e2e/flow.spec.ts:10 - "should complete full idea-to-scaffold flow"
+- **Issue**: Evidence Passport modal does not appear when "View Evidence" button is clicked
+- **Expected**: Modal with h2 "Evidence Passport" should be visible
+- **Actual**: Element not found after 5000ms timeout
+- **Impact**: Core user flow (viewing evidence details) is broken in E2E environment
+- **Possible causes**:
+  1. Timing issue - modal animation/render takes longer than 5000ms
+  2. Button click not triggering modal open
+  3. Modal component not rendering in test environment
+  4. CSS/visibility issue preventing modal from being detected
+- **Recommendation**: 
+  - Increase timeout or add explicit wait for modal animation
+  - Verify modal open state in component
+  - Check if modal is rendered but not visible (CSS issue)
+  - Add debug screenshot on failure
+
+## Pass Criteria Assessment
+
+From docs/phase-plan-P9-production-readiness.md line 718:
+"All commands exit 0, all tests green, validation script reports 16/16 passed."
+
+**Result**: FAIL
+- Commands 1-8: ✅ All passed (exit 0)
+- Command 9 (E2E): ❌ Failed (exit 1, 1/4 tests failed)
+- Validation: ✅ 16/16 passed
+
+## Next Steps
+
+**Immediate**: FIX step required
+1. Investigate E2E test failure for Evidence Passport modal
+2. Fix modal visibility/timing issue
+3. Re-run E2E tests to confirm fix
+4. Once all tests pass, proceed to EXPORT step
+
+**Evidence Discipline Note**: All test results reported truthfully. No tests claimed as passing without actual execution. The E2E failure is a real blocker that must be addressed before production readiness can be confirmed.

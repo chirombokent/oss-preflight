@@ -182,8 +182,8 @@ test.describe('OSS Preflight Full Flow', () => {
     const passportButton = page.locator('button:has-text("Open Passport")').first();
     await passportButton.click();
 
-    // Step 5: Assert modal opens
-    await expect(page.locator('h2:has-text("Evidence Passport")')).toBeVisible();
+    // Step 5: Assert modal opens (wait for React state update and render)
+    await expect(page.locator('h2:has-text("Evidence Passport")')).toBeVisible({ timeout: 10000 });
 
     // Assert fact/inference split is visible
     await expect(page.locator('h3:has-text("Facts")')).toBeVisible();

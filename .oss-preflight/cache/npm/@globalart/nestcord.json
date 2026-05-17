@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@globalart/nestcord",
+      "version": "2.4.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@globalart/nestcord/-/nestcord-2.4.0.tgz"
+      },
+      "description": "A module for creating Discord bots using NestJS, based on Discord.js",
+      "license": "MIT",
+      "homepage": "https://github.com/GlobalartInc/nestcord#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/GlobalartInc/nestcord.git"
+      }
+    },
+    "weeklyDownloads": 4271342,
+    "sourceUrl": "https://registry.npmjs.org/%40globalart%2Fnestcord/latest",
+    "collectedAt": "2026-05-17T12:24:08.602Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.604Z",
+  "source": "live"
+}

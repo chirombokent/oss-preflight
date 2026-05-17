@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "range-parser",
+      "version": "1.2.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz"
+      },
+      "description": "Range header field string parser",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/range-parser#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/range-parser.git"
+      }
+    },
+    "weeklyDownloads": 85851817,
+    "sourceUrl": "https://registry.npmjs.org/range-parser/latest",
+    "collectedAt": "2026-05-17T12:01:19.056Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:19.057Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "cookie-signature",
+      "version": "1.2.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.2.2.tgz"
+      },
+      "description": "Sign and unsign cookies",
+      "license": "MIT",
+      "homepage": "https://github.com/visionmedia/node-cookie-signature#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/visionmedia/node-cookie-signature.git"
+      }
+    },
+    "weeklyDownloads": 82704283,
+    "sourceUrl": "https://registry.npmjs.org/cookie-signature/latest",
+    "collectedAt": "2026-05-17T12:00:56.190Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:00:56.191Z",
+  "source": "live"
+}

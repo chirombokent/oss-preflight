@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@snazzah/davey",
+      "version": "0.1.11",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@snazzah/davey/-/davey-0.1.11.tgz"
+      },
+      "description": "DAVE protocol implementation",
+      "license": "MIT",
+      "homepage": "https://github.com/Snazzah/davey#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Snazzah/davey.git"
+      }
+    },
+    "weeklyDownloads": 232322,
+    "sourceUrl": "https://registry.npmjs.org/%40snazzah%2Fdavey/latest",
+    "collectedAt": "2026-05-17T12:24:08.542Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:08.546Z",
+  "source": "live"
+}

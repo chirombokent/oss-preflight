@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "send",
+      "version": "1.2.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/send/-/send-1.2.1.tgz"
+      },
+      "description": "Better streaming static file server with Range and conditional-GET support",
+      "license": "MIT",
+      "homepage": "https://github.com/pillarjs/send#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pillarjs/send.git"
+      }
+    },
+    "weeklyDownloads": 108676758,
+    "sourceUrl": "https://registry.npmjs.org/send/latest",
+    "collectedAt": "2026-05-17T12:01:22.091Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:22.092Z",
+  "source": "live"
+}

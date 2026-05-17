@@ -196,6 +196,79 @@ app.post('/api/scaffold', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/audit - spawns `oss-preflight audit --repo <path> --json`
+ *
+ * Exercises the real CLI audit path (no mocking): repo context detection,
+ * dependency extraction, evidence collection, scoring, and report generation.
+ */
+app.post('/api/audit', async (req, res) => {
+  const { repo, manifest } = req.body;
+
+  if ((!repo || typeof repo !== 'string') && (!manifest || typeof manifest !== 'string')) {
+    return res.status(400).json({ error: 'A repo path/URL or manifest path is required' });
+  }
+
+  const target = repo || manifest;
+  const flag = repo ? '--repo' : '--manifest';
+  const manualCommand = `oss-preflight audit ${flag} "${target}" --json`;
+
+  try {
+    const cli = createCliInvocation(['audit', flag, target, '--json']);
+    const child = spawn(cli.command, cli.args, {
+      cwd: repoRoot,
+      env: { ...process.env },
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('error', (error) => {
+      console.error('CLI spawn error:', error);
+      return res.status(500).json({
+        error: `Failed to spawn CLI. Run manually: ${manualCommand}`,
+        command: manualCommand,
+      });
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        console.error('CLI exited with code', code);
+        console.error('stderr:', stderr);
+        return res.status(500).json({
+          error: stderr || 'CLI command failed',
+          command: manualCommand,
+        });
+      }
+
+      try {
+        const result = JSON.parse(stdout);
+        res.json(result);
+      } catch (parseError) {
+        console.error('Failed to parse CLI output:', parseError);
+        res.status(500).json({
+          error: 'Failed to parse CLI output',
+          command: manualCommand,
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      command: manualCommand,
+    });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`OSS Preflight API server running on http://localhost:${PORT}`);

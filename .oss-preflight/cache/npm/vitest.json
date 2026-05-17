@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "vitest",
+      "version": "4.1.6",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/vitest/-/vitest-4.1.6.tgz"
+      },
+      "description": "Next generation testing framework powered by Vite",
+      "license": "MIT",
+      "homepage": "https://vitest.dev",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vitest-dev/vitest.git"
+      }
+    },
+    "weeklyDownloads": 49999635,
+    "sourceUrl": "https://registry.npmjs.org/vitest/latest",
+    "collectedAt": "2026-05-17T11:58:00.948Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T11:58:00.949Z",
+  "source": "live"
+}

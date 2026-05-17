@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "accepts",
+      "version": "1.3.8",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/accepts/-/accepts-1.3.8.tgz"
+      },
+      "description": "Higher-level content negotiation",
+      "license": "MIT",
+      "homepage": "https://github.com/jshttp/accepts#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jshttp/accepts.git"
+      }
+    },
+    "weeklyDownloads": 86261984,
+    "sourceUrl": "https://registry.npmjs.org/accepts/latest",
+    "collectedAt": "2026-05-17T12:00:48.584Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:00:48.586Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "finalhandler",
+      "version": "2.1.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/finalhandler/-/finalhandler-2.1.1.tgz"
+      },
+      "description": "Node.js final http responder",
+      "license": "MIT",
+      "homepage": "https://github.com/pillarjs/finalhandler#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pillarjs/finalhandler.git"
+      }
+    },
+    "weeklyDownloads": 111567721,
+    "sourceUrl": "https://registry.npmjs.org/finalhandler/latest",
+    "collectedAt": "2026-05-17T12:01:04.506Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:01:04.507Z",
+  "source": "live"
+}

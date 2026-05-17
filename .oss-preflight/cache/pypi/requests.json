@@ -1,0 +1,33 @@
+{
+  "data": {
+    "metadata": {
+      "info": {
+        "name": "requests",
+        "version": "2.34.2",
+        "summary": "Python HTTP for Humans.",
+        "license": "Apache-2.0",
+        "home_page": null,
+        "project_urls": {
+          "Documentation": "https://requests.readthedocs.io",
+          "Source": "https://github.com/psf/requests"
+        }
+      },
+      "urls": [
+        {
+          "packagetype": "bdist_wheel",
+          "url": "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl"
+        },
+        {
+          "packagetype": "sdist",
+          "url": "https://files.pythonhosted.org/packages/ac/c3/e2a2b89f2d3e2179abd6d00ebd70bff6273f37fb3e0cc209f48b39d00cbf/requests-2.34.2.tar.gz"
+        }
+      ],
+      "releases": {}
+    },
+    "sourceUrl": "https://pypi.org/pypi/requests/json",
+    "collectedAt": "2026-05-17T12:24:06.722Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T12:24:06.723Z",
+  "source": "live"
+}
