@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "angular-http-server",
+      "version": "1.12.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/angular-http-server/-/angular-http-server-1.12.0.tgz"
+      },
+      "description": "Simple http server for developers of apps with client side routing",
+      "license": "ISC",
+      "homepage": "https://github.com/simonh1000/angular-http-server#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/simonh1000/angular-http-server.git"
+      }
+    },
+    "weeklyDownloads": 81274,
+    "sourceUrl": "https://registry.npmjs.org/angular-http-server/latest",
+    "collectedAt": "2026-05-17T13:57:40.270Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.277Z",
+  "source": "live"
+}

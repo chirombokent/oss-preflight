@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@web/dev-server",
+      "version": "0.4.6",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@web/dev-server/-/dev-server-0.4.6.tgz"
+      },
+      "description": "Dev server for web applications",
+      "license": "MIT",
+      "homepage": "https://github.com/modernweb-dev/web/tree/master/packages/dev-server",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/modernweb-dev/web.git"
+      }
+    },
+    "weeklyDownloads": 178848,
+    "sourceUrl": "https://registry.npmjs.org/%40web%2Fdev-server/latest",
+    "collectedAt": "2026-05-17T13:57:40.682Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.684Z",
+  "source": "live"
+}

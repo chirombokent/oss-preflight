@@ -1,0 +1,21 @@
+{
+  "name": "discord-summary-bot",
+  "version": "1.0.0",
+  "description": "Discord bot that summarizes channel activity",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "node --loader ts-node/esm src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --loader ts-node/esm smoke-test.ts"
+  },
+  "dependencies": {
+    "discord.js": "14.26.4",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

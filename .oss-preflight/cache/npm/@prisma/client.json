@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@prisma/client",
+      "version": "7.8.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@prisma/client/-/client-7.8.0.tgz"
+      },
+      "description": "Prisma Client is an auto-generated, type-safe and modern JavaScript/TypeScript ORM for Node.js that's tailored to your data. Supports PostgreSQL, CockroachDB, MySQL, MariaDB, SQL Server, SQLite & MongoDB databases.",
+      "license": "Apache-2.0",
+      "homepage": "https://www.prisma.io",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/prisma/prisma.git"
+      }
+    },
+    "weeklyDownloads": 8657311,
+    "sourceUrl": "https://registry.npmjs.org/%40prisma%2Fclient/latest",
+    "collectedAt": "2026-05-17T13:59:43.572Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.574Z",
+  "source": "live"
+}

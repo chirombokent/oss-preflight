@@ -20,6 +20,22 @@ const WEIGHTS = {
   docsQuality: 0.05,
 } as const;
 
+const DOMAIN_PACKAGE_MATCHES: Record<string, string[]> = {
+  discord: ['discord.js', 'eris', 'oceanic.js', 'discord.py', 'py-cord', 'nextcord'],
+  'web-framework': ['express', 'fastify', 'koa', 'hapi', 'hono', 'flask', 'django', 'fastapi', 'tornado'],
+  'data-science': ['numpy', 'pandas', 'scikit-learn', 'matplotlib'],
+  testing: ['vitest', 'jest', 'mocha', 'chai', 'pytest', 'unittest', 'nose2'],
+  'http-client': ['axios', 'node-fetch', 'got', 'undici', 'requests'],
+};
+
+const DOMAIN_NAME_TOKENS: Record<string, string[]> = {
+  discord: ['discord'],
+  'web-framework': ['express', 'fastify', 'koa', 'hapi', 'hono', 'web', 'http', 'server', 'router', 'routing', 'flask', 'django', 'fastapi', 'tornado'],
+  'data-science': ['data', 'science', 'numpy', 'pandas', 'scikit', 'matplotlib', 'csv', 'notebook'],
+  testing: ['test', 'testing', 'jest', 'vitest', 'mocha', 'chai', 'pytest'],
+  'http-client': ['http', 'fetch', 'request', 'axios', 'got', 'undici'],
+};
+
 /**
  * Score and rank candidates against an idea brief
  * 
@@ -102,31 +118,56 @@ function computeSubscores(
  * Deterministic logic based on name matching and ecosystem alignment
  */
 function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
-  let score = 50; // baseline
-
   const candidateLower = candidate.name.toLowerCase();
   const domainLower = brief.domain.toLowerCase();
+  const knownDomainPackages = DOMAIN_PACKAGE_MATCHES[domainLower];
+  const knownDomainPackage = knownDomainPackages?.includes(candidateLower) ?? false;
 
-  // Strong match: candidate name contains domain
-  if (candidateLower.includes(domainLower)) {
-    score += 30;
+  if (knownDomainPackage) {
+    return candidate.ecosystem === brief.ecosystem ? 100 : 85;
   }
 
-  // Ecosystem match
+  const recognizedDomain = Boolean(knownDomainPackages);
+  const tokenMatch = matchesDomainToken(candidateLower, domainLower);
+  let score = 35;
+
   if (candidate.ecosystem === brief.ecosystem) {
     score += 20;
   }
 
-  // Capability keywords in name
+  if (tokenMatch) {
+    score += 20;
+  } else if (!recognizedDomain && candidateLower.includes(domainLower)) {
+    score += 20;
+  }
+
   for (const capability of brief.capabilities) {
-    const capLower = capability.toLowerCase();
-    if (candidateLower.includes(capLower)) {
+    if (capabilityMatchesName(candidateLower, capability)) {
       score += 10;
-      break; // Only count once
+      break;
     }
   }
 
+  if (recognizedDomain) {
+    // Unknown packages in a recognized domain can still be considered, but
+    // they should not outrank known fit packages on popularity alone.
+    score = Math.min(score, tokenMatch ? 70 : 55);
+  }
+
   return Math.min(100, score);
+}
+
+function matchesDomainToken(candidateName: string, domain: string): boolean {
+  return (DOMAIN_NAME_TOKENS[domain] ?? [domain]).some((token) => candidateName.includes(token));
+}
+
+function capabilityMatchesName(candidateName: string, capability: string): boolean {
+  const tokens = capability
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length >= 3);
+
+  return tokens.some((token) => candidateName.includes(token));
 }
 
 /**

@@ -96,6 +96,29 @@ describe('Scaffold Runner', () => {
     expect(result.output).toContain('Smoke test output');
   }, RUNNER_TEST_TIMEOUT_MS);
 
+  it('fails before smoke test when typecheck fails', async () => {
+    const packageJson = {
+      name: 'test-scaffold',
+      version: '1.0.0',
+      scripts: {
+        typecheck: 'node -e "process.exit(1)"',
+        test: 'echo "should not run"',
+      },
+      dependencies: {},
+    };
+
+    fs.writeFileSync(
+      path.join(testScaffoldDir, 'package.json'),
+      JSON.stringify(packageJson, null, 2)
+    );
+
+    const result = await runSmokeTest(testScaffoldDir);
+
+    expect(result.pass).toBe(false);
+    expect(result.output).toContain('npm run typecheck --if-present');
+    expect(result.output).not.toContain('should not run');
+  }, RUNNER_TEST_TIMEOUT_MS);
+
   it('returns pass=true when test exits 0', async () => {
     const packageJson = {
       name: 'test-scaffold',

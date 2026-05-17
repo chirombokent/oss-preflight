@@ -5,24 +5,38 @@ export function keywordParser(idea: string): IdeaBrief {
   const lowerIdea = idea.toLowerCase();
 
   let ecosystem: 'npm' | 'pypi' | 'github' = 'npm';
-  if (lowerIdea.includes('python') || lowerIdea.includes('django') || lowerIdea.includes('flask')) {
-    ecosystem = 'pypi';
-  } else if (
-    lowerIdea.includes('npm') ||
-    lowerIdea.includes('node') ||
-    lowerIdea.includes('javascript') ||
-    lowerIdea.includes('typescript')
+  if (
+    includesAny(lowerIdea, [
+      'python',
+      'django',
+      'flask',
+      'fastapi',
+      'pandas',
+      'numpy',
+      'scikit',
+      'pytest',
+      'jupyter',
+      'notebook',
+    ])
   ) {
+    ecosystem = 'pypi';
+  } else if (includesAny(lowerIdea, ['npm', 'node', 'javascript', 'typescript'])) {
     ecosystem = 'npm';
   }
 
   let domain = 'general';
   if (lowerIdea.includes('discord')) {
     domain = 'discord';
+  } else if (includesAny(lowerIdea, ['data science', 'data analysis', 'analytics', 'csv', 'notebook', 'jupyter', 'pandas', 'numpy', 'machine learning', 'ml'])) {
+    domain = 'data-science';
+  } else if (includesAny(lowerIdea, ['test', 'testing', 'unit test', 'pytest', 'vitest', 'jest'])) {
+    domain = 'testing';
+  } else if (includesAny(lowerIdea, ['http client', 'fetch', 'request', 'axios'])) {
+    domain = 'http-client';
+  } else if (includesAny(lowerIdea, ['web', 'api', 'server', 'framework', 'express', 'fastify', 'koa', 'hono', 'django', 'flask', 'fastapi'])) {
+    domain = 'web-framework';
   } else if (lowerIdea.includes('bot')) {
     domain = 'bot';
-  } else if (lowerIdea.includes('web') || lowerIdea.includes('api')) {
-    domain = 'web';
   }
 
   const capabilities: string[] = [];
@@ -34,6 +48,32 @@ export function keywordParser(idea: string): IdeaBrief {
   }
   if (lowerIdea.includes('schedule') || lowerIdea.includes('cron')) {
     capabilities.push('scheduling');
+  }
+  if (includesAny(lowerIdea, ['api', 'server', 'route', 'routing', 'endpoint', 'http'])) {
+    capabilities.push('http server');
+    capabilities.push('routing');
+  }
+  if (includesAny(lowerIdea, ['upload', 'image upload', 'file upload'])) {
+    capabilities.push('file upload');
+  }
+  if (includesAny(lowerIdea, ['csv', 'spreadsheet'])) {
+    capabilities.push('csv processing');
+  }
+  if (includesAny(lowerIdea, ['data analysis', 'analytics', 'notebook', 'jupyter'])) {
+    capabilities.push('data analysis');
+  }
+  if (includesAny(lowerIdea, ['test', 'testing', 'unit test'])) {
+    capabilities.push('testing');
+  }
+
+  if (capabilities.length === 0) {
+    if (domain === 'web-framework') {
+      capabilities.push('http server', 'routing');
+    } else if (domain === 'data-science') {
+      capabilities.push('data analysis', 'csv processing');
+    } else if (domain === 'testing') {
+      capabilities.push('testing');
+    }
   }
 
   return {
@@ -51,3 +91,6 @@ export function createKeywordIntentParser(): IntentParser {
   };
 }
 
+function includesAny(value: string, needles: string[]): boolean {
+  return needles.some((needle) => value.includes(needle));
+}

@@ -1,0 +1,234 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/aws/aws-sdk-js-v3",
+        "commit": "51d1f8cb1e9b98af735318954821396a23dfb339"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 5.2,
+      "checks": [
+        {
+          "name": "Maintained",
+          "score": 10,
+          "reason": "30 commit(s) and 1 issue activity found in the last 90 days -- score normalized to 10",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Code-Review",
+          "score": 1,
+          "reason": "Found 4/30 approved changesets -- score normalized to 1",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 0,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Info: jobLevel 'contents' permission set to 'read': .github/workflows/pull-request-build.yml:22",
+            "Info: jobLevel 'contents' permission set to 'read': .github/workflows/stale_issues.yml:12",
+            "Warn: no topLevel permission defined: .github/workflows/closed-issue-message.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/codegen-ci.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/commit-message-lint.yml:1",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/git-sync.yml:10",
+            "Warn: no topLevel permission defined: .github/workflows/handle-stale-discussions.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/issue-regression-labeler.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/lock.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/pre-commit-hooks.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/pull-request-build.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/stale_issues.yml:1",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: Apache License 2.0: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": 0,
+          "reason": "Project has not signed or included provenance with any releases.",
+          "details": [
+            "Warn: release artifact v3.1045.0 not signed: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/319131218",
+            "Warn: release artifact v3.1044.0 not signed: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/318582391",
+            "Warn: release artifact v3.1043.0 not signed: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/317997451",
+            "Warn: release artifact v3.1042.0 not signed: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/317411684",
+            "Warn: release artifact v3.1041.0 not signed: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/316491102",
+            "Warn: release artifact v3.1045.0 does not have provenance: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/319131218",
+            "Warn: release artifact v3.1044.0 does not have provenance: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/318582391",
+            "Warn: release artifact v3.1043.0 does not have provenance: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/317997451",
+            "Warn: release artifact v3.1042.0 does not have provenance: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/317411684",
+            "Warn: release artifact v3.1041.0 does not have provenance: https://api.github.com/repos/aws/aws-sdk-js-v3/releases/316491102"
+          ],
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": 5,
+          "reason": "branch protection is not maximal on development and all release branches",
+          "details": [
+            "Info: 'allow deletion' disabled on branch 'main'",
+            "Info: 'force pushes' disabled on branch 'main'",
+            "Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'",
+            "Warn: 'stale review dismissal' is disabled on branch 'main'",
+            "Warn: required approving review count is 1 on branch 'main'",
+            "Info: codeowner review is required on branch 'main'",
+            "Warn: 'last push approval' is disabled on branch 'main'",
+            "Warn: no status checks found to merge onto branch 'main'",
+            "Info: PRs are required in order to make changes on branch 'main'"
+          ],
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 10,
+          "reason": "security policy file detected",
+          "details": [
+            "Info: security policy file detected: github.com/aws/.github/SECURITY.md:1",
+            "Info: Found linked content: github.com/aws/.github/SECURITY.md:1",
+            "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/aws/.github/SECURITY.md:1",
+            "Info: Found text in security policy: github.com/aws/.github/SECURITY.md:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": 10,
+          "reason": "packaging workflow detected",
+          "details": [
+            "Info: Project packages its releases by way of GitHub Actions.: .github/workflows/codegen-ci.yml:16"
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 7,
+          "reason": "SAST tool is not run on all commits -- score normalized to 7",
+          "details": [
+            "Warn: 3 commits out of 4 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 8,
+          "reason": "binaries present in source code",
+          "details": [
+            "Warn: binary detected: codegen/gradle/wrapper/gradle-wrapper.jar:1",
+            "Warn: binary detected: tests/react-native/End2End/android/gradle/wrapper/gradle-wrapper.jar:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 0,
+          "reason": "dependency not pinned by hash detected -- score normalized to 0",
+          "details": [
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/closed-issue-message.yml:11: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/closed-issue-message.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/codegen-ci.yml:24: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/codegen-ci.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/codegen-ci.yml:27: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/codegen-ci.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/codegen-ci.yml:33: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/codegen-ci.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/commit-message-lint.yml:13: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/commit-message-lint.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/commit-message-lint.yml:16: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/commit-message-lint.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/git-sync.yml:17: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/git-sync.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/git-sync.yml:46: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/git-sync.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/handle-stale-discussions.yml:16: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/handle-stale-discussions.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/issue-regression-labeler.yml:14: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/issue-regression-labeler.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/lock.yml:18: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/lock.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/pre-commit-hooks.yml:13: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/pre-commit-hooks.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/pre-commit-hooks.yml:15: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/pre-commit-hooks.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/pull-request-build.yml:25: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/pull-request-build.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/stale_issues.yml:17: update your workflow using https://app.stepsecurity.io/secureworkflow/aws/aws-sdk-js-v3/stale_issues.yml/main?enable=pin",
+            "Info:   0 out of   6 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   0 out of   9 third-party GitHubAction dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        }
+      ]
+    },
+    "score": 5.2,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/aws/aws-sdk-js-v3",
+    "collectedAt": "2026-05-17T13:20:52.962Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.963Z",
+  "source": "live"
+}

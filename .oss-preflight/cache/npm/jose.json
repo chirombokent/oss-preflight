@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "jose",
+      "version": "6.2.3",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/jose/-/jose-6.2.3.tgz"
+      },
+      "description": "JWA, JWS, JWE, JWT, JWK, JWKS for Node.js, Browser, Cloudflare Workers, Deno, Bun, and other Web-interoperable runtimes",
+      "license": "MIT",
+      "homepage": "https://github.com/panva/jose",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/panva/jose.git"
+      }
+    },
+    "weeklyDownloads": 74651205,
+    "sourceUrl": "https://registry.npmjs.org/jose/latest",
+    "collectedAt": "2026-05-17T13:20:52.092Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.115Z",
+  "source": "live"
+}

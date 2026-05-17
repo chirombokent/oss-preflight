@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "ioredis",
+      "version": "5.10.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/ioredis/-/ioredis-5.10.1.tgz"
+      },
+      "description": "A robust, performance-focused and full-featured Redis client for Node.js.",
+      "license": "MIT",
+      "homepage": "https://github.com/luin/ioredis#readme",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/luin/ioredis.git"
+      }
+    },
+    "weeklyDownloads": 19112285,
+    "sourceUrl": "https://registry.npmjs.org/ioredis/latest",
+    "collectedAt": "2026-05-17T13:59:43.362Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.363Z",
+  "source": "live"
+}

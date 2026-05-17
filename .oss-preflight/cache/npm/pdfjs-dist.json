@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "pdfjs-dist",
+      "version": "5.7.284",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-5.7.284.tgz"
+      },
+      "description": "Generic build of Mozilla's PDF.js library.",
+      "license": "Apache-2.0",
+      "homepage": "https://mozilla.github.io/pdf.js/",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mozilla/pdf.js.git"
+      }
+    },
+    "weeklyDownloads": 15243015,
+    "sourceUrl": "https://registry.npmjs.org/pdfjs-dist/latest",
+    "collectedAt": "2026-05-17T13:20:52.157Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.178Z",
+  "source": "live"
+}

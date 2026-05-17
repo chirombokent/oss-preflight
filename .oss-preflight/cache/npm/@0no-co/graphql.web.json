@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@0no-co/graphql.web",
+      "version": "1.2.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@0no-co/graphql.web/-/graphql.web-1.2.0.tgz"
+      },
+      "description": "A spec-compliant client-side GraphQL implementation",
+      "license": "MIT",
+      "homepage": "https://github.com/0no-co/graphql.web#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0no-co/graphql.web.git"
+      }
+    },
+    "weeklyDownloads": 5351154,
+    "sourceUrl": "https://registry.npmjs.org/%400no-co%2Fgraphql.web/latest",
+    "collectedAt": "2026-05-17T13:59:42.747Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:42.750Z",
+  "source": "live"
+}

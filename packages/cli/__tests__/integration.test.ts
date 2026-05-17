@@ -20,10 +20,16 @@ const repoRoot = path.resolve(here, '../../..');
 const cliDist = path.join(repoRoot, 'packages/cli/dist/index.js');
 const distBuilt = fs.existsSync(cliDist);
 
+// Run the CLI from a throwaway cwd so collector cache / saved artifacts
+// never land in the working tree during `pnpm test`.
+const sandboxCwd = distBuilt
+  ? fs.mkdtempSync(path.join(os.tmpdir(), 'ossp-itest-cwd-'))
+  : repoRoot;
+
 function runCli(args: string[]) {
   // Exercises the real built CLI — the exact entry the web bridge spawns.
   return spawnSync(process.execPath, [cliDist, ...args], {
-    cwd: repoRoot,
+    cwd: sandboxCwd,
     encoding: 'utf-8',
     timeout: 120_000,
     env: { ...process.env },
@@ -105,6 +111,40 @@ describe.skipIf(!distBuilt)('CLI integration (real execution, no mocks)', () => 
     expect(Array.isArray(parsed.recommendations)).toBe(true);
     expect(parsed.recommendations.length).toBeGreaterThan(0);
     expect(parsed.ideas_parsed.ecosystem).toBe('npm');
+  });
+
+  it('recommend ranks known Node web frameworks for a generic API idea', () => {
+    const result = runCli([
+      'recommend',
+      '--idea',
+      'Node TypeScript web API framework',
+      '--json',
+    ]);
+
+    expect(result.status).toBe(0);
+
+    const parsed = JSON.parse(result.stdout);
+    const names = parsed.recommendations.map((r: { candidate: { name: string } }) => r.candidate.name);
+    expect(parsed.ideas_parsed.domain).toBe('web-framework');
+    expect(names.some((name: string) => ['express', 'fastify', 'koa', 'hapi'].includes(name))).toBe(true);
+    expect(names[0]).not.toBe('pdfjs-dist');
+  });
+
+  it('recommend returns Python data-science packages for a CSV notebook idea', () => {
+    const result = runCli([
+      'recommend',
+      '--idea',
+      'Python data science notebook for CSV analysis',
+      '--json',
+    ]);
+
+    expect(result.status).toBe(0);
+
+    const parsed = JSON.parse(result.stdout);
+    const names = parsed.recommendations.map((r: { candidate: { name: string } }) => r.candidate.name);
+    expect(parsed.ideas_parsed.ecosystem).toBe('pypi');
+    expect(parsed.ideas_parsed.domain).toBe('data-science');
+    expect(names.some((name: string) => ['pandas', 'numpy', 'scikit-learn', 'matplotlib'].includes(name))).toBe(true);
   });
 });
 

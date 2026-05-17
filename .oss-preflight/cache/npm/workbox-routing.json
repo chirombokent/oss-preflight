@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "workbox-routing",
+      "version": "7.4.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/workbox-routing/-/workbox-routing-7.4.1.tgz"
+      },
+      "description": "A service worker helper library to route request URLs to handlers.",
+      "license": "MIT",
+      "homepage": "https://github.com/GoogleChrome/workbox",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/googlechrome/workbox.git"
+      }
+    },
+    "weeklyDownloads": 6751989,
+    "sourceUrl": "https://registry.npmjs.org/workbox-routing/latest",
+    "collectedAt": "2026-05-17T13:57:40.715Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.733Z",
+  "source": "live"
+}

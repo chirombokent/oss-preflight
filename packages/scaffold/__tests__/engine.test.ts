@@ -172,6 +172,25 @@ describe('Scaffold Engine', () => {
     expect(report).toContain('https://registry.npmjs.org/discord.js');
     expect(report).toContain('https://api.github.com/repos/discordjs/discord.js');
   });
+
+  it('refuses to generate a template for non-scaffoldable recommendations', async () => {
+    const result = await generateScaffold(
+      {
+        ...mockRecommendation,
+        candidate: {
+          ...mockRecommendation.candidate,
+          name: '@discordjs/rest',
+        },
+        scaffoldAvailable: false,
+        templateId: null,
+      },
+      testOutputDir
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('No scaffold template is available');
+    expect(fs.existsSync(path.join(testOutputDir, 'package.json'))).toBe(false);
+  });
 });
 
 // Made with Bob

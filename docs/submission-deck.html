@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>OSS Preflight Submission Deck</title>
+    <style>
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, Segoe UI, Arial, sans-serif;
+        color: #f7f2e9;
+        background: #0d1321;
+      }
+
+      .slide {
+        position: relative;
+        width: 16in;
+        height: 9in;
+        padding: 0.72in 0.86in;
+        page-break-after: always;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 86% 12%, rgba(248, 181, 82, 0.28), transparent 2.1in),
+          radial-gradient(circle at 8% 82%, rgba(42, 157, 143, 0.26), transparent 2.2in),
+          linear-gradient(135deg, #0d1321 0%, #1c2b36 58%, #19312f 100%);
+      }
+
+      .slide:last-child {
+        page-break-after: auto;
+      }
+
+      .kicker {
+        color: #f8b552;
+        font-size: 0.26in;
+        font-weight: 800;
+        letter-spacing: 0.03in;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0.18in 0 0.22in;
+        max-width: 10.6in;
+        color: #ffffff;
+        font-size: 0.74in;
+        line-height: 1.02;
+      }
+
+      h2 {
+        margin: 0.18in 0 0.34in;
+        max-width: 11in;
+        color: #ffffff;
+        font-size: 0.56in;
+        line-height: 1.08;
+      }
+
+      p,
+      li {
+        max-width: 10.8in;
+        font-size: 0.28in;
+        line-height: 1.38;
+      }
+
+      ul {
+        margin: 0.1in 0 0;
+        padding-left: 0.36in;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.25in;
+        margin-top: 0.45in;
+      }
+
+      .panel {
+        min-height: 2.45in;
+        padding: 0.28in;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 0.08in;
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .panel strong {
+        display: block;
+        margin-bottom: 0.12in;
+        color: #f8b552;
+        font-size: 0.24in;
+      }
+
+      .panel span {
+        color: #f7f2e9;
+        font-size: 0.22in;
+        line-height: 1.35;
+      }
+
+      .metric-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.2in;
+        margin-top: 0.45in;
+      }
+
+      .metric {
+        padding: 0.2in;
+        border-top: 0.05in solid #2a9d8f;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .metric b {
+        display: block;
+        color: #ffffff;
+        font-size: 0.4in;
+      }
+
+      .metric small {
+        color: #dce7e3;
+        font-size: 0.18in;
+      }
+
+      .footer {
+        position: absolute;
+        right: 0.86in;
+        bottom: 0.38in;
+        left: 0.86in;
+        display: flex;
+        justify-content: space-between;
+        color: #aebdb9;
+        font-size: 0.16in;
+      }
+
+      code {
+        color: #8be9d5;
+        font-family: Cascadia Code, Consolas, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slide">
+      <div class="kicker">IBM Bob Hackathon</div>
+      <h1>OSS Preflight</h1>
+      <p>
+        Turn an app idea into a ranked, evidence-backed open source starting
+        point with a generated starter and smoke test.
+      </p>
+      <div class="metric-row">
+        <div class="metric"><b>3</b><small>ranked recommendations</small></div>
+        <div class="metric"><b>1</b><small>Evidence Passport per package</small></div>
+        <div class="metric"><b>1</b><small>generated Discord starter</small></div>
+        <div class="metric"><b>134</b><small>unit tests green locally</small></div>
+      </div>
+      <div class="footer"><span>OSS Preflight</span><span>Problem</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Problem</div>
+      <h2>Developers lose time choosing a stack before they write useful code.</h2>
+      <ul>
+        <li>Package choice is often driven by memory, popularity, or search ranking.</li>
+        <li>Facts, inferred tradeoffs, and stale assumptions get mixed together.</li>
+        <li>Even a good choice still leaves starter setup and verification work.</li>
+      </ul>
+      <div class="footer"><span>OSS Preflight</span><span>Problem</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Solution</div>
+      <h2>A single honest pipeline: idea -> evidence -> scaffold -> smoke test.</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Recommend</strong>
+          <span>Parse the idea, collect public package facts, and rank candidates deterministically.</span>
+        </div>
+        <div class="panel">
+          <strong>Explain</strong>
+          <span>Show score components and separate registry facts from AI-generated inference.</span>
+        </div>
+        <div class="panel">
+          <strong>Generate</strong>
+          <span>Create a starter project with mocked messages and a runnable smoke test.</span>
+        </div>
+      </div>
+      <div class="footer"><span>OSS Preflight</span><span>Solution</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Demo</div>
+      <h2>The verified local demo path is ready.</h2>
+      <ul>
+        <li>Input: <code>Discord bot that summarizes channel activity</code></li>
+        <li>Result: three recommendations, with <code>discord.js</code> ranked first.</li>
+        <li>Scaffold: generated starter installs dependencies and passes its smoke test.</li>
+        <li>Fallback: README documents the local path if no public deployment is available.</li>
+      </ul>
+      <div class="footer"><span>OSS Preflight</span><span>Demo</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Bob Evidence</div>
+      <h2>Bob is part of the SDLC, not only the final polish.</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Modes</strong>
+          <span>Plan, Code, Orchestrator, reviewer, and scoped scaffolder modes.</span>
+        </div>
+        <div class="panel">
+          <strong>Skills</strong>
+          <span>Code review, evidence discipline, test runner, doc writer, Plan Council, OSS advisor.</span>
+        </div>
+        <div class="panel">
+          <strong>Exports</strong>
+          <span>Build ledger and session folders under <code>bob_sessions/</code>.</span>
+        </div>
+      </div>
+      <div class="footer"><span>OSS Preflight</span><span>Bob Evidence</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Team + Readiness</div>
+      <h2>Solo build, Bob-assisted delivery, explicit remaining submission actions.</h2>
+      <ul>
+        <li>Team: Dreamverse Holdings solo builder with IBM Bob as the visible engineering partner.</li>
+        <li>Green locally: <code>pnpm test</code>, <code>pnpm build</code>, and Playwright browser flow.</li>
+        <li>Still external: missing S06/S07 Bob screenshots, demo video, final approved commit and tag.</li>
+      </ul>
+      <div class="footer"><span>OSS Preflight</span><span>Team</span></div>
+    </section>
+  </body>
+</html>

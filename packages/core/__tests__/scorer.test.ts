@@ -288,6 +288,45 @@ describe('scorer.ts', () => {
       expect(typeof recommendations[0].scaffoldAvailable).toBe('boolean');
       expect(recommendations[0].templateId === null || typeof recommendations[0].templateId === 'string').toBe(true);
     });
+
+    it('ranks known web framework packages above unrelated registry hits', () => {
+      const brief: IdeaBrief = {
+        capabilities: ['http server', 'routing'],
+        domain: 'web-framework',
+        ecosystem: 'npm',
+      };
+
+      const candidates: Candidate[] = [
+        { name: 'pdfjs-dist', version: '1.0.0', ecosystem: 'npm' },
+        { name: 'express', version: '4.18.0', ecosystem: 'npm' },
+        { name: 'fastify', version: '4.0.0', ecosystem: 'npm' },
+      ];
+
+      const recommendations = scoreAndRank(candidates, brief);
+
+      expect(recommendations[0].candidate.name).not.toBe('pdfjs-dist');
+      expect(['express', 'fastify']).toContain(recommendations[0].candidate.name);
+      expect(recommendations[0].subscores.goalFit).toBe(100);
+    });
+
+    it('ranks scaffoldable discord.js above adjacent non-template packages', () => {
+      const brief: IdeaBrief = {
+        capabilities: ['summarization', 'message processing'],
+        domain: 'discord',
+        ecosystem: 'npm',
+      };
+
+      const candidates: Candidate[] = [
+        { name: '@discordjs/rest', version: '2.0.0', ecosystem: 'npm' },
+        { name: 'discord.js', version: '14.14.1', ecosystem: 'npm' },
+      ];
+
+      const recommendations = scoreAndRank(candidates, brief);
+
+      expect(recommendations[0].candidate.name).toBe('discord.js');
+      expect(recommendations[0].scaffoldAvailable).toBe(true);
+      expect(recommendations[1].scaffoldAvailable).toBe(false);
+    });
   });
 });
 

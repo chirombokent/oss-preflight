@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@aws-sdk/client-lambda",
+      "version": "3.1048.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@aws-sdk/client-lambda/-/client-lambda-3.1048.0.tgz"
+      },
+      "description": "AWS SDK for JavaScript Lambda Client for Node.js, Browser and React Native",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-lambda",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aws/aws-sdk-js-v3.git"
+      }
+    },
+    "weeklyDownloads": 8217168,
+    "sourceUrl": "https://registry.npmjs.org/%40aws-sdk%2Fclient-lambda/latest",
+    "collectedAt": "2026-05-17T13:20:52.055Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.066Z",
+  "source": "live"
+}

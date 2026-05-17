@@ -1,0 +1,190 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/koajs/koa",
+        "commit": "e0ba8ef39d27fe5dae5492f9fe753d155124f994"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 5.3,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 4,
+          "reason": "Found 9/19 approved changesets -- score normalized to 4",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": -1,
+          "reason": "packaging workflow not detected",
+          "details": [
+            "Warn: no GitHub/GitLab publishing workflow detected."
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 5,
+          "reason": "7 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 5",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 0,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Warn: no topLevel permission defined: .github/workflows/node.js.yml:1",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/npm-publish.yml:30",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 10,
+          "reason": "no binaries found in the repo",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 5,
+          "reason": "dependency not pinned by hash detected -- score normalized to 5",
+          "details": [
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/node.js.yml:19: update your workflow using https://app.stepsecurity.io/secureworkflow/koajs/koa/node.js.yml/master?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/node.js.yml:21: update your workflow using https://app.stepsecurity.io/secureworkflow/koajs/koa/node.js.yml/master?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/node.js.yml:28: update your workflow using https://app.stepsecurity.io/secureworkflow/koajs/koa/node.js.yml/master?enable=pin",
+            "Warn: npmCommand not pinned by hash: .github/workflows/npm-publish.yml:48",
+            "Info:   2 out of   4 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   0 out of   1 third-party GitHubAction dependencies pinned",
+            "Info:   2 out of   3 npmCommand dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: MIT License: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": -1,
+          "reason": "no releases found",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": -1,
+          "reason": "internal error: error during branchesHandler.setup: internal error: some github tokens can't read classic branch protection rules: https://github.com/ossf/scorecard-action/blob/main/docs/authentication/fine-grained-auth-token.md",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 10,
+          "reason": "security policy file detected",
+          "details": [
+            "Info: security policy file detected: github.com/koajs/.github/SECURITY.md:1",
+            "Info: Found linked content: github.com/koajs/.github/SECURITY.md:1",
+            "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/koajs/.github/SECURITY.md:1",
+            "Info: Found text in security policy: github.com/koajs/.github/SECURITY.md:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 0,
+          "reason": "SAST tool is not run on all commits -- score normalized to 0",
+          "details": [
+            "Warn: 0 commits out of 21 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 5.3,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/koajs/koa",
+    "collectedAt": "2026-05-17T13:57:41.949Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:41.950Z",
+  "source": "live"
+}

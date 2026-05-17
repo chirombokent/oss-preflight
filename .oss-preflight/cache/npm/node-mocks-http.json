@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "node-mocks-http",
+      "version": "1.17.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/node-mocks-http/-/node-mocks-http-1.17.2.tgz"
+      },
+      "description": "Mock 'http' objects for testing Express, Next.js and Koa routing functions",
+      "license": "MIT",
+      "homepage": "https://github.com/eugef/node-mocks-http",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/eugef/node-mocks-http.git"
+      }
+    },
+    "weeklyDownloads": 1911273,
+    "sourceUrl": "https://registry.npmjs.org/node-mocks-http/latest",
+    "collectedAt": "2026-05-17T13:57:40.656Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.658Z",
+  "source": "live"
+}

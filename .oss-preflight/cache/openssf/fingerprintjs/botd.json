@@ -1,0 +1,223 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/fingerprintjs/botd",
+        "commit": "de9b2b82cc94e7f6c2f19514b1a651ce89fd15c9"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 5.8,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 10,
+          "reason": "all changesets reviewed",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 8,
+          "reason": "10 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 8",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": -1,
+          "reason": "packaging workflow not detected",
+          "details": [
+            "Warn: no GitHub/GitLab publishing workflow detected."
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 10,
+          "reason": "no binaries found in the repo",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 0,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Warn: no topLevel permission defined: .github/workflows/build.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/check_upcoming_browser_versions.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/codeql-analysis.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/demo.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/npm_release.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/release.yml:1",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 0,
+          "reason": "dependency not pinned by hash detected -- score normalized to 0",
+          "details": [
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/build.yml:21: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/build.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/build.yml:26: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/build.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/build.yml:29: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/build.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/build.yml:33: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/build.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/check_upcoming_browser_versions.yml:25: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/check_upcoming_browser_versions.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/check_upcoming_browser_versions.yml:27: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/check_upcoming_browser_versions.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/check_upcoming_browser_versions.yml:37: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/check_upcoming_browser_versions.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/check_upcoming_browser_versions.yml:46: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/check_upcoming_browser_versions.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/codeql-analysis.yml:23: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/codeql-analysis.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/codeql-analysis.yml:26: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/codeql-analysis.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/codeql-analysis.yml:31: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/codeql-analysis.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/demo.yml:16: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/demo.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/demo.yml:21: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/demo.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/demo.yml:24: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/demo.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/demo.yml:28: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/demo.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/demo.yml:47: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/demo.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/npm_release.yml:17: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/npm_release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/npm_release.yml:21: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/npm_release.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/npm_release.yml:46: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/npm_release.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/release.yml:15: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/release.yml:20: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/release.yml:23: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/release.yml:27: update your workflow using https://app.stepsecurity.io/secureworkflow/fingerprintjs/BotD/release.yml/main?enable=pin",
+            "Info:   0 out of  16 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   0 out of   7 third-party GitHubAction dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 0,
+          "reason": "security policy file not detected",
+          "details": [
+            "Warn: no security policy file detected",
+            "Warn: no security file to analyze",
+            "Warn: no security file to analyze",
+            "Warn: no security file to analyze"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: MIT License: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": -1,
+          "reason": "no releases found",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": 5,
+          "reason": "branch protection is not maximal on development and all release branches",
+          "details": [
+            "Info: 'allow deletion' disabled on branch 'main'",
+            "Info: 'force pushes' disabled on branch 'main'",
+            "Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'",
+            "Warn: 'stale review dismissal' is disabled on branch 'main'",
+            "Warn: required approving review count is 1 on branch 'main'",
+            "Warn: codeowners review is not required on branch 'main'",
+            "Warn: 'last push approval' is disabled on branch 'main'",
+            "Warn: no status checks found to merge onto branch 'main'",
+            "Info: PRs are required in order to make changes on branch 'main'"
+          ],
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 9,
+          "reason": "SAST tool detected but not run on all commits",
+          "details": [
+            "Info: SAST configuration detected: CodeQL",
+            "Warn: 28 commits out of 30 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 5.8,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/fingerprintjs/botd",
+    "collectedAt": "2026-05-17T13:59:43.941Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.942Z",
+  "source": "live"
+}

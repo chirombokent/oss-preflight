@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@fingerprintjs/botd",
+      "version": "2.0.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@fingerprintjs/botd/-/botd-2.0.0.tgz"
+      },
+      "description": "botd is a browser library for JavaScript bot detection",
+      "license": "MIT",
+      "homepage": "https://fingerprintjs.github.io/BotD/",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/fingerprintjs/botd.git"
+      }
+    },
+    "weeklyDownloads": 174467,
+    "sourceUrl": "https://registry.npmjs.org/%40fingerprintjs%2Fbotd/latest",
+    "collectedAt": "2026-05-17T13:59:43.258Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.259Z",
+  "source": "live"
+}

@@ -74,6 +74,21 @@ export async function runSmokeTest(scaffoldDir: string): Promise<SmokeTestResult
       }
     }
 
+    // Typecheck first when a scaffold provides the script. This catches invalid
+    // entrypoints that a narrow smoke test might not import.
+    const typecheckResult = await runCommand('npm', ['run', 'typecheck', '--if-present'], scaffoldDir);
+    if (typecheckResult.exitCode !== 0) {
+      return {
+        pass: false,
+        output: [
+          needsInstall ? `[npm install]\n${installOutput.trim() || '(no output)'}` : '',
+          `[npm run typecheck --if-present]\n${typecheckResult.output.trim() || '(no output)'}`,
+        ].filter(Boolean).join('\n\n'),
+        duration: Date.now() - startTime,
+        installedDependencies: needsInstall,
+      };
+    }
+
     // Run npm test
     const testResult = await runCommand('npm', ['test'], scaffoldDir);
 
@@ -83,6 +98,7 @@ export async function runSmokeTest(scaffoldDir: string): Promise<SmokeTestResult
       pass: testResult.exitCode === 0,
       output: [
         needsInstall ? `[npm install]\n${installOutput.trim() || '(no output)'}` : '',
+        `[npm run typecheck --if-present]\n${typecheckResult.output.trim() || '(no output)'}`,
         `[npm test]\n${testResult.output.trim() || '(no output)'}`,
       ].filter(Boolean).join('\n\n'),
       duration,

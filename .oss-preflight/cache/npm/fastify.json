@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "fastify",
+      "version": "5.8.5",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/fastify/-/fastify-5.8.5.tgz"
+      },
+      "description": "Fast and low overhead web framework, for Node.js",
+      "license": "MIT",
+      "homepage": "https://fastify.dev/",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fastify/fastify.git"
+      }
+    },
+    "weeklyDownloads": 7611011,
+    "sourceUrl": "https://registry.npmjs.org/fastify/latest",
+    "collectedAt": "2026-05-17T13:57:40.181Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.182Z",
+  "source": "live"
+}

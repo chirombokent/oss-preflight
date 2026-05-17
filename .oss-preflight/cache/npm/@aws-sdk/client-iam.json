@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@aws-sdk/client-iam",
+      "version": "3.1048.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@aws-sdk/client-iam/-/client-iam-3.1048.0.tgz"
+      },
+      "description": "AWS SDK for JavaScript Iam Client for Node.js, Browser and React Native",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-iam",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aws/aws-sdk-js-v3.git"
+      }
+    },
+    "weeklyDownloads": 3433613,
+    "sourceUrl": "https://registry.npmjs.org/%40aws-sdk%2Fclient-iam/latest",
+    "collectedAt": "2026-05-17T13:20:52.143Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.155Z",
+  "source": "live"
+}

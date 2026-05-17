@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "koa",
+      "version": "3.2.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/koa/-/koa-3.2.0.tgz"
+      },
+      "description": "Koa web app framework",
+      "license": "MIT",
+      "homepage": "https://koajs.com",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/koajs/koa.git"
+      }
+    },
+    "weeklyDownloads": 6466817,
+    "sourceUrl": "https://registry.npmjs.org/koa/latest",
+    "collectedAt": "2026-05-17T13:57:40.678Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.683Z",
+  "source": "live"
+}

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "node-fetch",
+      "version": "3.3.2",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/node-fetch/-/node-fetch-3.3.2.tgz"
+      },
+      "description": "A light-weight module that brings Fetch API to node.js",
+      "license": "MIT",
+      "homepage": "https://github.com/node-fetch/node-fetch",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/node-fetch/node-fetch.git"
+      }
+    },
+    "weeklyDownloads": 145766019,
+    "sourceUrl": "https://registry.npmjs.org/node-fetch/latest",
+    "collectedAt": "2026-05-17T13:59:42.675Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:42.675Z",
+  "source": "live"
+}

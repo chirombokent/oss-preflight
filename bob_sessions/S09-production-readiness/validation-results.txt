@@ -1,0 +1,25 @@
+> oss-preflight@0.1.0 validate:production C:\Users\Computer\Documents\Dreamverse Holdings\Main Projects\oss-preflight
+> tsx scripts/validate-production.ts
+
+Running production validation (real execution)...
+
+
+=== Production Validation Results ===
+
+Passed:   13/13
+Failed:   0/13
+Blockers: 0
+
+[PASS] AC1: pnpm build: Build exited 0
+[PASS] AC2: pnpm test: Test suite exited 0
+[PASS] AC3: recommend --json --save: Ran, returned recommendations, wrote latest.json
+[PASS] AC4/5: run command: Scaffold selected discord.js, typecheck/smoke passed, artifacts written
+[PASS] P9: arbitrary idea recommendations: Node web: express, fastify, koa; Python data: matplotlib, scikit-learn, numpy
+[PASS] AC6: audit npm repo: Audited npm fixture, structured JSON returned
+[PASS] AC7: audit python repo: Audited pypi fixture; workflow records true pypi/manifest discovery
+[PASS] AC8/9: web CLI bridge: /api/recommend, /api/scaffold, /api/audit all spawn the real CLI
+[PASS] AC10/13/14: evidence schema: Full source attribution + explicit null handling present
+[PASS] AC11: Bob skill: SKILL.md defines the Production Workflow
+[PASS] AC12: search-first discovery: Pipeline calls discoverCandidatesWithSearch with source labels
+[PASS] AC15: validation script runs: Script executed real commands
+[PASS] AC16: documentation: Required docs present

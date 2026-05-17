@@ -227,6 +227,14 @@ export async function generateScaffold(
   smokeResult?: { pass: boolean; output: string; duration: number }
 ): Promise<ScaffoldResult> {
   try {
+    if (!recommendation.scaffoldAvailable || recommendation.templateId !== 'discord-summary-bot') {
+      return {
+        success: false,
+        skipped: false,
+        message: `No scaffold template is available for ${recommendation.candidate.name}`,
+      };
+    }
+
     const versionHash = generateVersionHash(recommendation);
 
     // Check idempotency - skip only if no smoke result provided

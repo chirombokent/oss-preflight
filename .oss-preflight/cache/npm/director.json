@@ -1,0 +1,23 @@
+{
+  "data": {
+    "metadata": {
+      "name": "director",
+      "version": "1.2.8",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/director/-/director-1.2.8.tgz"
+      },
+      "description": "A client Side/Server Side Router",
+      "homepage": "https://github.com/flatiron/director",
+      "repository": {
+        "type": "git",
+        "url": "http://github.com/flatiron/director.git"
+      }
+    },
+    "weeklyDownloads": 189397,
+    "sourceUrl": "https://registry.npmjs.org/director/latest",
+    "collectedAt": "2026-05-17T13:57:40.631Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.634Z",
+  "source": "live"
+}

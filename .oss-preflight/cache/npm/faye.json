@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "faye",
+      "version": "1.4.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/faye/-/faye-1.4.1.tgz"
+      },
+      "description": "Simple pub/sub messaging for the web",
+      "license": "Apache-2.0",
+      "homepage": "https://faye.jcoglan.com",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/faye/faye.git"
+      }
+    },
+    "weeklyDownloads": 1579214,
+    "sourceUrl": "https://registry.npmjs.org/faye/latest",
+    "collectedAt": "2026-05-17T13:57:40.616Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.618Z",
+  "source": "live"
+}

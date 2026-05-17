@@ -1,0 +1,209 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/luin/ioredis",
+        "commit": "0d510bbc1cfc8b01d862b76c408f6687f6e77809"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 5.4,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 7,
+          "reason": "Found 21/30 approved changesets -- score normalized to 7",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 10,
+          "reason": "20 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 10",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 0,
+          "reason": "detected GitHub workflow tokens with excessive permissions",
+          "details": [
+            "Warn: no topLevel permission defined: .github/workflows/manual.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/push-requests.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/release.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/stale-issues.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/test.yml:1",
+            "Warn: no topLevel permission defined: .github/workflows/test_with_cov.yml:1",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 10,
+          "reason": "no binaries found in the repo",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 0,
+          "reason": "security policy file not detected",
+          "details": [
+            "Warn: no security policy file detected",
+            "Warn: no security file to analyze",
+            "Warn: no security file to analyze",
+            "Warn: no security file to analyze"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: MIT License: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 0,
+          "reason": "dependency not pinned by hash detected -- score normalized to 0",
+          "details": [
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/release.yml:16: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/release.yml:18: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/release.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/stale-issues.yml:23: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/stale-issues.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/stale-issues.yml:67: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/stale-issues.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/test.yml:17: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/test.yml:22: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/test.yml:27: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/test_with_cov.yml:14: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test_with_cov.yml/main?enable=pin",
+            "Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/test_with_cov.yml:17: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test_with_cov.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/test_with_cov.yml:34: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test_with_cov.yml/main?enable=pin",
+            "Warn: third-party GitHubAction not pinned by hash: .github/workflows/test_with_cov.yml:46: update your workflow using https://app.stepsecurity.io/secureworkflow/redis/ioredis/test_with_cov.yml/main?enable=pin",
+            "Warn: containerImage not pinned by hash: test/cluster/docker/Dockerfile:1: pin your Docker image by updating grokzen/redis-cluster to grokzen/redis-cluster@sha256:bfdff783f81486e1f5b72a19f63fe4f87abc2feedfe6b690e7a86f7246571199",
+            "Warn: downloadThenRun not pinned by hash: test/cluster/docker/Dockerfile:10",
+            "Warn: npmCommand not pinned by hash: test/cluster/docker/Dockerfile:18",
+            "Warn: npmCommand not pinned by hash: test/cluster/docker/main.sh:2",
+            "Warn: npmCommand not pinned by hash: .github/workflows/test.yml:34",
+            "Warn: npmCommand not pinned by hash: .github/workflows/test_with_cov.yml:26",
+            "Info:   0 out of   8 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   0 out of   3 third-party GitHubAction dependencies pinned",
+            "Info:   0 out of   1 containerImage dependencies pinned",
+            "Info:   0 out of   1 downloadThenRun dependencies pinned",
+            "Info:   1 out of   5 npmCommand dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 0,
+          "reason": "project is not fuzzed",
+          "details": [
+            "Warn: no fuzzer integrations found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": -1,
+          "reason": "no releases found",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": -1,
+          "reason": "internal error: error during GetBranch(v4): error during branchesHandler.query: internal error: some github tokens can't read classic branch protection rules: https://github.com/ossf/scorecard-action/blob/main/docs/authentication/fine-grained-auth-token.md",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": 10,
+          "reason": "packaging workflow detected",
+          "details": [
+            "Info: Project packages its releases by way of GitHub Actions.: .github/workflows/release.yml:12"
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 0,
+          "reason": "SAST tool is not run on all commits -- score normalized to 0",
+          "details": [
+            "Warn: 0 commits out of 23 are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 5.4,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/luin/ioredis",
+    "collectedAt": "2026-05-17T13:59:43.808Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.810Z",
+  "source": "live"
+}

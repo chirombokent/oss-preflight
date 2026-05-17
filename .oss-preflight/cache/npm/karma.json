@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "karma",
+      "version": "6.4.4",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/karma/-/karma-6.4.4.tgz"
+      },
+      "description": "Spectacular Test Runner for JavaScript.",
+      "license": "MIT",
+      "homepage": "https://karma-runner.github.io/",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/karma-runner/karma.git"
+      }
+    },
+    "weeklyDownloads": 3299977,
+    "sourceUrl": "https://registry.npmjs.org/karma/latest",
+    "collectedAt": "2026-05-17T13:20:52.140Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.151Z",
+  "source": "live"
+}

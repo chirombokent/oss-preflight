@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@chat-adapter/discord",
+      "version": "4.28.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@chat-adapter/discord/-/discord-4.28.1.tgz"
+      },
+      "description": "Discord adapter for chat",
+      "license": "MIT",
+      "homepage": "https://github.com/vercel/chat#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/vercel/chat.git"
+      }
+    },
+    "weeklyDownloads": 58045,
+    "sourceUrl": "https://registry.npmjs.org/%40chat-adapter%2Fdiscord/latest",
+    "collectedAt": "2026-05-17T13:59:43.275Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.278Z",
+  "source": "live"
+}

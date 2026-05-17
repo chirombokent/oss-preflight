@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "snowtransfer",
+      "version": "0.17.7",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/snowtransfer/-/snowtransfer-0.17.7.tgz"
+      },
+      "description": "Minimalistic Rest client for the Discord Api",
+      "license": "MIT",
+      "homepage": "https://github.com/DasWolke/SnowTransfer#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DasWolke/SnowTransfer.git"
+      }
+    },
+    "weeklyDownloads": 21096,
+    "sourceUrl": "https://registry.npmjs.org/snowtransfer/latest",
+    "collectedAt": "2026-05-17T13:59:43.224Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.225Z",
+  "source": "live"
+}

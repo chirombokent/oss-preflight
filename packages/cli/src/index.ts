@@ -101,7 +101,7 @@ program
   .description('Complete workflow: recommend, scaffold, verify, report')
   .requiredOption('--idea <string>', 'Your software idea')
   .option('--out <directory>', 'Output directory (default: .oss-preflight/runs/<timestamp>)')
-  .option('--rank <number>', 'Scaffold rank to use (1-3)', '1')
+  .option('--rank <number>', 'Recommendation rank to use (1-3); defaults to first scaffoldable recommendation')
   .option('--ai-provider <provider>', 'AI provider: anthropic, openai-compatible, gemini, or keyword')
   .option('--ai-model <model>', 'AI model for the selected provider')
   .option('--ai-base-url <url>', 'Base URL for the selected AI provider')

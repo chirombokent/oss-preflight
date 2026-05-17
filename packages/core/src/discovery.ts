@@ -122,13 +122,15 @@ export async function discoverCandidatesWithSearch(
     return true;
   });
 
-  // Check if we need catalog fallback
-  const needsFallback = catalogFallback && deduplicated.length < 3;
+  const catalogCandidates = catalogFallback ? discoverCandidates(brief) : [];
+  const hasCatalogDomain = catalogCandidates.length > 0;
+
+  // Top up known domains with curated catalog candidates even when live search
+  // returns plenty of results. Registry search is broad; the catalog provides
+  // deterministic, visibly labelled anchors for common project intents.
+  const needsFallback = catalogFallback && (deduplicated.length < 3 || hasCatalogDomain);
 
   if (needsFallback) {
-    // Get catalog candidates
-    const catalogCandidates = discoverCandidates(brief);
-    
     // Add catalog candidates that aren't already in search results
     const catalogWithSource = catalogCandidates
       .filter(name => !seen.has(name))
@@ -137,10 +139,18 @@ export async function discoverCandidatesWithSearch(
         source: 'catalog-fallback' as const
       }));
 
+    if (catalogWithSource.length === 0 && deduplicated.length >= 3) {
+      return {
+        candidates: deduplicated,
+        method: 'search',
+        fallbackUsed: false
+      };
+    }
+
     return {
       candidates: [...deduplicated, ...catalogWithSource],
       method: 'search-with-catalog-fallback',
-      fallbackUsed: true
+      fallbackUsed: catalogWithSource.length > 0
     };
   }
 
@@ -161,8 +171,18 @@ export async function discoverCandidatesWithSearch(
  * @returns Search query string
  */
 function buildSearchQuery(brief: IdeaBrief): string {
-  // Combine domain and capabilities into search query
-  const parts = [brief.domain, ...brief.capabilities];
+  const domainQueries: Record<string, string[]> = {
+    discord: ['discord', 'bot', 'client'],
+    'web-framework': ['web', 'framework', 'http', 'server', 'routing'],
+    'data-science': ['data', 'science', 'dataframe', 'csv', 'notebook'],
+    testing: ['testing', 'unit', 'test', 'runner'],
+    'http-client': ['http', 'client', 'request', 'fetch'],
+  };
+
+  const parts = [
+    ...(domainQueries[brief.domain] ?? [brief.domain]),
+    ...brief.capabilities,
+  ];
   return parts.join(' ');
 }
 

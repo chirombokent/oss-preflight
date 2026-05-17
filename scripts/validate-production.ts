@@ -37,12 +37,41 @@ interface RunResult {
   stderr: string;
 }
 
-function run(command: string, args: string[], timeoutMs = 600_000, cwd = repoRoot): RunResult {
+/**
+ * Run a binary with array args and NO shell. Safe for paths containing
+ * spaces (this repo lives under ".../Main Projects/..."). Used for the
+ * `node <cliDist>` invocations.
+ */
+function run(
+  command: string,
+  args: string[],
+  timeoutMs = 600_000,
+  cwd = repoRoot
+): RunResult {
   const result = spawnSync(command, args, {
     cwd,
     encoding: 'utf-8',
     timeout: timeoutMs,
-    shell: process.platform === 'win32',
+    env: { ...process.env },
+  });
+  return {
+    code: result.status,
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+  };
+}
+
+/**
+ * Run a package script via the platform pnpm launcher. pnpm is a `.cmd`
+ * shim on Windows, so this path needs a shell — but it takes no
+ * space-containing path arguments, so shell quoting is not a concern.
+ */
+function runPnpm(args: string[], timeoutMs = 600_000): RunResult {
+  const result = spawnSync('pnpm', args, {
+    cwd: repoRoot,
+    encoding: 'utf-8',
+    timeout: timeoutMs,
+    shell: true,
     env: { ...process.env },
   });
   return {
@@ -64,11 +93,19 @@ function fail(criterion: string, evidence: string, blocker = true): ValidationRe
   return { criterion, passed: false, evidence, blocker };
 }
 
+function parseRecommendationNames(stdout: string): string[] {
+  const json = JSON.parse(stdout);
+  if (!Array.isArray(json.recommendations)) {
+    throw new Error('recommendations[] missing');
+  }
+  return json.recommendations.map((r: { candidate: { name: string } }) => r.candidate.name);
+}
+
 /**
  * AC1: pnpm build actually succeeds.
  */
 function checkBuild(): ValidationResult {
-  const r = run('pnpm', ['-s', 'build']);
+  const r = runPnpm(['-s', 'build']);
   return r.code === 0
     ? ok('AC1: pnpm build', 'Build exited 0')
     : fail('AC1: pnpm build', `Build exited ${r.code}: ${r.stderr.slice(-400)}`);
@@ -78,7 +115,7 @@ function checkBuild(): ValidationResult {
  * AC2: pnpm test actually passes.
  */
 function checkTests(): ValidationResult {
-  const r = run('pnpm', ['-s', 'test']);
+  const r = runPnpm(['-s', 'test']);
   return r.code === 0
     ? ok('AC2: pnpm test', 'Test suite exited 0')
     : fail('AC2: pnpm test', `Tests exited ${r.code}: ${r.stdout.slice(-400)}`);
@@ -128,7 +165,11 @@ function checkRecommendSave(tmp: string): ValidationResult {
  */
 function checkRunCommand(tmp: string): ValidationResult {
   const outDir = path.join(tmp, 'run');
-  const r = runCli(['run', '--idea', 'Discord bot that summarizes channel activity', '--out', outDir], 300_000);
+  const r = runCli(
+    ['run', '--idea', 'Discord bot that summarizes channel activity', '--out', outDir],
+    300_000,
+    tmp
+  );
   if (r.code !== 0) {
     return fail('AC4/5: run command', `Exit ${r.code}: ${r.stderr.slice(-300)}`);
   }
@@ -137,21 +178,95 @@ function checkRunCommand(tmp: string): ValidationResult {
   if (!reportExists || !workflowExists) {
     return fail('AC4/5: run command', 'Missing REPORT.md or workflow.json');
   }
-  return ok('AC4/5: run command', 'Scaffold + smoke test completed, artifacts written');
+  try {
+    const workflow = JSON.parse(fs.readFileSync(path.join(outDir, 'workflow.json'), 'utf-8'));
+    const scaffoldAction = workflow.actions.find((a: { type: string; success: boolean }) => a.type === 'scaffold' && a.success);
+    if (!scaffoldAction) {
+      return fail('AC4/5: run command', 'Workflow did not record a successful scaffold action');
+    }
+    if (workflow.verification.smokeTestPassed !== true) {
+      return fail('AC4/5: run command', 'Workflow smokeTestPassed was not true');
+    }
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(outDir, 'scaffold', 'package.json'), 'utf-8')
+    );
+    if (!packageJson.dependencies?.['discord.js']) {
+      return fail('AC4/5: run command', 'Generated scaffold did not depend on discord.js');
+    }
+    if (packageJson.dependencies?.['@discordjs/rest']) {
+      return fail('AC4/5: run command', 'Generated scaffold used @discordjs/rest as the template package');
+    }
+  } catch (e) {
+    return fail('AC4/5: run command', `Could not inspect generated artifacts: ${(e as Error).message}`);
+  }
+  return ok('AC4/5: run command', 'Scaffold selected discord.js, typecheck/smoke passed, artifacts written');
+}
+
+/**
+ * Random project usefulness: generic ideas should produce domain-appropriate
+ * packages, not broad registry-search hits ranked by popularity alone.
+ */
+function checkArbitraryIdeaRecommendations(tmp: string): ValidationResult {
+  const web = runCli(
+    ['recommend', '--idea', 'Node TypeScript web API framework', '--json'],
+    180_000,
+    tmp
+  );
+  if (web.code !== 0) {
+    return fail('P9: arbitrary idea recommendations', `Node web idea exited ${web.code}: ${web.stderr.slice(-300)}`);
+  }
+
+  const py = runCli(
+    ['recommend', '--idea', 'Python data science notebook for CSV analysis', '--json'],
+    180_000,
+    tmp
+  );
+  if (py.code !== 0) {
+    return fail('P9: arbitrary idea recommendations', `Python data idea exited ${py.code}: ${py.stderr.slice(-300)}`);
+  }
+
+  try {
+    const webNames = parseRecommendationNames(web.stdout);
+    const pyNames = parseRecommendationNames(py.stdout);
+    const hasWebFramework = webNames.some((name) => ['express', 'fastify', 'koa', 'hapi'].includes(name));
+    const hasDataScience = pyNames.some((name) => ['pandas', 'numpy', 'scikit-learn', 'matplotlib'].includes(name));
+
+    if (!hasWebFramework) {
+      return fail('P9: arbitrary idea recommendations', `Web API recommendations were ${webNames.join(', ')}`);
+    }
+    if (!hasDataScience) {
+      return fail('P9: arbitrary idea recommendations', `Python data recommendations were ${pyNames.join(', ')}`);
+    }
+    if (webNames[0] === 'pdfjs-dist') {
+      return fail('P9: arbitrary idea recommendations', 'pdfjs-dist still outranked web frameworks');
+    }
+
+    return ok(
+      'P9: arbitrary idea recommendations',
+      `Node web: ${webNames.join(', ')}; Python data: ${pyNames.join(', ')}`
+    );
+  } catch (e) {
+    return fail('P9: arbitrary idea recommendations', `Unparseable recommendation output: ${(e as Error).message}`);
+  }
 }
 
 /**
  * AC6: audit an npm repo via the real CLI JSON path.
  */
 function checkAuditNpm(tmp: string): ValidationResult {
-  const r = runCli([
-    'audit',
-    '--repo',
-    path.join(repoRoot, 'fixtures/npm-project'),
-    '--json',
-    '--out',
-    path.join(tmp, 'audit-npm'),
-  ]);
+  // Run in tmp so collector cache writes land under tmp, not the repo.
+  const r = runCli(
+    [
+      'audit',
+      '--repo',
+      path.join(repoRoot, 'fixtures/npm-project'),
+      '--json',
+      '--out',
+      path.join(tmp, 'audit-npm'),
+    ],
+    180_000,
+    tmp
+  );
   if (r.code !== 0) {
     return fail('AC6: audit npm repo', `Exit ${r.code}: ${r.stderr.slice(-300)}`);
   }
@@ -171,14 +286,18 @@ function checkAuditNpm(tmp: string): ValidationResult {
  */
 function checkAuditPython(tmp: string): ValidationResult {
   const outDir = path.join(tmp, 'audit-py');
-  const r = runCli([
-    'audit',
-    '--repo',
-    path.join(repoRoot, 'fixtures/python-project'),
-    '--json',
-    '--out',
-    outDir,
-  ]);
+  const r = runCli(
+    [
+      'audit',
+      '--repo',
+      path.join(repoRoot, 'fixtures/python-project'),
+      '--json',
+      '--out',
+      outDir,
+    ],
+    180_000,
+    tmp
+  );
   if (r.code !== 0) {
     return fail('AC7: audit python repo', `Exit ${r.code}: ${r.stderr.slice(-300)}`);
   }
@@ -314,10 +433,11 @@ async function main() {
   if (buildOk) {
     results.push(checkRecommendSave(tmp));
     results.push(checkRunCommand(tmp));
+    results.push(checkArbitraryIdeaRecommendations(tmp));
     results.push(checkAuditNpm(tmp));
     results.push(checkAuditPython(tmp));
   } else {
-    for (const c of ['AC3: recommend', 'AC4/5: run', 'AC6: audit npm', 'AC7: audit python']) {
+    for (const c of ['AC3: recommend', 'AC4/5: run', 'P9: arbitrary idea recommendations', 'AC6: audit npm', 'AC7: audit python']) {
       results.push(fail(c, 'Skipped — build failed'));
     }
   }

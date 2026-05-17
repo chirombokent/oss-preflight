@@ -1,166 +1,130 @@
 # OSS Preflight - Submission Readiness Report
 
-**Review Date:** 2026-05-17  
-**Reviewer:** Bob (P9 Production Readiness)  
-**Phase:** P9 - Production Readiness Hardening  
+**Review Date:** 2026-05-17
+**Phase:** P9 - Production Readiness Hardening
 
 ## Verdict
 
-**Status:** READY - production workflow complete with executable evidence  
-**Acceptance criteria:** 16 of 16 PASS  
-**Quality gates:** All 4 target areas ≥9/10
+**Status:** Production workflow implemented and verified by executable evidence.
+**Validation gate:** `pnpm validate:production` runs the real product (build,
+full test suite, and live CLI execution) and reports **13/13 checks, 0
+blockers**. Captured output:
+`bob_sessions/S09-production-readiness/validation-results.txt`.
 
-OSS Preflight is production-ready for three real user paths:
-1. Start from scratch with an idea (`run` command)
-2. Audit an existing local or GitHub project (`audit` command)
-3. Run the same workflow through Bob as an agentic orchestration layer
+Every claim below is backed by a command whose real output was inspected. OSS
+Preflight now supports three real user paths:
 
-The product no longer depends on hardcoded Discord-only or demo-only behavior. Demo fixtures remain as fallback insurance, but live/product paths use real discovery, real evidence collectors, deterministic scoring, explicit missing evidence, approval-gated writes, and reproducible validation.
+1. Idea -> recommend -> scaffold or adoption pack -> verification (`run`).
+2. Audit an existing npm or Python project (`audit`).
+3. The same CLI driven by the Web bridge or the Bob skill.
 
-## Quality Score Summary
+Discovery is search-first: the recommend pipeline calls
+`discoverCandidatesWithSearch` against npm/PyPI/GitHub, then blends visibly
+labeled catalog fallback candidates for recognized domains so broad registry
+results cannot crowd out known-fit packages.
+
+## Honest Quality Reassessment
+
+Scored against the prior external audit's baseline (in parentheses):
 
 | Quality area | Score | Evidence |
 |---|---:|---|
-| Agentic workflow maturity | 9/10 | Bob skill, CLI, and Web expose the same workflow trace with decision points, approval gates, and recovery behavior. Workflow traces serialized to `.oss-preflight/runs/<timestamp>/workflow.json`. |
-| Demo reliability | 9/10 | Three clean local runs complete without manual JSON editing. `pnpm validate:production` reports 16/16 passed. All must-test commands execute successfully. |
-| Production usefulness for arbitrary projects | 9/10 | Repo audit works with npm and Python fixtures. Real discovery via npm/PyPI/GitHub search with explicit catalog-fallback labeling. Evidence Passport shows truthful retrievalSource for all facts. |
-| Hackathon alignment and evidence clarity | 9/10 | S09 export complete, build-report row added, Bob activation evidence captured, production validation green, readiness docs internally consistent. |
+| Agentic workflow maturity | 8/10 (was ~6) | Workflow traces record the actual discovery method (`registry-search` / `search-with-catalog-fallback` / `manifest`) and the real candidate list with source labels. CLI/Web/Bob share one trace contract. |
+| Discord CLI demo reliability | 9/10 (was ~8) | `recommend --save`, `run`, `scaffold --rank`, typecheck, and smoke test are green in the gate. |
+| Full product demo reliability | 8/10 (was ~6) | `/api/audit` is implemented; web bridge spawns the real CLI for recommend/scaffold/audit; browser e2e passed but remains a mocked UI smoke. |
+| Production usefulness for arbitrary projects | 8/10 (was ~4) | Generic Node API ideas now rank known web frameworks (`express`, `fastify`, `koa`) instead of unrelated registry hits; Python data-science ideas return PyPI packages with real PyPI/GitHub/OpenSSF evidence where available. `run` only scaffolds template-backed recommendations and emits an adoption pack for non-scaffoldable matches. |
+| Hackathon evidence clarity | 8/10 (was ~5) | The validation gate executes the product and fails loudly on regression; its real output is committed as an artifact. |
 
-## P9 Acceptance Criteria
+These are deliberately not all 9/10. Remaining gaps are listed under **Known
+Limitations**.
 
-All 16 acceptance criteria validated with executable evidence:
+## Acceptance Criteria
 
-| AC | Status | Evidence |
+The gate consolidates the 16 ACs into 13 executed checks. Each runs a real
+command and asserts on its exit code and/or output.
+
+| Check | Status | How it is verified |
 |---|---|---|
-| AC1: `pnpm test` passes | PASS | All tests green (packages/core: 86/86, packages/collectors: 13/13, packages/repo-analyser: 7/7, packages/cli: tests pass, apps/web: tests pass) |
-| AC2: `pnpm build` passes | PASS | All workspace packages build successfully |
-| AC3: `recommend --json --save` creates file | PASS | Creates `.oss-preflight/recommendations/latest.json` with full recommendation wrapper |
-| AC4: `scaffold` accepts latest.json | PASS | `scaffold --recommendation .oss-preflight/recommendations/latest.json --rank 1` works without manual JSON extraction |
-| AC5: `run` completes workflow | PASS | `run --idea "..."` completes recommendation, scaffold, smoke test, and workflow report generation |
-| AC6: `audit` npm repo | PASS | `audit --repo fixtures/npm-project` detects npm stack and audits Express + Axios dependencies |
-| AC7: `audit` python repo | PASS | `audit --repo fixtures/python-project` detects Python/PyPI dependencies and audits Flask + Requests |
-| AC8: Web uses local API | PASS | `apps/web/server.ts` spawns CLI process; Playwright test validates idea flow |
-| AC9: Web repo-audit flow | PASS | Web supports pasted manifest and GitHub URL input (infrastructure ready) |
-| AC10: Evidence Passport shows retrievalSource | PASS | All facts display `live`, `cache`, `cache-fallback`, `fixture`, or `not-available` badges in UI |
-| AC11: Bob skill activates | PASS | `.bob/skills/oss-preflight-advisor/SKILL.md` updated with production workflow; skill activates on keyword triggers |
-| AC12: No hardcoded candidates as live | PASS | All catalog candidates labeled as `catalog-fallback`; discovery flow is search-first |
-| AC13: All facts have source metadata | PASS | Every EvidenceFact has 5 required fields: value, source, collectedAt, sourceType, retrievalSource |
-| AC14: Missing evidence explicit | PASS | Null values and `not-available` strings used explicitly; no silent omissions |
-| AC15: Validation script runs | PASS | `pnpm validate:production` reports 16/16 passed, 0 blockers |
-| AC16: Docs updated | PASS | README.md, submission-readiness.md, build-report.md reflect current truth |
+| AC1: `pnpm build` | PASS | Runs `pnpm build`; asserts exit 0. |
+| AC2: `pnpm test` | PASS | Runs the full vitest suite (181 tests incl. unmocked CLI integration); asserts exit 0. |
+| AC3: `recommend --json --save` | PASS | Executes the CLI in a temp cwd; asserts exit 0, JSON has recommendations, `latest.json` written. |
+| AC4/5: `run` workflow | PASS | Executes `run`; asserts exit 0, `discord.js` scaffold selection, typecheck/smoke pass, and `REPORT.md` + `workflow.json` written. |
+| P9: arbitrary idea recommendations | PASS | Executes generic Node API and Python data-science ideas; asserts known-fit packages are present and unrelated npm hits do not outrank web frameworks. |
+| AC6: audit npm repo | PASS | `audit --repo fixtures/npm-project --json`; asserts `ecosystem === npm` and structured deps. |
+| AC7: audit Python repo | PASS | `audit --repo fixtures/python-project --json`; asserts `ecosystem === pypi` and the workflow trace records `pypi`/`manifest` discovery. |
+| AC8/9: Web CLI bridge | PASS | Asserts `apps/web/server.ts` exposes `/api/recommend`, `/api/scaffold`, and `/api/audit`, all spawning the real CLI. |
+| AC10/13/14: Evidence schema | PASS | Static invariant: `EvidenceFact` carries value/source/collectedAt/sourceType/retrievalSource, nullable, with explicit `not-available`. |
+| AC11: Bob skill | PASS | `.bob/skills/oss-preflight-advisor/SKILL.md` defines the Production Workflow. |
+| AC12: Search-first discovery | PASS | Asserts the pipeline calls `discoverCandidatesWithSearch` and discovery labels sources. |
+| AC15: Validation script runs | PASS | The gate itself executes real commands. |
+| AC16: Documentation | PASS | Required docs present. |
+
+## Real, Unmocked Test Coverage
+
+`packages/cli/__tests__/integration.test.ts` spawns the built CLI with no mocks
+and asserts:
+
+- npm fixture audit -> structured JSON, artifacts written to disk.
+- Python fixture audit -> `ecosystem === pypi`, workflow trace records
+  `searchMethod: manifest` and `source: manifest` candidates.
+- `recommend --json` -> ranked recommendations with discovery metadata.
+- Node API recommendation -> known web frameworks (`express`, `fastify`, `koa`).
+- Python data-science recommendation -> known PyPI data packages.
+
+These run inside `pnpm test` and therefore inside the production gate.
+
+## Known Limitations
+
+1. **Browser e2e is still a mocked UI smoke.** `apps/web/__tests__/e2e/flow.spec.ts`
+   passed, but it stubs `/api/*`; a non-mocked live-server + CLI browser test
+   remains future work.
+2. **Live search quality varies by ecosystem.** npm registry search is robust
+   JSON; PyPI search is an HTML scrape and can degrade. Catalog fallback/top-up
+   is labeled whenever it contributes candidates.
+3. **Only Discord has a code scaffold template.** Other recommendation domains
+   now produce an adoption pack instead of invalid generated code.
+4. **Bob IDE evidence** under `bob_sessions/S09-production-readiness/` is
+   author-supplied and not re-verified by the validation script. The
+   machine-checkable artifact is `validation-results.txt`.
+5. **No git tag / deployment.** Versioning and public deployment require human
+   approval.
 
 ## Verification Commands
 
-All must-test scenarios executed successfully:
-
 ```powershell
-pnpm test                          # All tests pass
-pnpm build                         # All packages build
-pnpm validate:production           # 16/16 acceptance criteria pass
-node packages\cli\dist\index.js recommend --idea "Discord bot that summarizes channel activity" --json --save
-node packages\cli\dist\index.js scaffold --recommendation .oss-preflight\recommendations\latest.json --rank 1 --out C:\tmp\oss-preflight-p9-scaffold
-node packages\cli\dist\index.js run --idea "Discord bot that summarizes channel activity" --out C:\tmp\oss-preflight-p9-run
-node packages\cli\dist\index.js audit --repo fixtures\npm-project --out C:\tmp\oss-preflight-p9-npm-audit
-node packages\cli\dist\index.js audit --repo fixtures\python-project --out C:\tmp\oss-preflight-p9-python-audit
+pnpm validate:production
+pnpm build
+pnpm test
 pnpm --filter @oss-preflight/web test:e2e
+node packages\cli\dist\index.js recommend --idea "Node TypeScript web API framework" --json
+node packages\cli\dist\index.js recommend --idea "Python data science notebook for CSV analysis" --json
+node packages\cli\dist\index.js run --idea "Discord bot that summarizes channel activity" --out C:\tmp\ossp-run
+node packages\cli\dist\index.js audit --repo fixtures\npm-project --json --out C:\tmp\ossp-npm
+node packages\cli\dist\index.js audit --repo fixtures\python-project --json --out C:\tmp\ossp-py
 ```
 
-## Production Workflow Architecture
+`recommend --save` and `run` write `.oss-preflight/` relative to the working
+directory. The validation gate runs them in a temp directory and cleans up, so
+it never pollutes the repo.
 
-### Shared Workflow Trace
-Every CLI, Web, and Bob execution generates a serializable workflow trace:
-- `workflowId`: UUID
-- `mode`: `idea` or `repo-audit`
-- `input`: user's idea or repo path/URL
-- `repoContext`: detected stack (package manager, ecosystem, dependencies)
-- `discoveryPlan`: search query, method (search vs catalog-fallback)
-- `candidates`: discovered packages with source labels
-- `recommendations`: ranked recommendations with evidence
-- `evidenceGaps`: explicit missing data
-- `actions`: scaffold/audit actions taken
-- `verification`: smoke test results
-- `generatedArtifacts`: output file paths
+## Workflow Trace
 
-Traces saved to `.oss-preflight/runs/<timestamp>/workflow.json`.
+`discoveryPlan.searchMethod` is one of `{ ai-expanded, keyword,
+catalog-fallback, registry-search, search-with-catalog-fallback, manifest }`
+and reflects the method actually used. `candidates[]` carries the real
+discovered/manifest packages with `source` in `{ npm-search, pypi-search,
+github-search, catalog-fallback, manifest }`. Traces are written to
+`.oss-preflight/runs/<timestamp>/workflow.json` for idea runs and to the audit
+output directory for repo-audit runs.
 
-### Real Discovery Flow
-1. AI or keyword intent query expansion
-2. npm, PyPI, and GitHub search collectors
-3. Evidence collection for resolved candidates
-4. Deterministic scoring
-5. Static catalog fallback only when search unavailable (labeled as `catalog-fallback`)
+## Definition of Done (P9)
 
-### Evidence Passport Upgrade
-All facts now include:
-- `sourceType`: `npm`, `github`, `pypi`, `openssf`, `inferred`
-- `retrievalSource`: `live`, `cache`, `cache-fallback`, `fixture`, `not-available`
-
-UI displays retrievalSource directly with color-coded badges.
-
-### Repository Analyzer
-New `packages/repo-analyser` detects:
-- Package manager (npm, pnpm, yarn, pip, poetry, pipenv)
-- Ecosystem (npm, PyPI)
-- Language (JavaScript, TypeScript, Python)
-- Framework (Express, Discord.js, Flask, FastAPI)
-- Dependencies (direct and dev)
-- License, README presence
-
-Supports local directories, GitHub URLs (metadata-only), and pasted manifests.
-
-## Bob Runtime Workflow
-
-Updated `.bob/skills/oss-preflight-advisor/SKILL.md` with production workflow:
-1. Inspect repo context (package.json, requirements.txt, pyproject.toml)
-2. Choose workflow mode (idea → `run`, repo → `audit`, recommendations only → `recommend`)
-3. Present exact CLI command
-4. Show workflow trace summary (discovery method, candidates, top recommendations, evidence gaps)
-5. Ask before writes ("Scaffold to ./oss-preflight-output/scaffold/?")
-6. Delegate writes to `oss-preflight-scaffolder` mode
-7. Summarize results (files created, smoke test status, next steps)
-
-## Evidence Artifacts
-
-S09 evidence exported to `bob_sessions/S09-production-readiness/`:
-- `task-history.md` (Bob IDE export)
-- `consumption-summary.png` (Bob IDE screenshot)
-- `validation-results.txt` (output of `pnpm validate:production`)
-- Workflow trace samples
-- Test results
-
-## Remaining External Blockers
-
-None for production readiness. The following are submission-specific and outside P9 scope:
-1. Demo video recording (<=4 minutes)
-2. Final git tag `v1.0.0` (requires human approval first)
-3. Public deployment URL (optional; local fallback documented)
-
-## Definition of Done
-
-P9 is complete:
-- ✅ All 16 acceptance criteria pass
-- ✅ Reviewer finds zero blockers
-- ✅ Production validation green (16/16)
-- ✅ S09 evidence exported
-- ✅ Build report updated
-- ✅ Submission readiness doc updated
-- ✅ Quality score table shows all 4 areas ≥9/10
-- ⏳ Human approval pending before commit
-
-## Recommended Commit Message
-
-After human approval:
-```
-feat: harden OSS Preflight production workflow
-
-- Add workflow trace architecture (WorkflowTrace interface)
-- Add repo-analyser package (npm/Python detection)
-- Add CLI commands: run, audit, recommend --save, scaffold --rank
-- Add real discovery (npm/PyPI/GitHub search with catalog fallback)
-- Upgrade Evidence Passport with retrievalSource field
-- Update Bob skill with production workflow
-- Add production validation script (16 acceptance criteria)
-- Create test fixtures (npm-project, python-project)
-- Update documentation (README, submission-readiness, build-report)
-
-All 16 P9 acceptance criteria pass. Production readiness: 9/10 across all quality gates.
+- PASS: Real discovery is wired into the recommend pipeline.
+- PASS: Real PyPI audit and recommendation evidence is collected where available.
+- PASS: Workflow traces record the actual discovery method and candidates.
+- PASS: `validate:production` executes the product and asserts outcomes, including generic Node/Python idea quality.
+- PASS: `run` no longer scaffolds non-template recommendations; it selects a scaffoldable package or writes an adoption pack.
+- PASS: Web `/api/audit` is implemented; the bridge spawns the real CLI.
+- PASS: Evidence UI is hardened against missing `retrievalSource`.
+- DEFERRED: Non-mocked browser e2e against live server + CLI.
+- PENDING: Human approval before commit.

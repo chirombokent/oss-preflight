@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "unrouting",
+      "version": "0.1.7",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/unrouting/-/unrouting-0.1.7.tgz"
+      },
+      "description": "[![npm version][npm-version-src]][npm-version-href] [![npm downloads][npm-downloads-src]][npm-downloads-href] [![bundle][bundle-src]][bundle-href] [![Codecov][codecov-src]][codecov-href] [![License][license-src]][license-href] [![JSDocs][jsdocs-src]][jsdo",
+      "license": "MIT",
+      "homepage": "https://github.com/unjs/unrouting#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/unjs/unrouting.git"
+      }
+    },
+    "weeklyDownloads": 499283,
+    "sourceUrl": "https://registry.npmjs.org/unrouting/latest",
+    "collectedAt": "2026-05-17T13:57:40.698Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.710Z",
+  "source": "live"
+}

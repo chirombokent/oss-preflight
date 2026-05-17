@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "@tanstack/router-plugin",
+      "version": "1.168.6",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@tanstack/router-plugin/-/router-plugin-1.168.6.tgz"
+      },
+      "description": "Modern and scalable routing for React applications",
+      "license": "MIT",
+      "homepage": "https://tanstack.com/router",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TanStack/router.git"
+      }
+    },
+    "weeklyDownloads": 15475567,
+    "sourceUrl": "https://registry.npmjs.org/%40tanstack%2Frouter-plugin/latest",
+    "collectedAt": "2026-05-17T13:57:40.592Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:57:40.595Z",
+  "source": "live"
+}

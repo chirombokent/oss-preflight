@@ -1,0 +1,217 @@
+{
+  "data": {
+    "scorecard": {
+      "date": "2026-05-11",
+      "repo": {
+        "name": "github.com/mozilla/pdf.js",
+        "commit": "bf9ae7622f723596f2ab4de19b115f544bed8e33"
+      },
+      "scorecard": {
+        "version": "v5.5.1-0.20260504095009-117f74463c54",
+        "commit": "117f74463c544dc32b6da4bd38db575617334b49"
+      },
+      "score": 8.3,
+      "checks": [
+        {
+          "name": "Code-Review",
+          "score": 10,
+          "reason": "all changesets reviewed",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#code-review"
+          }
+        },
+        {
+          "name": "Maintained",
+          "score": 10,
+          "reason": "30 commit(s) and 10 issue activity found in the last 90 days -- score normalized to 10",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project is \"actively maintained\".",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#maintained"
+          }
+        },
+        {
+          "name": "Security-Policy",
+          "score": 10,
+          "reason": "security policy file detected",
+          "details": [
+            "Info: security policy file detected: .github/SECURITY.md:1",
+            "Info: Found linked content: .github/SECURITY.md:1",
+            "Info: Found disclosure, vulnerability, and/or timelines in security policy: .github/SECURITY.md:1",
+            "Info: Found text in security policy: .github/SECURITY.md:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has published a security policy.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#security-policy"
+          }
+        },
+        {
+          "name": "Dangerous-Workflow",
+          "score": 10,
+          "reason": "no dangerous workflow patterns detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#dangerous-workflow"
+          }
+        },
+        {
+          "name": "CII-Best-Practices",
+          "score": 0,
+          "reason": "no effort to earn an OpenSSF best practices badge detected",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the project has an OpenSSF (formerly CII) Best Practices Badge.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#cii-best-practices"
+          }
+        },
+        {
+          "name": "Token-Permissions",
+          "score": 10,
+          "reason": "GitHub workflow tokens follow principle of least privilege",
+          "details": [
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/ci.yml:4",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/codeql.yml:4",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/fluent_linter.yml:19",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/font_tests.yml:23",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/integration_tests.yml:25",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/lint.yml:4",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/notify-pdf-sync.yml:10",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/prefs_tests.yml:4",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/publish_release.yml:6",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/publish_website.yml:7",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/types_tests.yml:4",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/unit_tests.yml:25",
+            "Info: topLevel 'contents' permission set to 'read': .github/workflows/update_locales.yml:9",
+            "Info: no jobLevel write permissions found"
+          ],
+          "documentation": {
+            "short": "Determines if the project's workflows follow the principle of least privilege.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#token-permissions"
+          }
+        },
+        {
+          "name": "Binary-Artifacts",
+          "score": 6,
+          "reason": "binaries present in source code",
+          "details": [
+            "Warn: binary detected: external/jbig2/jbig2.wasm:1",
+            "Warn: binary detected: external/openjpeg/openjpeg.wasm:1",
+            "Warn: binary detected: external/qcms/qcms_bg.wasm:1",
+            "Warn: binary detected: external/quickjs/quickjs-eval.wasm:1"
+          ],
+          "documentation": {
+            "short": "Determines if the project has generated executable (binary) artifacts in the source repository.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#binary-artifacts"
+          }
+        },
+        {
+          "name": "License",
+          "score": 10,
+          "reason": "license file detected",
+          "details": [
+            "Info: project has a license file: LICENSE:0",
+            "Info: FSF or OSI recognized license: Apache License 2.0: LICENSE:0"
+          ],
+          "documentation": {
+            "short": "Determines if the project has defined a license.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#license"
+          }
+        },
+        {
+          "name": "Branch-Protection",
+          "score": -1,
+          "reason": "internal error: error during branchesHandler.setup: internal error: some github tokens can't read classic branch protection rules: https://github.com/ossf/scorecard-action/blob/main/docs/authentication/fine-grained-auth-token.md",
+          "details": null,
+          "documentation": {
+            "short": "Determines if the default and release branches are protected with GitHub's branch protection settings.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#branch-protection"
+          }
+        },
+        {
+          "name": "Pinned-Dependencies",
+          "score": 9,
+          "reason": "dependency not pinned by hash detected -- score normalized to 9",
+          "details": [
+            "Warn: pipCommand not pinned by hash: .github/workflows/fluent_linter.yml:41",
+            "Warn: pipCommand not pinned by hash: .github/workflows/font_tests.yml:69",
+            "Info:  38 out of  38 GitHub-owned GitHubAction dependencies pinned",
+            "Info:   3 out of   3 third-party GitHubAction dependencies pinned",
+            "Info:   0 out of   2 pipCommand dependencies pinned",
+            "Info:  10 out of  10 npmCommand dependencies pinned"
+          ],
+          "documentation": {
+            "short": "Determines if the project has declared and pinned the dependencies of its build process.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#pinned-dependencies"
+          }
+        },
+        {
+          "name": "Packaging",
+          "score": 10,
+          "reason": "packaging workflow detected",
+          "details": [
+            "Info: Project packages its releases by way of GitHub Actions.: .github/workflows/publish_release.yml:10"
+          ],
+          "documentation": {
+            "short": "Determines if the project is published as a package that others can easily download, install, easily update, and uninstall.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#packaging"
+          }
+        },
+        {
+          "name": "Signed-Releases",
+          "score": 0,
+          "reason": "Project has not signed or included provenance with any releases.",
+          "details": [
+            "Warn: release artifact v5.7.284 not signed: https://api.github.com/repos/mozilla/pdf.js/releases/314221941",
+            "Warn: release artifact v5.6.205 not signed: https://api.github.com/repos/mozilla/pdf.js/releases/302892430",
+            "Warn: release artifact v5.5.207 not signed: https://api.github.com/repos/mozilla/pdf.js/releases/291841298",
+            "Warn: release artifact v5.4.624 not signed: https://api.github.com/repos/mozilla/pdf.js/releases/281955544",
+            "Warn: release artifact v5.4.530 not signed: https://api.github.com/repos/mozilla/pdf.js/releases/273091099",
+            "Warn: release artifact v5.7.284 does not have provenance: https://api.github.com/repos/mozilla/pdf.js/releases/314221941",
+            "Warn: release artifact v5.6.205 does not have provenance: https://api.github.com/repos/mozilla/pdf.js/releases/302892430",
+            "Warn: release artifact v5.5.207 does not have provenance: https://api.github.com/repos/mozilla/pdf.js/releases/291841298",
+            "Warn: release artifact v5.4.624 does not have provenance: https://api.github.com/repos/mozilla/pdf.js/releases/281955544",
+            "Warn: release artifact v5.4.530 does not have provenance: https://api.github.com/repos/mozilla/pdf.js/releases/273091099"
+          ],
+          "documentation": {
+            "short": "Determines if the project cryptographically signs release artifacts.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#signed-releases"
+          }
+        },
+        {
+          "name": "Fuzzing",
+          "score": 10,
+          "reason": "project is fuzzed",
+          "details": [
+            "Info: OSSFuzz integration found"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses fuzzing.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#fuzzing"
+          }
+        },
+        {
+          "name": "SAST",
+          "score": 10,
+          "reason": "SAST tool is run on all commits",
+          "details": [
+            "Info: SAST configuration detected: CodeQL",
+            "Info: all commits (30) are checked with a SAST tool"
+          ],
+          "documentation": {
+            "short": "Determines if the project uses static code analysis.",
+            "url": "https://github.com/ossf/scorecard/blob/117f74463c544dc32b6da4bd38db575617334b49/docs/checks.md#sast"
+          }
+        }
+      ]
+    },
+    "score": 8.3,
+    "sourceUrl": "https://api.securityscorecards.dev/projects/github.com/mozilla/pdf.js",
+    "collectedAt": "2026-05-17T13:20:53.019Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:53.020Z",
+  "source": "live"
+}

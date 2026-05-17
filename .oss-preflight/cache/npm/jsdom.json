@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "jsdom",
+      "version": "29.1.1",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/jsdom/-/jsdom-29.1.1.tgz"
+      },
+      "description": "A JavaScript implementation of many web standards",
+      "license": "MIT",
+      "homepage": "https://github.com/jsdom/jsdom#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jsdom/jsdom.git"
+      }
+    },
+    "weeklyDownloads": 72186358,
+    "sourceUrl": "https://registry.npmjs.org/jsdom/latest",
+    "collectedAt": "2026-05-17T13:20:52.100Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:20:52.123Z",
+  "source": "live"
+}

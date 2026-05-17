@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "prisma",
+      "version": "7.8.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/prisma/-/prisma-7.8.0.tgz"
+      },
+      "description": "Prisma is an open-source database toolkit. It includes a JavaScript/TypeScript ORM for Node.js, migrations and a modern GUI to view and edit the data in your database. You can use Prisma in new projects or add it to an existing one.",
+      "license": "Apache-2.0",
+      "homepage": "https://www.prisma.io",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/prisma/prisma.git"
+      }
+    },
+    "weeklyDownloads": 12565243,
+    "sourceUrl": "https://registry.npmjs.org/prisma/latest",
+    "collectedAt": "2026-05-17T13:59:43.374Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.378Z",
+  "source": "live"
+}

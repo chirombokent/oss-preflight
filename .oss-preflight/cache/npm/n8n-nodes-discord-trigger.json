@@ -1,0 +1,24 @@
+{
+  "data": {
+    "metadata": {
+      "name": "n8n-nodes-discord-trigger",
+      "version": "0.8.0",
+      "dist": {
+        "tarball": "https://registry.npmjs.org/n8n-nodes-discord-trigger/-/n8n-nodes-discord-trigger-0.8.0.tgz"
+      },
+      "description": "A node that triggers a workflow whenever a message from discord is sent.",
+      "license": "MIT",
+      "homepage": "https://github.com/katerlol/n8n-discord-trigger#readme",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/katerlol/n8n-discord-trigger.git"
+      }
+    },
+    "weeklyDownloads": 521,
+    "sourceUrl": "https://registry.npmjs.org/n8n-nodes-discord-trigger/latest",
+    "collectedAt": "2026-05-17T13:59:43.223Z",
+    "source": "live"
+  },
+  "collectedAt": "2026-05-17T13:59:43.224Z",
+  "source": "live"
+}

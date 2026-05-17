@@ -171,7 +171,7 @@ describe('discovery.ts', () => {
       expect(result.candidates[0].source).toBe('npm-search');
       expect(result.method).toBe('search');
       expect(result.fallbackUsed).toBe(false);
-      expect(mockSearch).toHaveBeenCalledWith('discord bot message processing', 'npm');
+      expect(mockSearch).toHaveBeenCalledWith('discord bot client bot message processing', 'npm');
     });
 
     it('falls back to catalog when search returns < 3 candidates', async () => {

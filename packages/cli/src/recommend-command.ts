@@ -13,6 +13,7 @@ import {
 } from '@oss-preflight/core';
 import {
   collectNpmData,
+  collectPyPIData,
   collectGitHubData,
   collectOpenSSFData,
   searchNpm,
@@ -168,6 +169,41 @@ function parseGitHubRepo(repositoryUrl?: string | null): string | null {
   return `${match[1]}/${match[2]}`;
 }
 
+function findPyPIRepositoryUrl(projectUrls?: Record<string, string>): string | null {
+  if (!projectUrls) {
+    return null;
+  }
+
+  const preferredKeys = ['Source', 'Source Code', 'Code', 'Repository', 'Homepage', 'GitHub'];
+  for (const key of preferredKeys) {
+    const value = projectUrls[key];
+    if (value && value.includes('github.com')) {
+      return normalizeRepositoryUrl(value);
+    }
+  }
+
+  const githubUrl = Object.values(projectUrls).find((value) => value.includes('github.com'));
+  return githubUrl ? normalizeRepositoryUrl(githubUrl) : null;
+}
+
+function normalizePyPILicense(license?: string | null): string | null {
+  const trimmed = license?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const spdxLike = trimmed.match(/\b(MIT|BSD-2-Clause|BSD-3-Clause|BSD|Apache-2\.0|MPL-2\.0|GPL-2\.0|GPL-3\.0|LGPL-2\.1|LGPL-3\.0|PSF)\b/i);
+  if (spdxLike) {
+    return spdxLike[0];
+  }
+
+  const firstLine = trimmed.split(/\r?\n/).map((line) => line.trim()).find(Boolean);
+  if (!firstLine) {
+    return null;
+  }
+  return firstLine.length > 120 ? `${firstLine.slice(0, 117)}...` : firstLine;
+}
+
 /**
  * Search adapter signature consumed by core's `discoverCandidatesWithSearch`.
  */
@@ -300,36 +336,61 @@ async function gatherEvidence(
   const evidence: EvidenceMap = {};
 
   const enriched = await Promise.all(candidates.map(async (candidate) => {
-    if (candidate.ecosystem !== 'npm') {
+    if (candidate.ecosystem !== 'npm' && candidate.ecosystem !== 'pypi') {
       return candidate;
     }
 
-    let resolved: Candidate;
+    let resolved: Candidate = candidate;
     const inputs: CollectedInputs = {};
 
-    try {
-      const npmData = await collectNpmData(candidate.name, forceRefresh);
-      resolved = {
-        ...candidate,
-        version: npmData.metadata.version,
-        homepageUrl: npmData.metadata.homepage ?? candidate.homepageUrl,
-        repositoryUrl:
-          normalizeRepositoryUrl(npmData.metadata.repository?.url) ?? candidate.repositoryUrl,
-      };
-      inputs.npm = {
-        metadata: { license: npmData.metadata.license ?? null },
-        weeklyDownloads: npmData.weeklyDownloads,
-        sourceUrl: npmData.sourceUrl,
-        collectedAt: npmData.collectedAt,
-        retrievalSource: npmData.source,
-      };
-    } catch {
-      const fallback = DEMO_PACKAGE_FALLBACKS[candidate.name.toLowerCase()];
-      resolved = {
-        ...candidate,
-        ...fallback,
-        version: fallback?.version ?? candidate.version,
-      };
+    if (candidate.ecosystem === 'npm') {
+      try {
+        const npmData = await collectNpmData(candidate.name, forceRefresh);
+        resolved = {
+          ...candidate,
+          version: npmData.metadata.version,
+          homepageUrl: npmData.metadata.homepage ?? candidate.homepageUrl,
+          repositoryUrl:
+            normalizeRepositoryUrl(npmData.metadata.repository?.url) ?? candidate.repositoryUrl,
+        };
+        inputs.npm = {
+          metadata: { license: npmData.metadata.license ?? null },
+          weeklyDownloads: npmData.weeklyDownloads,
+          sourceUrl: npmData.sourceUrl,
+          collectedAt: npmData.collectedAt,
+          retrievalSource: npmData.source,
+        };
+      } catch {
+        const fallback = DEMO_PACKAGE_FALLBACKS[candidate.name.toLowerCase()];
+        resolved = {
+          ...candidate,
+          ...fallback,
+          version: fallback?.version ?? candidate.version,
+        };
+      }
+    } else if (candidate.ecosystem === 'pypi') {
+      try {
+        const pypiData = await collectPyPIData(candidate.name, forceRefresh);
+        const projectUrls = pypiData.metadata.info.project_urls;
+        resolved = {
+          ...candidate,
+          version: pypiData.metadata.info.version,
+          homepageUrl:
+            pypiData.metadata.info.home_page ??
+            projectUrls?.Homepage ??
+            projectUrls?.Documentation ??
+            candidate.homepageUrl,
+          repositoryUrl: findPyPIRepositoryUrl(projectUrls) ?? candidate.repositoryUrl,
+        };
+        inputs.pypi = {
+          metadata: { license: normalizePyPILicense(pypiData.metadata.info.license) },
+          sourceUrl: pypiData.sourceUrl,
+          collectedAt: pypiData.collectedAt,
+          retrievalSource: pypiData.source,
+        };
+      } catch {
+        resolved = candidate;
+      }
     }
 
     // Repo-derived evidence (GitHub + OpenSSF), best-effort.
