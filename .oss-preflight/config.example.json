@@ -1,0 +1,7 @@
+{
+  "ai": {
+    "provider": "keyword",
+    "model": null,
+    "baseUrl": null
+  }
+}

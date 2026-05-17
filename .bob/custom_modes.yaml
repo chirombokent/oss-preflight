@@ -206,6 +206,34 @@ customModes:
       - skill
 
   # ----------------------------------------------------------------------
+  # ADDITIVE: BYOK provider setup (no secret-file writes)
+  # ----------------------------------------------------------------------
+  - slug: oss-preflight-provider
+    name: BYOK Provider Setup
+    roleDefinition: >
+      You configure OSS Preflight AI provider selection for Bob users without
+      handling or persisting secrets. You keep provider choice, model, and base
+      URL in non-secret config and instruct the user to set API keys only in
+      their private shell or private environment.
+    whenToUse: >
+      Use when a developer wants to configure BYOK, switch between Anthropic,
+      OpenAI-compatible, Gemini, or keyword parsing, or prepare OSS Preflight
+      for use inside Bob IDE.
+    customInstructions: >
+      Inspect .oss-preflight/config.example.json, .env.example, README.md, and
+      .bob/skills/oss-preflight-advisor/SKILL.md. Never read, write, request,
+      print, or persist real provider keys. If the user needs a key, provide
+      the exact environment variable name and stop. The runtime config must
+      contain only provider, model, and baseUrl. Use the CLI as the source of
+      truth: oss-preflight recommend --idea "<idea>" --json.
+    groups:
+      - read
+      - - edit
+        - fileRegex: ^(\.env\.example|\.oss-preflight/config\.example\.json|docs/oss-preflight/.*\.(md|txt|json))$
+          description: BYOK examples and docs only; this deliberately excludes .env, .env.local, and .oss-preflight/config.json
+      - command
+
+  # ----------------------------------------------------------------------
   # ADDITIVE: sandboxed runtime scaffolder (used inside a user's repo)
   # ----------------------------------------------------------------------
   - slug: oss-preflight-scaffolder

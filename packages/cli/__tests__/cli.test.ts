@@ -1,10 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import type { IdeaBrief, Candidate, Recommendation } from '@oss-preflight/core';
 
 /**
  * CLI Test Suite - Phase P3
  *
- * Tests all 13 acceptance criteria with mocked collectors and Claude
+ * Tests all 13 acceptance criteria with mocked collectors and AI providers
  * No live API calls in unit tests
  */
 
@@ -142,30 +145,10 @@ vi.mock('@oss-preflight/core', async () => {
   };
 });
 
-// Mock Claude adapter
-vi.mock('../src/recommend-command.js', async () => {
-  const actual = await vi.importActual('../src/recommend-command.js');
-  return {
-    ...actual,
-    createClaudeAdapter: vi.fn(() => {
-      return async (idea: string): Promise<IdeaBrief> => {
-        // Return fixed IdeaBrief for Discord bot idea
-        return {
-          capabilities: ['message processing', 'scheduled summarization'],
-          domain: 'discord community management',
-          targetUser: 'solo developer',
-          ecosystem: 'npm',
-          constraints: {}
-        };
-      };
-    })
-  };
-});
-
 // Mock environment variables
 const originalEnv = process.env;
 
-const mockClaudeAdapter = async (_idea: string): Promise<IdeaBrief> => ({
+const mockIntentParser = async (_idea: string): Promise<IdeaBrief> => ({
   capabilities: ['message processing', 'scheduled summarization'],
   domain: 'discord community management',
   targetUser: 'solo developer',
@@ -175,13 +158,20 @@ const mockClaudeAdapter = async (_idea: string): Promise<IdeaBrief> => ({
 
 beforeEach(() => {
   process.env = { ...originalEnv };
-  process.env.ANTHROPIC_API_KEY = 'test-key-12345';
+  delete process.env.ANTHROPIC_API_KEY;
+  delete process.env.OPENAI_API_KEY;
+  delete process.env.GEMINI_API_KEY;
+  delete process.env.OSS_PREFLIGHT_AI_PROVIDER;
+  delete process.env.OSS_PREFLIGHT_AI_MODEL;
+  delete process.env.OSS_PREFLIGHT_AI_BASE_URL;
   process.env.GITHUB_TOKEN = 'test-github-token';
 });
 
 afterEach(() => {
   process.env = originalEnv;
+  vi.restoreAllMocks();
   vi.clearAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe('CLI Package Structure', () => {
@@ -198,7 +188,7 @@ describe('CLI Package Structure', () => {
 });
 
 describe('Recommend Command - Full Pipeline', () => {
-  it('AC2: runs full pipeline with Claude adapter (temp=0, seed=42)', async () => {
+  it('AC2: runs full pipeline with provider-neutral intent parser', async () => {
     // This test verifies the pipeline structure exists
     // Actual execution tested in integration tests
     const { recommendCommand } = await import('../src/recommend-command.js');
@@ -211,8 +201,7 @@ describe('Recommend Command - Full Pipeline', () => {
     
     // Run full pipeline with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345',
-      claudeAdapter: mockClaudeAdapter,
+      intentParser: mockIntentParser,
       collectEvidence: false
     });
     
@@ -246,8 +235,7 @@ describe('Recommend Command - Full Pipeline', () => {
     
     // Run full pipeline with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345',
-      claudeAdapter: mockClaudeAdapter,
+      intentParser: mockIntentParser,
       collectEvidence: false
     });
     
@@ -311,24 +299,35 @@ describe('Recommend Command - Full Pipeline', () => {
 });
 
 describe('Environment and Configuration', () => {
-  it('AC6: reads ANTHROPIC_API_KEY (required) and GITHUB_TOKEN (optional)', async () => {
+  it('AC6: no selected provider and no key uses keyword fallback config', async () => {
     const { checkEnvironment } = await import('../src/recommend-command.js');
-    
-    // With API key - should not throw
-    process.env.ANTHROPIC_API_KEY = 'test-key';
+
     expect(() => checkEnvironment()).not.toThrow();
-    
-    // Without API key - should throw with exit code 3
-    delete process.env.ANTHROPIC_API_KEY;
-    expect(() => checkEnvironment()).toThrow();
   });
 
-  it('GAP4: runRecommendPipeline degrades to keyword parsing when ANTHROPIC_API_KEY is unset', async () => {
+  it('AC6: explicit provider with missing key is a config error', async () => {
+    const { checkEnvironment } = await import('../src/recommend-command.js');
+
+    expect(() => checkEnvironment({ provider: 'gemini' })).toThrow(/GEMINI_API_KEY/);
+  });
+
+  it('AC6: explicit provider with key passes config validation', async () => {
+    const { checkEnvironment } = await import('../src/recommend-command.js');
+
+    process.env.GEMINI_API_KEY = 'test-gemini-key';
+    expect(() => checkEnvironment({ provider: 'gemini' })).not.toThrow();
+  });
+
+  it('AC6: invalid configured provider is a config error', async () => {
+    const { checkEnvironment } = await import('../src/recommend-command.js');
+
+    expect(() => checkEnvironment({ provider: 'not-real' })).toThrow(/Unsupported AI provider/);
+  });
+
+  it('GAP4: runRecommendPipeline degrades to keyword parsing when no provider is configured', async () => {
     const { runRecommendPipeline } = await import('../src/recommend-command.js');
 
-    delete process.env.ANTHROPIC_API_KEY;
-
-    // No API key and no claude adapter supplied: must not throw, must fall
+    // No API key and no provider supplied: must not throw, must fall
     // back to keyword parsing and still return recommendations.
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
       collectEvidence: false,
@@ -350,6 +349,56 @@ describe('Environment and Configuration', () => {
       opt.flags.includes('--refresh') || opt.long === '--refresh'
     );
     expect(hasRefreshFlag).toBe(true);
+
+    const hasAiProviderFlag = options.some((opt: any) => opt.long === '--ai-provider');
+    const hasAiModelFlag = options.some((opt: any) => opt.long === '--ai-model');
+    const hasAiBaseUrlFlag = options.some((opt: any) => opt.long === '--ai-base-url');
+    const hasConfigFlag = options.some((opt: any) => opt.long === '--config');
+    expect(hasAiProviderFlag).toBe(true);
+    expect(hasAiModelFlag).toBe(true);
+    expect(hasAiBaseUrlFlag).toBe(true);
+    expect(hasConfigFlag).toBe(true);
+  });
+
+  it('resolves config precedence from CLI over env over config file', async () => {
+    const { resolveAiConfig } = await import('../src/ai/index.js');
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'oss-preflight-config-'));
+    const configDir = path.join(tempDir, '.oss-preflight');
+    fs.mkdirSync(configDir);
+    fs.writeFileSync(
+      path.join(configDir, 'config.json'),
+      JSON.stringify({ ai: { provider: 'gemini', model: 'gemini-from-config', baseUrl: 'https://config.example' } })
+    );
+
+    const resolved = resolveAiConfig({
+      cwd: tempDir,
+      provider: 'openai-compatible',
+      model: 'model-from-cli',
+      env: {
+        OSS_PREFLIGHT_AI_PROVIDER: 'gemini',
+        OSS_PREFLIGHT_AI_MODEL: 'model-from-env',
+        OPENAI_API_KEY: 'openai-key',
+        GEMINI_API_KEY: 'gemini-key',
+      },
+    });
+
+    expect(resolved.provider).toBe('openai-compatible');
+    expect(resolved.model).toBe('model-from-cli');
+    expect(resolved.baseUrl).toBe('https://config.example');
+    expect(resolved.apiKey).toBe('openai-key');
+  });
+
+  it('rejects secret-shaped fields in config files', async () => {
+    const { resolveAiConfig } = await import('../src/ai/index.js');
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'oss-preflight-secret-config-'));
+    const configDir = path.join(tempDir, '.oss-preflight');
+    fs.mkdirSync(configDir);
+    fs.writeFileSync(
+      path.join(configDir, 'config.json'),
+      JSON.stringify({ ai: { provider: 'gemini', apiKey: 'do-not-store' } })
+    );
+
+    expect(() => resolveAiConfig({ cwd: tempDir })).toThrow(/Secret-shaped field/);
   });
 });
 
@@ -359,8 +408,7 @@ describe('Exit Codes', () => {
     
     // Run pipeline - should succeed with mocked dependencies
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345',
-      claudeAdapter: mockClaudeAdapter,
+      intentParser: mockIntentParser,
       collectEvidence: false
     });
     
@@ -386,8 +434,7 @@ describe('Exit Codes', () => {
     // Should throw an error
     await expect(
       runRecommendPipeline('Discord bot that summarizes channel activity', {
-        apiKey: 'test-key-12345',
-        claudeAdapter: mockClaudeAdapter,
+        intentParser: mockIntentParser,
         collectEvidence: false
       })
     ).rejects.toThrow('Collector API error');
@@ -402,16 +449,14 @@ describe('Exit Codes', () => {
     expect(() => validateInput('   ')).toThrow();
   });
 
-  it('AC8: exit code 3 on config error (no API key)', async () => {
+  it('AC8: exit code 3 on explicit provider config error', async () => {
     const { checkEnvironment } = await import('../src/recommend-command.js');
-    
-    delete process.env.ANTHROPIC_API_KEY;
-    
+
     try {
-      checkEnvironment();
+      checkEnvironment({ provider: 'openai-compatible', model: 'gpt-test' });
       expect.fail('Should have thrown');
     } catch (error: any) {
-      expect(error.message).toContain('ANTHROPIC_API_KEY');
+      expect(error.message).toContain('OPENAI_API_KEY');
     }
   });
 });
@@ -486,31 +531,119 @@ describe('buildCandidateFacts (GAP 1 wiring)', () => {
   });
 });
 
-describe('Claude Integration', () => {
-  it('AC12: Claude fallback on API error - keyword parsing activates', async () => {
+describe('AI Provider Integration', () => {
+  it('AC12: provider fallback on API error - keyword parsing activates', async () => {
     const { parseIntentWithFallback } = await import('../src/recommend-command.js');
-    
-    // Mock Claude failure, should fall back to keyword parsing
-    const mockClaudeError = new Error('API Error');
-    
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const mockProviderError = new Error('API Error');
+
     const result = await parseIntentWithFallback(
       'Discord bot that summarizes channel activity',
-      () => Promise.reject(mockClaudeError)
+      () => Promise.reject(mockProviderError)
     );
-    
+
     expect(result).toBeDefined();
     expect(result.ecosystem).toBe('npm'); // Should extract from "Discord"
     expect(result.domain).toContain('discord');
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'AI provider error, falling back to keyword intent parsing:',
+      'API Error'
+    );
   });
 
-  it('AC11: Claude determinism with temperature=0, seed=42', async () => {
-    // Verify Claude adapter uses correct parameters
-    const { createClaudeAdapter } = await import('../src/recommend-command.js');
-    
-    const adapter = createClaudeAdapter('test-key');
-    expect(adapter).toBeDefined();
-    
-    // Parameters verified in implementation
+  it('AC11: provider request builders use deterministic settings where supported', async () => {
+    const {
+      buildAnthropicMessageRequest,
+      buildGeminiRequestBody,
+      buildOpenAiCompatibleRequestBody,
+    } = await import('../src/ai/index.js');
+
+    const anthropic = buildAnthropicMessageRequest('test idea', 'claude-test');
+    const openai = buildOpenAiCompatibleRequestBody('test idea', 'gpt-test');
+    const gemini = buildGeminiRequestBody('test idea');
+
+    expect(anthropic.temperature).toBe(0);
+    expect(anthropic.seed).toBe(42);
+    expect(openai.temperature).toBe(0);
+    expect(gemini.generationConfig.temperature).toBe(0);
+  });
+
+  it('normalizes provider JSON through one shared code path', async () => {
+    const { normalizeBriefJson } = await import('../src/ai/index.js');
+
+    const brief = normalizeBriefJson('prefix {"capabilities":["chat"],"domain":"discord","ecosystem":"npm"} suffix');
+
+    expect(brief).toEqual({
+      capabilities: ['chat'],
+      domain: 'discord',
+      ecosystem: 'npm',
+      constraints: {},
+    });
+    expect(() => normalizeBriefJson('not json')).toThrow(/No JSON/);
+  });
+
+  it('OpenAI-compatible adapter calls /chat/completions and normalizes the response', async () => {
+    const { createOpenAiCompatibleIntentParser } = await import('../src/ai/index.js');
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: '{"capabilities":["messages"],"domain":"discord","ecosystem":"npm"}',
+          },
+        }],
+      }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const parser = createOpenAiCompatibleIntentParser({
+      apiKey: 'openai-key',
+      model: 'gpt-test',
+      baseUrl: 'https://example.com/v1/',
+    });
+    const brief = await parser.parse('Discord bot');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://example.com/v1/chat/completions',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ Authorization: 'Bearer openai-key' }),
+      })
+    );
+    expect(brief.domain).toBe('discord');
+  });
+
+  it('Gemini adapter calls generateContent and normalizes the response', async () => {
+    const { createGeminiIntentParser } = await import('../src/ai/index.js');
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        candidates: [{
+          content: {
+            parts: [{
+              text: '{"capabilities":["messages"],"domain":"discord","ecosystem":"npm"}',
+            }],
+          },
+        }],
+      }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const parser = createGeminiIntentParser({
+      apiKey: 'gemini-key',
+      model: 'gemini-test',
+      baseUrl: 'https://generativelanguage.googleapis.com',
+    });
+    const brief = await parser.parse('Discord bot');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-test:generateContent',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({ 'x-goog-api-key': 'gemini-key' }),
+      })
+    );
+    expect(brief.domain).toBe('discord');
   });
 });
 
@@ -520,8 +653,7 @@ describe('Hour 14 Gate', () => {
     
     // Run full pipeline with Discord bot idea
     const result = await runRecommendPipeline('Discord bot that summarizes channel activity', {
-      apiKey: 'test-key-12345',
-      claudeAdapter: mockClaudeAdapter,
+      intentParser: mockIntentParser,
       collectEvidence: false
     });
     

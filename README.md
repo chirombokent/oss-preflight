@@ -26,8 +26,7 @@ session exports, and build-report evidence.
 
 Phase P7 hardening is in progress. The core demo path, build, unit tests, and
 browser flow are green locally; final submission still requires the external
-video, missing Bob export screenshots, and final tag after human
-approval.
+video, missing Bob export screenshots, and final tag after human approval.
 
 ## Local Demo
 
@@ -47,16 +46,19 @@ available.
    Expected: `packages/core`, `packages/collectors`, `packages/scaffold`,
    `packages/cli`, and `apps/web` report successful builds.
 
-3. *(Optional)* Configure a Claude API key for higher-quality intent parsing:
+3. *(Optional)* Configure BYOK intent parsing for higher-quality intent extraction:
    ```powershell
-   $env:ANTHROPIC_API_KEY="your-api-key"
+   $env:OSS_PREFLIGHT_AI_PROVIDER="gemini"
+   $env:GEMINI_API_KEY="your-api-key"
    ```
-   Expected: no terminal output. The key is **optional** — when it is unset or
-   the API call fails, the CLI prints a one-line notice and degrades to
-   deterministic keyword intent parsing, so the demo runs on a fresh clone
-   with no credentials. Evidence facts (npm/GitHub/OpenSSF) are independent of
-   this key and are served from the committed cache when upstream APIs are
-   unavailable.
+   Expected: no terminal output. Supported providers are `anthropic`,
+   `openai-compatible`, `gemini`, and `keyword`. Provider choice, model, and
+   base URL can also be placed in `.oss-preflight/config.json`; real API keys
+   must stay in environment variables. If no provider is configured, OSS
+   Preflight uses deterministic keyword intent parsing, so the demo runs on a
+   fresh clone with no credentials. Evidence facts (npm/GitHub/OpenSSF) are
+   independent of this key and are served from the committed cache when
+   upstream APIs are unavailable.
 
 4. Start the API server in one terminal:
    ```powershell

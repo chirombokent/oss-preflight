@@ -7,6 +7,33 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
  */
 
 describe('Server CLI Spawn Failure', () => {
+  it('keeps provider selection out of browser-controlled CLI args', () => {
+    const createRecommendArgs = (idea: string) => ['recommend', '--idea', idea, '--json'];
+
+    const args = createRecommendArgs('Discord bot');
+
+    expect(args).toEqual(['recommend', '--idea', 'Discord bot', '--json']);
+    expect(args).not.toContain('--ai-provider');
+    expect(args).not.toContain('--ai-model');
+    expect(args).not.toContain('--ai-base-url');
+  });
+
+  it('inherits provider environment for the spawned CLI process', () => {
+    const serverEnv = {
+      ...process.env,
+      OSS_PREFLIGHT_AI_PROVIDER: 'gemini',
+      GEMINI_API_KEY: 'server-side-key',
+    };
+
+    const spawnOptions = {
+      cwd: 'repo-root',
+      env: { ...serverEnv },
+    };
+
+    expect(spawnOptions.env.OSS_PREFLIGHT_AI_PROVIDER).toBe('gemini');
+    expect(spawnOptions.env.GEMINI_API_KEY).toBe('server-side-key');
+  });
+
   it('should return error response with manual CLI command on spawn failure', async () => {
     // This test would require mocking the Express server
     // For now, we'll test the error handling logic

@@ -1,4 +1,3 @@
-import Anthropic from '@anthropic-ai/sdk';
 import type {
   IdeaBrief,
   Candidate,
@@ -12,6 +11,16 @@ import {
   collectGitHubData,
   collectOpenSSFData,
 } from '@oss-preflight/collectors';
+import {
+  createAnthropicIntentParser,
+  createIntentParser,
+  isAiConfigError,
+  keywordParser,
+  resolveAiConfig,
+  type AiConfigOptions,
+  type IntentParser,
+  type IntentParserFn,
+} from './ai/index.js';
 
 type EvidenceFact = CandidateFacts['license'];
 type SourceType = NonNullable<EvidenceFact>['sourceType'];
@@ -91,10 +100,10 @@ export function buildCandidateFacts(inputs: CollectedInputs): CandidateFacts {
 /**
  * Recommend Command - Phase P3
  * 
- * Full pipeline: Claude intent parser → discovery → collectors → scoring → output
- * Claude adapter lives in CLI (not core), preserving core's zero-I/O property
+ * Full pipeline: AI intent parser -> discovery -> collectors -> scoring -> output
+ * Provider adapters live in CLI (not core), preserving core's zero-I/O property
  * 
- * On Claude API error: falls back to keyword-based intent parsing
+ * On AI provider error: falls back to keyword-based intent parsing
  */
 
 const DEMO_PACKAGE_FALLBACKS: Record<string, Partial<Candidate>> = {
@@ -135,14 +144,31 @@ function parseGitHubRepo(repositoryUrl?: string | null): string | null {
   return `${match[1]}/${match[2]}`;
 }
 
+export interface RecommendPipelineOptions extends AiConfigOptions {
+  refresh?: boolean;
+  collectEvidence?: boolean;
+  intentParser?: IntentParser | IntentParserFn;
+  /**
+   * Backward-compatible test hook for older callers. Prefer `intentParser`.
+   */
+  claudeAdapter?: IntentParserFn;
+}
+
+function parseWith(parser: IntentParser | IntentParserFn, idea: string): Promise<IdeaBrief> {
+  return typeof parser === 'function' ? parser(idea) : parser.parse(idea);
+}
+
+function parserName(parser: IntentParser | IntentParserFn): string {
+  return typeof parser === 'function' ? 'AI provider' : `${parser.provider} provider`;
+}
+
 /**
- * Check environment variables
- * Throws if ANTHROPIC_API_KEY is missing (exit code 3)
+ * Check AI provider configuration. No configured provider is valid and means
+ * OSS Preflight will use keyword parsing. Explicit provider misconfiguration
+ * is a config error (CLI exit code 3).
  */
-export function checkEnvironment(): void {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('ANTHROPIC_API_KEY environment variable is required');
-  }
+export function checkEnvironment(options: AiConfigOptions = {}): void {
+  resolveAiConfig(options);
   // GITHUB_TOKEN is optional - higher rate limits if present
 }
 
@@ -156,130 +182,36 @@ export function validateInput(idea: string): void {
   }
 }
 
-/**
- * Create Claude adapter with deterministic settings
- * temperature=0, seed=42 for reproducible output
- */
-export function createClaudeAdapter(apiKey: string) {
-  const client = new Anthropic({ apiKey });
-  
-  return async (idea: string): Promise<IdeaBrief> => {
-    const response = await client.messages.create({
-      model: 'claude-haiku-3-5-20241022',
-      max_tokens: 1024,
-      temperature: 0,
-      // @ts-ignore - seed parameter exists but may not be in types yet
-      seed: 42,
-      messages: [{
-        role: 'user',
-        content: `Parse this software idea into structured intent. Extract:
-- capabilities (array of strings)
-- domain (string)
-- targetUser (string, optional)
-- ecosystem (one of: npm, pypi, github)
+export { keywordParser };
 
-Idea: "${idea}"
-
-Respond with ONLY valid JSON matching this schema:
-{
-  "capabilities": ["string"],
-  "domain": "string",
-  "targetUser": "string",
-  "ecosystem": "npm|pypi|github"
-}`
-      }]
-    });
-
-    const content = response.content[0];
-    if (!content || content.type !== 'text') {
-      throw new Error('Unexpected response type from Claude');
-    }
-
-    // Extract JSON from response
-    const text = content.text.trim();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON found in Claude response');
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    
-    return {
-      capabilities: parsed.capabilities || [],
-      domain: parsed.domain || 'general',
-      targetUser: parsed.targetUser,
-      ecosystem: parsed.ecosystem || 'npm',
-      constraints: {}
-    };
-  };
+export function createClaudeAdapter(apiKey: string): IntentParserFn {
+  const parser = createAnthropicIntentParser({
+    apiKey,
+    model: 'claude-haiku-3-5-20241022',
+    baseUrl: 'https://api.anthropic.com',
+  });
+  return (idea: string) => parser.parse(idea);
 }
 
 /**
- * Keyword-based fallback parser
- * Extracts ecosystem and domain from keywords when Claude fails
- */
-export function keywordParser(idea: string): IdeaBrief {
-  const lowerIdea = idea.toLowerCase();
-  
-  // Detect ecosystem
-  let ecosystem: 'npm' | 'pypi' | 'github' = 'npm';
-  if (lowerIdea.includes('python') || lowerIdea.includes('django') || lowerIdea.includes('flask')) {
-    ecosystem = 'pypi';
-  } else if (lowerIdea.includes('npm') || lowerIdea.includes('node') || lowerIdea.includes('javascript') || lowerIdea.includes('typescript')) {
-    ecosystem = 'npm';
-  }
-  
-  // Detect domain
-  let domain = 'general';
-  if (lowerIdea.includes('discord')) {
-    domain = 'discord';
-  } else if (lowerIdea.includes('bot')) {
-    domain = 'bot';
-  } else if (lowerIdea.includes('web') || lowerIdea.includes('api')) {
-    domain = 'web';
-  }
-  
-  // Extract capabilities (simple keyword extraction)
-  const capabilities: string[] = [];
-  if (lowerIdea.includes('summarize') || lowerIdea.includes('summary')) {
-    capabilities.push('summarization');
-  }
-  if (lowerIdea.includes('message') || lowerIdea.includes('chat')) {
-    capabilities.push('message processing');
-  }
-  if (lowerIdea.includes('schedule') || lowerIdea.includes('cron')) {
-    capabilities.push('scheduling');
-  }
-  
-  if (capabilities.length === 0) {
-    capabilities.push('general functionality');
-  }
-  
-  return {
-    capabilities,
-    domain,
-    ecosystem,
-    constraints: {}
-  };
-}
-
-/**
- * Parse intent with Claude, fall back to keyword parsing on error
+ * Parse intent with the selected provider, falling back to keyword parsing on
+ * provider failures. Config errors are raised before this point.
  */
 export async function parseIntentWithFallback(
   idea: string,
-  claudeAdapter?: (idea: string) => Promise<IdeaBrief>
+  intentParser?: IntentParser | IntentParserFn
 ): Promise<IdeaBrief> {
-  if (!claudeAdapter) {
-    // No Claude adapter provided, use keyword parser
+  if (!intentParser) {
     return keywordParser(idea);
   }
   
   try {
-    return await claudeAdapter(idea);
+    return await parseWith(intentParser, idea);
   } catch (error) {
-    // Claude failed - fall back to keyword parsing
-    console.error('Claude API error, falling back to keyword parsing:', (error as Error).message);
+    console.error(
+      `${parserName(intentParser)} error, falling back to keyword intent parsing:`,
+      (error as Error).message
+    );
     return keywordParser(idea);
   }
 }
@@ -372,24 +304,14 @@ async function gatherEvidence(
  */
 export async function runRecommendPipeline(
   idea: string,
-  options: {
-    refresh?: boolean;
-    apiKey?: string;
-    claudeAdapter?: (idea: string) => Promise<IdeaBrief>;
-    collectEvidence?: boolean;
-  } = {}
+  options: RecommendPipelineOptions = {}
 ): Promise<{ recommendations: Recommendation[]; brief: IdeaBrief }> {
   // Validate input
   validateInput(idea);
 
-  // Claude is the preferred intent parser but it is optional: when no API key
-  // is available we degrade to keyword parsing (reduced capability) instead of
-  // failing the whole pipeline. `checkEnvironment` remains the strict gate for
-  // callers that require Claude.
-  const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
-  const claudeAdapter =
-    options.claudeAdapter || (apiKey ? createClaudeAdapter(apiKey) : undefined);
-  const brief = await parseIntentWithFallback(idea, claudeAdapter);
+  const suppliedParser = options.intentParser ?? options.claudeAdapter;
+  const intentParser = suppliedParser ?? createIntentParser(resolveAiConfig(options));
+  const brief = await parseIntentWithFallback(idea, intentParser);
   
   // Discover candidates
   const candidateNames = discoverCandidates(brief);
@@ -428,22 +350,19 @@ export async function runRecommendPipeline(
  */
 export async function recommendCommand(
   idea: string,
-  options: {
+  options: RecommendPipelineOptions & {
     json?: boolean;
     format?: 'table' | 'json' | 'md';
-    refresh?: boolean;
   }
 ): Promise<void> {
   try {
-    await runRecommendPipeline(idea, {
-      refresh: options.refresh
-    });
+    await runRecommendPipeline(idea, options);
     
     // Output will be handled by the CLI index
     // This function is a stub for the actual command handler
     return;
   } catch (error) {
-    if ((error as Error).message.includes('ANTHROPIC_API_KEY')) {
+    if (isAiConfigError(error)) {
       process.exit(3); // Config error
     } else if ((error as Error).message.includes('empty')) {
       process.exit(2); // User input error

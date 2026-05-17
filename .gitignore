@@ -17,6 +17,7 @@ test-results/
 
 .claude/
 
+.oss-preflight/config.json
 .oss-preflight/cache/tmp/
 oss-preflight-output/
 packages/scaffold/packages/

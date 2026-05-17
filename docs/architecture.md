@@ -54,7 +54,7 @@ Developer points OSS Preflight at a GitHub URL or local repo. OSS Preflight dete
 
 ### 3.3 Bob-Native Flow
 
-Developer opens IBM Bob and asks *"Run OSS Preflight on this idea."* The `oss-preflight-advisor` skill activates, reads repo context, invokes the OSS Preflight CLI, presents recommendations, and uses a sandboxed custom mode for approved scaffold writes.
+Developer opens IBM Bob and asks *"Run OSS Preflight on this idea."* The `oss-preflight-advisor` skill activates, reads repo context, invokes the OSS Preflight CLI, presents recommendations, and uses sandboxed custom modes for approved provider setup and scaffold writes. This is the agentic workflow layer; package verification remains deterministic through collectors, cache, scoring rules, and smoke tests.
 
 ---
 
@@ -122,7 +122,7 @@ graph TB
     UI --> Proof
 ```
 
-**System context (external):** the only outbound calls are to public registries — npm registry, GitHub REST API, PyPI JSON API, OpenSSF Scorecard — plus the Anthropic Claude API for intent parsing and tradeoff narration. No package is installed or executed; only metadata is fetched.
+**System context (external):** the only outbound calls are to public registries - npm registry, GitHub REST API, PyPI JSON API, OpenSSF Scorecard - plus the configured BYOK AI provider for intent parsing and tradeoff narration (`anthropic`, `openai-compatible`, or `gemini`). With no provider configured, OSS Preflight uses local keyword parsing. No package is installed or executed; only metadata is fetched.
 
 ---
 
@@ -159,7 +159,7 @@ oss-preflight/
 
 The engine in `packages/core/` is **pure logic, no I/O**. It runs five stages:
 
-1. **Intent extraction** — convert the raw idea string into an `IdeaBrief`. Uses the Claude API (Haiku, low temperature). Every inferred field is tagged `@source: 'inferred'`.
+1. **Intent extraction** - convert the raw idea string into an `IdeaBrief`. Uses a provider-neutral intent parser (`anthropic`, `openai-compatible`, `gemini`, or local `keyword`) with temperature `0` for network providers. Every inferred field is tagged `@source: 'inferred'`.
 2. **Candidate discovery** — find packages, frameworks, SDKs, components, and starter repos.
 3. **Evidence gathering** — fetch registry, GitHub, OpenSSF, and optional model metadata via collectors.
 4. **Ranking** — score candidates against intent and constraints using a deterministic function.
@@ -302,14 +302,14 @@ The web server is a thin bridge — all logic lives in the CLI/core so the Bob s
 | Scorer has incomplete data | score anyway, mark dimension incomplete | gap shown on score bar |
 | Smoke test fails | adoption report states failure; exit 1 | red smoke status |
 
-**CLI exit codes:** `0` success · `1` collector/API error · `2` user-input error · `3` config error (no `ANTHROPIC_API_KEY`).
+**CLI exit codes:** `0` success - `1` collector/API error - `2` user-input error - `3` config error (explicit AI provider is invalid or missing required key/model).
 
 ---
 
 ## 15. Security and privacy
 
 - No user data logged or persisted beyond the session.
-- API keys (`ANTHROPIC_API_KEY`, `GITHUB_TOKEN`) read from env, never logged.
+- API keys (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GITHUB_TOKEN`) are read from env, never logged, and never stored in `.oss-preflight/config.json`.
 - Cache files are local-only, never uploaded.
 - Collector sources are public registries; no package is installed or executed — metadata only.
 - Scaffold templates are read-only; generated output is plaintext.
