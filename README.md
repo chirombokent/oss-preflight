@@ -14,6 +14,7 @@ session exports, and build-report evidence.
 - [Implementation plan](docs/implementation-plan.md)
 - [IBM Bob build guide](docs/bob-build-guide.md)
 - [Bob prompts](docs/bob-prompts.md)
+- [Phase P9 production readiness plan](docs/phase-plan-P9-production-readiness.md)
 - [Source ledger](docs/source-ledger.md)
 - [Submission deck](docs/oss-preflight-submission-deck.pdf)
 

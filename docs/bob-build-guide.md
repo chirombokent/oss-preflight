@@ -243,6 +243,7 @@ plan, code, tests, or evidence is treated as waste and must stop.
 | S06 P5 | Web UI + build-proof loop | Continue while improving | Browser/API/build-proof evidence |
 | S07 P6 | Runtime skill demo | Iterate if useful | Activation/fence evidence |
 | S08 P7 | Review + submission loop | Iterate until clean | Zero blockers + submission proof |
+| S09 P9 | Production readiness hardening | Iterate until production gate is green | Workflow trace, real discovery, repo audit, CLI/Web/Bob validation |
 
 Record each meaningful Bob session in `bob_sessions/build-report.md`. If a
 round does not produce a measurable delta, document that and stop rather than
@@ -275,9 +276,9 @@ Example:
 
 ---
 
-## 7. Session task plan (S00–S08)
+## 7. Session task plan (S00–S09)
 
-The session IDs are the **evidence-export units**: one official `bob_sessions/S<id>-<slug>/` folder per relevant Bob task. In the new model you hand-type only four prompt kinds (see [bob-prompts.md](./bob-prompts.md) §1): the Hour-0 test, the Plan-mode **phase-plan generator** (initial pass → `docs/phase-plan.md`), a **one-line `/orchestrator` launcher** per build phase, and the runtime skill demo. The Orchestrator authors its own `new_task` instructions from the generated phase spec + its encoded loop — it does **not** read `bob-prompts.md`. Rules auto-inject; skills auto-activate.
+The session IDs are the **evidence-export units**: one official `bob_sessions/S<id>-<slug>/` folder per relevant Bob task. In the new model you hand-type only four prompt kinds for the original submission build (see [bob-prompts.md](./bob-prompts.md) §1): the Hour-0 test, the Plan-mode **phase-plan generator** (initial pass → `docs/phase-plan.md`), a **one-line `/orchestrator` launcher** per build phase, and the runtime skill demo. P9 adds a post-submission production-hardening launcher from `docs/phase-plan-P9-production-readiness.md`. The Orchestrator authors its own `new_task` instructions from the generated phase spec + its encoded loop — it does **not** read `bob-prompts.md`. Rules auto-inject; skills auto-activate.
 
 | ID | Session | What you type | Runs as | Success criteria |
 |---|---|---|---|---|
@@ -291,13 +292,15 @@ The session IDs are the **evidence-export units**: one official `bob_sessions/S<
 | S06 | Web UI + build-proof | 1-line launcher | Orchestrator loop → code | Demo completes in UI; `/build-proof` shows Bob evidence |
 | S07 | Runtime skill demo | literal prompt (§6) | **Advanced** | Skill activates in the guaranteed runtime; presents recs; stays in approved paths |
 | S08 | Review + submission | 1-line launcher | Orchestrator loop → reviewer | No critical blockers; submission checklist complete |
+| S09 | Production readiness hardening | P9 launcher in `docs/phase-plan-P9-production-readiness.md` | Orchestrator loop → code/reviewer/advanced | Production validation green; agentic workflow, demo reliability, production usefulness, and hackathon alignment all >=9/10 |
 
-Each S03–S08 row's detail lives in its `docs/phase-plan.md` spec (generated in S01), **not** as a hand-copied prompt. `docs/phase-plan.md` is a *generated* artifact — it does not change the authored 3+1 doc set.
+Each S03–S08 row's detail lives in its `docs/phase-plan.md` spec (generated in S01), **not** as a hand-copied prompt. P9 is intentionally separate in `docs/phase-plan-P9-production-readiness.md` because it is a post-submission hardening phase, not part of the original P1-P7 generated phase plan. `docs/phase-plan.md` is a *generated* artifact — it does not change the authored 3+1 doc set.
 
 **Phase → Session map (authoritative — use these exact S-ids).** The build
 phases (P0–P7) and the evidence sessions (S00–S08) are intentionally offset;
-note that **P3 and P4 collapse into the single session S05**. The phase-plan
-generator MUST stamp each spec header with the S-id from this table so the
+note that **P3 and P4 collapse into the single session S05**. P9 maps to S09
+through its dedicated production-readiness spec. The phase-plan generator MUST
+stamp each original P1-P7 spec header with the S-id from this table so the
 `bob_sessions/` folders are numbered consistently:
 
 | Phase (implementation-plan §4) | Session (evidence) | Slug |
@@ -311,6 +314,7 @@ generator MUST stamp each spec header with the S-id from this table so the
 | P5 Web UI + build-proof | S06 | `S06-web-build-proof` |
 | P6 Bob runtime skill demo | S07 | `S07-runtime-skill-demo` |
 | P7 Review + submission | S08 | `S08-review-submission` |
+| P9 Production readiness hardening | S09 | `S09-production-readiness` |
 
 **S01.5 multi-subtask export rule.** The Plan Council spawns 5 team
 `new_task` subtasks (each its own Bob History entry). Export the **parent
