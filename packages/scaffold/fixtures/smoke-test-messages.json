@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1234567890",
+    "content": "Hey team, just deployed the new feature to staging!",
+    "author": {
+      "username": "alice",
+      "id": "111"
+    },
+    "timestamp": "2026-05-16T10:30:00Z",
+    "channelId": "general"
+  },
+  {
+    "id": "1234567891",
+    "content": "Great work! I'll test it this afternoon.",
+    "author": {
+      "username": "bob",
+      "id": "222"
+    },
+    "timestamp": "2026-05-16T11:15:00Z",
+    "channelId": "general"
+  },
+  {
+    "id": "1234567892",
+    "content": "Found a small bug in the login flow, creating a ticket.",
+    "author": {
+      "username": "charlie",
+      "id": "333"
+    },
+    "timestamp": "2026-05-16T14:20:00Z",
+    "channelId": "general"
+  },
+  {
+    "id": "1234567893",
+    "content": "Fixed! PR is up for review.",
+    "author": {
+      "username": "alice",
+      "id": "111"
+    },
+    "timestamp": "2026-05-16T16:45:00Z",
+    "channelId": "general"
+  },
+  {
+    "id": "1234567894",
+    "content": "LGTM, merging now.",
+    "author": {
+      "username": "bob",
+      "id": "222"
+    },
+    "timestamp": "2026-05-16T17:30:00Z",
+    "channelId": "general"
+  }
+]

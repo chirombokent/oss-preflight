@@ -1,0 +1,20 @@
+{
+  "name": "@oss-preflight/scaffold",
+  "version": "1.0.0",
+  "description": "Scaffold engine for OSS Preflight - generates working starters from recommendations",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@oss-preflight/core": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  }
+}
