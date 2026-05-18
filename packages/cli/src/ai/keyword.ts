@@ -20,6 +20,8 @@ export function keywordParser(idea: string): IdeaBrief {
     ])
   ) {
     ecosystem = 'pypi';
+  } else if (includesAny(lowerIdea, ['ai music', 'music generation', 'music composition', 'composer', 'midi', 'audio synthesis'])) {
+    ecosystem = 'pypi';
   } else if (includesAny(lowerIdea, ['npm', 'node', 'javascript', 'typescript'])) {
     ecosystem = 'npm';
   }
@@ -35,6 +37,8 @@ export function keywordParser(idea: string): IdeaBrief {
     domain = 'testing';
   } else if (includesAny(lowerIdea, ['http client', 'fetch', 'request', 'axios'])) {
     domain = 'http-client';
+  } else if (includesAny(lowerIdea, ['music', 'audio', 'midi', 'song', 'composer', 'composition'])) {
+    domain = 'music-generation';
   } else if (includesAny(lowerIdea, ['web', 'api', 'server', 'framework', 'express', 'fastify', 'koa', 'hono', 'django', 'flask', 'fastapi'])) {
     domain = 'web-framework';
   } else if (lowerIdea.includes('bot')) {
@@ -71,6 +75,13 @@ export function keywordParser(idea: string): IdeaBrief {
     capabilities.push('weather data');
     capabilities.push('forecasting');
   }
+  if (includesAny(lowerIdea, ['music', 'audio', 'midi', 'song', 'composer', 'composition'])) {
+    capabilities.push('AI music composition');
+    capabilities.push('music generation');
+    if (lowerIdea.includes('midi')) {
+      capabilities.push('MIDI generation');
+    }
+  }
 
   if (capabilities.length === 0) {
     if (domain === 'web-framework') {
@@ -81,13 +92,21 @@ export function keywordParser(idea: string): IdeaBrief {
       capabilities.push('testing');
     } else if (domain === 'weather') {
       capabilities.push('weather data', 'forecasting');
+    } else if (domain === 'music-generation') {
+      capabilities.push('AI music composition', 'music generation');
     }
   }
+
+  const searchTerms =
+    domain === 'music-generation'
+      ? ['ai music generation', 'music composition', 'audio synthesis', 'midi generation']
+      : undefined;
 
   return {
     capabilities: capabilities.length > 0 ? capabilities : ['general functionality'],
     domain: canonicalizeDomain(domain),
     ecosystem,
+    ...(searchTerms ? { searchTerms } : {}),
     constraints: {},
   };
 }

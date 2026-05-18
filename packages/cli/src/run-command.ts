@@ -222,7 +222,7 @@ export async function runCommand(options: RunOptions): Promise<void> {
     workflow.discoveryPlan = {
       ecosystem: brief.ecosystem,
       domain: brief.domain,
-      searchQuery: brief.capabilities.join(', '),
+      searchQuery: discovery.query ?? brief.capabilities.join(', '),
       searchMethod,
     };
 

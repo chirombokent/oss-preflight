@@ -17,6 +17,7 @@ describe('types.ts - Zod schemas', () => {
         capabilities: ['message processing', 'scheduled summarization'],
         domain: 'discord community management',
         targetUser: 'solo developer',
+        searchTerms: ['discord bot framework', 'message summarization'],
         ecosystem: 'npm',
         constraints: {
           maxComplexity: 'medium',

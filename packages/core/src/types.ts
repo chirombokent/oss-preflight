@@ -56,6 +56,13 @@ export const IdeaBriefSchema = z.object({
    */
   targetUser: z.string().optional(),
   /**
+   * Additional search terms inferred by the agentic intent layer. These are
+   * never treated as facts; discovery still has to verify real packages.
+   *
+   * @source inferred
+   */
+  searchTerms: z.array(z.string()).optional(),
+  /**
    * @source inferred
    */
   ecosystem: EcosystemSchema,
@@ -74,6 +81,7 @@ export const CandidateSchema = z.object({
   name: z.string(),
   version: z.string(),
   ecosystem: EcosystemSchema,
+  description: z.string().optional(),
   homepageUrl: z.string().nullable().optional(),
   repositoryUrl: z.string().nullable().optional(),
 });

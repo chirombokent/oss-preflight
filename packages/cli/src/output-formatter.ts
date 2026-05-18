@@ -42,6 +42,7 @@ function formatJson(recommendations: Recommendation[], brief: IdeaBrief): string
         name: rec.candidate.name,
         version: rec.candidate.version,
         ecosystem: rec.candidate.ecosystem,
+        description: rec.candidate.description,
         homepageUrl: rec.candidate.homepageUrl,
         repositoryUrl: rec.candidate.repositoryUrl
       },
@@ -64,6 +65,7 @@ function formatJson(recommendations: Recommendation[], brief: IdeaBrief): string
       capabilities: brief.capabilities,
       domain: brief.domain,
       targetUser: brief.targetUser,
+      searchTerms: brief.searchTerms,
       ecosystem: brief.ecosystem
     }
   };
@@ -92,6 +94,9 @@ function formatTable(recommendations: Recommendation[], brief: IdeaBrief): strin
   lines.push(`Domain: ${brief.domain}`);
   lines.push(`Ecosystem: ${brief.ecosystem}`);
   lines.push(`Capabilities: ${brief.capabilities.join(', ')}`);
+  if (brief.searchTerms && brief.searchTerms.length > 0) {
+    lines.push(`Search terms: ${brief.searchTerms.join(', ')}`);
+  }
   lines.push('');
   lines.push('─'.repeat(80));
   lines.push('');
@@ -153,6 +158,9 @@ function formatMarkdown(recommendations: Recommendation[], brief: IdeaBrief): st
   lines.push(`**Domain:** ${brief.domain}`);
   lines.push(`**Ecosystem:** ${brief.ecosystem}`);
   lines.push(`**Capabilities:** ${brief.capabilities.join(', ')}`);
+  if (brief.searchTerms && brief.searchTerms.length > 0) {
+    lines.push(`**Search terms:** ${brief.searchTerms.join(', ')}`);
+  }
   lines.push('');
   
   // Table

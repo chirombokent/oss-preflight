@@ -21,6 +21,7 @@ export type DiscoverySource = 'npm-search' | 'pypi-search' | 'github-search' | '
 export interface DiscoveredCandidate {
   name: string;
   source: DiscoverySource;
+  description?: string;
 }
 
 /**
@@ -30,6 +31,7 @@ export interface DiscoveryResult {
   candidates: DiscoveredCandidate[];
   method: DiscoveryMethod;
   fallbackUsed: boolean;
+  query?: string;
 }
 
 /**
@@ -104,7 +106,8 @@ export async function discoverCandidatesWithSearch(
         source: 'catalog-fallback' as const
       })),
       method: 'catalog',
-      fallbackUsed: false
+      fallbackUsed: false,
+      query: buildSearchQuery(brief)
     };
   }
 
@@ -145,21 +148,24 @@ export async function discoverCandidatesWithSearch(
       return {
         candidates: deduplicated,
         method: 'search',
-        fallbackUsed: false
+        fallbackUsed: false,
+        query
       };
     }
 
     return {
       candidates: [...deduplicated, ...catalogWithSource],
       method: 'search-with-catalog-fallback',
-      fallbackUsed: catalogWithSource.length > 0
+      fallbackUsed: catalogWithSource.length > 0,
+      query
     };
   }
 
   return {
     candidates: deduplicated,
     method: 'search',
-    fallbackUsed: false
+    fallbackUsed: false,
+    query
   };
 }
 
@@ -178,15 +184,37 @@ function buildSearchQuery(brief: IdeaBrief): string {
     weather: ['weather', 'forecast', 'forecasting', 'openmeteo', 'openweather'],
     'web-framework': ['web', 'framework', 'http', 'server', 'routing'],
     'data-science': ['data', 'science', 'dataframe', 'csv', 'notebook'],
+    'music-generation': ['ai music', 'music generation', 'music composition', 'audio synthesis', 'midi'],
     testing: ['testing', 'unit', 'test', 'runner'],
     'http-client': ['http', 'client', 'request', 'fetch'],
   };
 
+  const domain = canonicalizeDomain(brief.domain);
+  const domainParts = domainQueries[domain] ?? (domain === 'general' ? [] : [domain.replace(/-/g, ' ')]);
+
   const parts = [
-    ...(domainQueries[canonicalizeDomain(brief.domain)] ?? [brief.domain]),
+    ...domainParts,
     ...brief.capabilities,
+    ...(brief.searchTerms ?? []),
   ];
-  return parts.join(' ');
+  return dedupeQueryParts(parts).join(' ');
+}
+
+function dedupeQueryParts(parts: string[]): string[] {
+  const seen = new Set<string>();
+  const generic = new Set(['general', 'functionality', 'general functionality']);
+  const result: string[] = [];
+
+  for (const part of parts) {
+    const normalized = part.toLowerCase().trim().replace(/\s+/g, ' ');
+    if (!normalized || generic.has(normalized) || seen.has(normalized)) {
+      continue;
+    }
+    seen.add(normalized);
+    result.push(part.trim());
+  }
+
+  return result.length > 0 ? result : ['software package'];
 }
 
 // Made with Bob

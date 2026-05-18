@@ -27,3 +27,6 @@ packages/scaffold/__tests__/.tmp/
 **/.oss-preflight/cache/tmp/
 **/.oss-preflight/cache/tmp/temp-scaffold/
 **/.oss-preflight/cache/tmp/temp-scaffold/**
+.vercel
+.oss-preflight/cache/npm/@aws-sdk/client-kms.json
+Is

@@ -327,6 +327,37 @@ describe('scorer.ts', () => {
       expect(recommendations[0].scaffoldAvailable).toBe(true);
       expect(recommendations[1].scaffoldAvailable).toBe(false);
     });
+
+    it('uses registry descriptions for free-form domain goal fit without inventing facts', () => {
+      const brief: IdeaBrief = {
+        capabilities: ['AI music composition', 'music generation'],
+        domain: 'music-generation',
+        ecosystem: 'npm',
+      };
+
+      const candidates: Candidate[] = [
+        {
+          name: 'tuneframes',
+          version: '0.1.1',
+          ecosystem: 'npm',
+          description: 'Agent-native music generation. Write Tone.js, render to audio.',
+        },
+        {
+          name: '@multi-modal/sdk',
+          version: '10.0.0',
+          ecosystem: 'npm',
+          description: 'Unified image, video, speech, and music generation SDK.',
+        },
+      ];
+
+      const recommendations = scoreAndRank(candidates, brief);
+
+      expect(recommendations[0].candidate.name).toBe('tuneframes');
+      expect(recommendations[0].subscores.goalFit).toBeGreaterThan(
+        recommendations[1].subscores.goalFit
+      );
+      expect(recommendations[0].passport.facts.license).toBeNull();
+    });
   });
 });
 

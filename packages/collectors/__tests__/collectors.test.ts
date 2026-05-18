@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { collectNpmData, type NpmCollectedData } from '../src/npm.js';
@@ -196,6 +196,17 @@ describe('Collectors', () => {
   });
 
   describe('Cache invalidation', () => {
+    it('sanitizes cache keys that contain Windows alternate-stream characters', async () => {
+      await writeCache('pypi-search', 'ai music composition:10', [{ name: 'music21' }], 'live');
+
+      const cached = await readCache<Array<{ name: string }>>('pypi-search', 'ai music composition:10');
+      const files = await readdir(join(cacheDir, 'pypi-search'));
+
+      expect(cached?.data).toEqual([{ name: 'music21' }]);
+      expect(files).toContain('ai music composition_10.json');
+      expect(files).not.toContain('ai music composition');
+    });
+
     it('refetches when cache is expired', async () => {
       const oldTimestamp = new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString();
 

@@ -42,7 +42,19 @@ function getCacheDir(): string {
  * Get cache file path for a specific ecosystem and package
  */
 function getCachePath(ecosystem: string, canonicalId: string): string {
-  return join(getCacheDir(), ecosystem, `${canonicalId}.json`);
+  return join(getCacheDir(), ecosystem, `${safeCacheId(canonicalId)}.json`);
+}
+
+function safeCacheId(canonicalId: string): string {
+  return canonicalId
+    .split('/')
+    .map((segment) => {
+      const cleaned = segment
+        .replace(/[<>:"\\|?*\x00-\x1F]/g, '_')
+        .trim();
+      return cleaned.length > 0 && cleaned !== '.' && cleaned !== '..' ? cleaned : '_';
+    })
+    .join('/');
 }
 
 /**

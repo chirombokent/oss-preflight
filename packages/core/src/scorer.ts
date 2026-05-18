@@ -131,6 +131,8 @@ function computeSubscores(
  */
 function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
   const candidateLower = candidate.name.toLowerCase();
+  const candidateDescriptionLower = candidate.description?.toLowerCase() ?? '';
+  const candidateSearchText = `${candidateLower} ${candidateDescriptionLower}`.trim();
   const domainLower = canonicalizeDomain(brief.domain);
   const knownDomainPackages = DOMAIN_PACKAGE_MATCHES[domainLower];
   const knownDomainPackage = knownDomainPackages?.includes(candidateLower) ?? false;
@@ -140,14 +142,17 @@ function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
   }
 
   const recognizedDomain = Boolean(knownDomainPackages);
-  const tokenMatch = matchesDomainToken(candidateLower, domainLower);
+  const nameTokenMatch = matchesDomainToken(candidateLower, domainLower);
+  const descriptionTokenMatch = !nameTokenMatch && matchesDomainToken(candidateSearchText, domainLower);
   let score = 35;
 
   if (candidate.ecosystem === brief.ecosystem) {
     score += 20;
   }
 
-  if (tokenMatch) {
+  if (nameTokenMatch) {
+    score += 20;
+  } else if (descriptionTokenMatch) {
     score += 20;
   } else if (!recognizedDomain && !isGenericDomain(domainLower) && candidateLower.includes(domainLower)) {
     score += 20;
@@ -157,7 +162,14 @@ function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
     if (!isGenericCapability(capability) && capabilityMatchesName(candidateLower, capability)) {
       score += 10;
       break;
+    } else if (!isGenericCapability(capability) && capabilityMatchesName(candidateSearchText, capability)) {
+      score += 10;
+      break;
     }
+  }
+
+  if (isBroadMultimodalMatch(candidateDescriptionLower, domainLower) && !nameTokenMatch) {
+    score -= 15;
   }
 
   if (isGenericDomain(domainLower)) {
@@ -167,14 +179,25 @@ function scoreGoalFit(candidate: Candidate, brief: IdeaBrief): number {
   if (recognizedDomain) {
     // Unknown packages in a recognized domain can still be considered, but
     // they should not outrank known fit packages on popularity alone.
-    score = Math.min(score, tokenMatch ? 70 : 55);
+    score = Math.min(score, nameTokenMatch || descriptionTokenMatch ? 70 : 55);
   }
 
   return Math.min(100, score);
 }
 
+function isBroadMultimodalMatch(description: string, domain: string): boolean {
+  if (domain !== 'music-generation' || !description) {
+    return false;
+  }
+
+  const adjacentMediaTerms = ['image', 'video', 'speech', 'voice', 'text'];
+  const matches = adjacentMediaTerms.filter((term) => description.includes(term));
+  return matches.length >= 2;
+}
+
 function matchesDomainToken(candidateName: string, domain: string): boolean {
-  return (DOMAIN_NAME_TOKENS[domain] ?? [domain]).some((token) => candidateName.includes(token));
+  const tokens = DOMAIN_NAME_TOKENS[domain] ?? domain.split(/[^a-z0-9]+/).filter((token) => token.length >= 3);
+  return tokens.some((token) => candidateName.includes(token));
 }
 
 function capabilityMatchesName(candidateName: string, capability: string): boolean {

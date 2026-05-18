@@ -184,7 +184,7 @@ describe('discovery.ts', () => {
       expect(result.candidates[0].source).toBe('npm-search');
       expect(result.method).toBe('search');
       expect(result.fallbackUsed).toBe(false);
-      expect(mockSearch).toHaveBeenCalledWith('discord bot client bot message processing', 'npm');
+      expect(mockSearch).toHaveBeenCalledWith('discord bot client message processing', 'npm');
     });
 
     it('builds weather-specific search terms from weather domain aliases', async () => {
@@ -200,11 +200,39 @@ describe('discovery.ts', () => {
       const result = await discoverCandidatesWithSearch(brief, mockSearch);
 
       expect(mockSearch).toHaveBeenCalledWith(
-        'weather forecast forecasting openmeteo openweather weather data forecasting',
+        'weather forecast forecasting openmeteo openweather weather data',
         'npm'
       );
       expect(result.candidates.map((candidate) => candidate.name)).toContain('openmeteo');
       expect(result.fallbackUsed).toBe(true);
+    });
+
+    it('uses free-form domains and agentic search terms without requiring a catalog bucket', async () => {
+      const brief: IdeaBrief = {
+        capabilities: ['AI music composition', 'music generation'],
+        domain: 'ai music composition',
+        ecosystem: 'pypi',
+        searchTerms: ['audio synthesis', 'midi generation'],
+      };
+      const mockSearch = vi.fn().mockResolvedValue([
+        { name: 'music21', source: 'pypi-search' },
+        { name: 'magenta', source: 'pypi-search' },
+        { name: 'pretty-midi', source: 'pypi-search' },
+      ] as DiscoveredCandidate[]);
+
+      const result = await discoverCandidatesWithSearch(brief, mockSearch);
+
+      expect(mockSearch).toHaveBeenCalledWith(
+        'ai music music generation music composition audio synthesis midi AI music composition midi generation',
+        'pypi'
+      );
+      expect(result.method).toBe('search');
+      expect(result.fallbackUsed).toBe(false);
+      expect(result.candidates.map((candidate) => candidate.name)).toEqual([
+        'music21',
+        'magenta',
+        'pretty-midi',
+      ]);
     });
 
     it('falls back to catalog when search returns < 3 candidates', async () => {

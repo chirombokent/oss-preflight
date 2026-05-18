@@ -53,6 +53,17 @@ export function canonicalizeDomain(domain: string): string {
     return 'data-science';
   }
 
+  if (
+    normalized.includes('music') ||
+    normalized.includes('audio') ||
+    normalized.includes('midi') ||
+    normalized.includes('composition') ||
+    normalized.includes('composer') ||
+    normalized.includes('song-generation')
+  ) {
+    return 'music-generation';
+  }
+
   if (normalized.includes('test')) {
     return 'testing';
   }
@@ -81,4 +92,3 @@ export function canonicalizeDomain(domain: string): string {
 export function isGenericDomain(domain: string): boolean {
   return canonicalizeDomain(domain) === 'general';
 }
-

@@ -623,6 +623,47 @@ describe('AI Provider Integration', () => {
     expect(brief.domain).toBe('weather');
   });
 
+  it('preserves provider free-form domains and search terms for agentic discovery', async () => {
+    const { normalizeBriefJson } = await import('../src/ai/index.js');
+
+    const brief = normalizeBriefJson(`
+      {"capabilities":["AI music composition","music generation"],"domain":"AI music composition","ecosystem":"pypi","search_terms":["audio synthesis","midi generation"]}
+    `);
+
+    expect(brief.domain).toBe('music-generation');
+    expect(brief.searchTerms).toEqual(['audio synthesis', 'midi generation']);
+  });
+
+  it('maps discovered search sources to real candidate ecosystems before scoring', async () => {
+    const { runRecommendPipeline } = await import('../src/recommend-command.js');
+    const core = await import('@oss-preflight/core');
+    const scoreAndRankMock = vi.mocked(core.scoreAndRank);
+
+    scoreAndRankMock.mockClear();
+
+    await runRecommendPipeline('An ai music composer', {
+      intentParser: async () => ({
+        capabilities: ['AI music composition', 'music generation'],
+        domain: 'music-generation',
+        ecosystem: 'pypi',
+        searchTerms: ['audio synthesis'],
+      }),
+      collectEvidence: false,
+      searchFn: async () => [
+        { name: 'magenta', source: 'npm-search' },
+        { name: 'music21', source: 'pypi-search' },
+        { name: 'salu133445/musegan', source: 'github-search' },
+      ],
+    });
+
+    const candidates = scoreAndRankMock.mock.calls.at(-1)?.[0] as Candidate[];
+    expect(candidates.map((candidate) => [candidate.name, candidate.ecosystem])).toEqual([
+      ['magenta', 'npm'],
+      ['music21', 'pypi'],
+      ['salu133445/musegan', 'github'],
+    ]);
+  });
+
   it('OpenAI-compatible adapter calls /chat/completions and normalizes the response', async () => {
     const { createOpenAiCompatibleIntentParser } = await import('../src/ai/index.js');
     const fetchMock = vi.fn(async () => ({

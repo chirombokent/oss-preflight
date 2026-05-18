@@ -1,6 +1,7 @@
 import type {
   IdeaBrief,
   Candidate,
+  Ecosystem,
   Recommendation,
   CandidateFacts,
   EvidenceMap,
@@ -226,19 +227,136 @@ export async function liveSearchFn(
   query: string,
   ecosystem: string
 ): Promise<DiscoveredCandidate[]> {
+  const primary = normalizeEcosystem(ecosystem);
+  const searchOrder = isSubstantiveQuery(query)
+    ? uniqueEcosystems([primary, 'npm', 'pypi', 'github'])
+    : [primary];
+  const queries = buildSearchVariants(query);
+
+  const discovered: DiscoveredCandidate[] = [];
+
+  for (const target of searchOrder) {
+    for (const searchQuery of queries) {
+      const results = await searchRegistry(searchQuery, target);
+      discovered.push(...results);
+
+      if (discovered.length >= 3) {
+        break;
+      }
+    }
+
+    if (discovered.length >= 3 || !isSubstantiveQuery(query)) {
+      break;
+    }
+  }
+
+  return discovered;
+}
+
+function normalizeEcosystem(value: string): Ecosystem {
+  return value === 'pypi' || value === 'github' ? value : 'npm';
+}
+
+function uniqueEcosystems(values: Ecosystem[]): Ecosystem[] {
+  return [...new Set(values)];
+}
+
+async function searchRegistry(query: string, ecosystem: Ecosystem): Promise<DiscoveredCandidate[]> {
   if (ecosystem === 'pypi') {
     const results = await searchPyPI(query);
-    return results.map((r) => ({ name: r.name, source: 'pypi-search' as const }));
+    return results.map((r) => ({ name: r.name, description: r.description, source: 'pypi-search' as const }));
   }
 
   if (ecosystem === 'github') {
     const results = await searchGitHub(query);
-    return results.map((r) => ({ name: r.name, source: 'github-search' as const }));
+    return results.map((r) => ({ name: r.name, description: r.description, source: 'github-search' as const }));
   }
 
-  // Default to npm registry search.
   const results = await searchNpm(query);
-  return results.map((r) => ({ name: r.name, source: 'npm-search' as const }));
+  return results.map((r) => ({ name: r.name, description: r.description, source: 'npm-search' as const }));
+}
+
+function isSubstantiveQuery(query: string): boolean {
+  const generic = new Set([
+    'app',
+    'application',
+    'feature',
+    'features',
+    'functionality',
+    'general',
+    'package',
+    'software',
+    'tool',
+  ]);
+  const tokens = query
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length >= 3 && !generic.has(token));
+
+  return tokens.length >= 2;
+}
+
+function buildSearchVariants(query: string): string[] {
+  const normalized = query.toLowerCase().trim().replace(/\s+/g, ' ');
+  if (!normalized) {
+    return ['software package'];
+  }
+
+  const tokens = normalized
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length > 0);
+  const variants = [normalized];
+
+  for (const size of [2, 3]) {
+    for (let index = 0; index <= tokens.length - size; index++) {
+      const phrase = tokens.slice(index, index + size).join(' ');
+      if (isSubstantiveQuery(phrase) && !hasAdjacentDuplicateTokens(phrase)) {
+        variants.push(phrase);
+      }
+    }
+  }
+
+  for (const token of tokens) {
+    if (token.length >= 4 && isSubstantiveQuery(`${token} package`)) {
+      variants.push(token);
+    }
+  }
+
+  return uniqueStrings(variants).slice(0, 8);
+}
+
+function hasAdjacentDuplicateTokens(phrase: string): boolean {
+  const tokens = phrase.split(/\s+/).filter(Boolean);
+  return tokens.some((token, index) => index > 0 && token === tokens[index - 1]);
+}
+
+function uniqueStrings(values: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    const key = value.toLowerCase().trim();
+    if (!key || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(value.trim());
+  }
+
+  return result;
+}
+
+function ecosystemForDiscoverySource(source: DiscoveredCandidate['source'], fallback: Ecosystem): Ecosystem {
+  if (source === 'npm-search') {
+    return 'npm';
+  }
+  if (source === 'pypi-search') {
+    return 'pypi';
+  }
+  if (source === 'github-search') {
+    return 'github';
+  }
+  return fallback;
 }
 
 export interface RecommendPipelineOptions extends AiConfigOptions {
@@ -550,7 +668,8 @@ export async function runRecommendPipeline(
   const candidates: Candidate[] = discovery.candidates.map((c: DiscoveredCandidate) => ({
     name: c.name,
     version: '1.0.0', // Placeholder - collectors will provide real version
-    ecosystem: brief.ecosystem,
+    ecosystem: ecosystemForDiscoverySource(c.source, brief.ecosystem),
+    ...(c.description ? { description: c.description } : {}),
     homepageUrl: null,
     repositoryUrl: null
   }));
@@ -617,7 +736,7 @@ export function buildRecommendWorkflowTrace(
   workflow.discoveryPlan = {
     ecosystem: brief.ecosystem,
     domain: brief.domain,
-    searchQuery: brief.capabilities.join(', '),
+    searchQuery: discovery.query ?? brief.capabilities.join(', '),
     searchMethod,
   };
 
