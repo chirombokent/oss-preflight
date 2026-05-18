@@ -6,6 +6,7 @@ import { collectNpmData, type NpmCollectedData } from '../src/npm.js';
 import { collectGitHubData } from '../src/github.js';
 import { collectPyPIData } from '../src/pypi.js';
 import { collectOpenSSFData } from '../src/openssf.js';
+import { searchPyPI } from '../src/search.js';
 import { PackageNotFoundError, RateLimitError } from '../src/errors.js';
 import { readCache, writeCache } from '../src/cache/index.js';
 
@@ -321,6 +322,99 @@ describe('Collectors', () => {
       expect(githubResult.repo.full_name).toBe('discordjs/discord.js');
       expect(githubResult.contributorCount).toBe(1);
       expect(mockFetch).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  describe('searchPyPI (GitHub-backed discovery)', () => {
+    const textResponse = (status: number, body: string): Response => ({
+      status,
+      ok: status >= 200 && status < 300,
+      statusText: status === 200 ? 'OK' : 'Error',
+      headers: new Headers(),
+      text: async () => body
+    } as Response);
+
+    it('resolves GitHub repos to verified PyPI distribution names', async () => {
+      mockFetch.mockImplementation(async (url: string) => {
+        if (url.includes('api.github.com/search/repositories')) {
+          return jsonResponse(200, {
+            items: [
+              {
+                full_name: 'scrapy/scrapy',
+                description: 'GitHub repo description',
+                stargazers_count: 51000,
+                language: 'Python',
+                html_url: 'https://github.com/scrapy/scrapy'
+              }
+            ]
+          });
+        }
+        if (url.includes('pypi.org/pypi/scrapy/json')) {
+          return jsonResponse(200, {
+            info: { name: 'Scrapy', summary: 'A high-level web crawling framework' }
+          });
+        }
+        return jsonResponse(404, {});
+      });
+
+      const results = await searchPyPI('web crawler', 5);
+
+      expect(results).toEqual([
+        {
+          name: 'Scrapy',
+          description: 'A high-level web crawling framework',
+          stars: 51000,
+          source: 'pypi-search'
+        }
+      ]);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('language%3Apython'),
+        expect.anything()
+      );
+    });
+
+    it('falls back to pyproject.toml when the repo name is not the PyPI name', async () => {
+      mockFetch.mockImplementation(async (url: string) => {
+        if (url.includes('api.github.com/search/repositories')) {
+          return jsonResponse(200, {
+            items: [
+              {
+                full_name: 'octocat/cool-lib',
+                description: 'repo desc',
+                stargazers_count: 12,
+                language: 'Python',
+                html_url: 'https://github.com/octocat/cool-lib'
+              }
+            ]
+          });
+        }
+        if (url.includes('raw.githubusercontent.com/octocat/cool-lib/HEAD/pyproject.toml')) {
+          return textResponse(200, '[project]\nname = "coollib"\nversion = "1.0.0"\n');
+        }
+        if (url.includes('pypi.org/pypi/coollib/json')) {
+          return jsonResponse(200, { info: { name: 'coollib', summary: 'Resolved via pyproject' } });
+        }
+        return jsonResponse(404, {});
+      });
+
+      const results = await searchPyPI('cool lib', 5);
+
+      expect(results).toEqual([
+        {
+          name: 'coollib',
+          description: 'Resolved via pyproject',
+          stars: 12,
+          source: 'pypi-search'
+        }
+      ]);
+    });
+
+    it('degrades to an empty array when GitHub search is rate limited', async () => {
+      mockFetch.mockResolvedValueOnce(rateLimitResponse());
+
+      const results = await searchPyPI('web crawler', 5);
+
+      expect(results).toEqual([]);
     });
   });
 });

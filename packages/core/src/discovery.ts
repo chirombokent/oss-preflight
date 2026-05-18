@@ -192,12 +192,31 @@ function buildSearchQuery(brief: IdeaBrief): string {
   const domain = canonicalizeDomain(brief.domain);
   const domainParts = domainQueries[domain] ?? (domain === 'general' ? [] : [domain.replace(/-/g, ' ')]);
 
-  const parts = [
-    ...domainParts,
-    ...brief.capabilities,
-    ...(brief.searchTerms ?? []),
-  ];
-  return dedupeQueryParts(parts).join(' ');
+  // Registry/GitHub search ANDs every term, so a long keyword soup matches
+  // nothing. Keep the query tight: the domain anchor plus the single most
+  // specific phrase the intent parser produced. `liveSearchFn` derives
+  // narrower n-gram variants from this for the cascade.
+  const focusPhrase = brief.searchTerms?.[0] ?? brief.capabilities[0];
+  const parts = [...domainParts, ...(focusPhrase ? [focusPhrase] : [])];
+  const deduped = dedupeQueryParts(parts);
+
+  // Dedupe at the token level (a phrase part may repeat a word already used as
+  // a domain anchor) and hard cap at 6 tokens - past this, search relevance
+  // collapses because registries AND every term together.
+  const seenTokens = new Set<string>();
+  const tokens: string[] = [];
+  for (const token of deduped.join(' ').split(/\s+/)) {
+    const key = token.toLowerCase();
+    if (!key || seenTokens.has(key)) {
+      continue;
+    }
+    seenTokens.add(key);
+    tokens.push(token);
+    if (tokens.length === 6) {
+      break;
+    }
+  }
+  return tokens.length > 0 ? tokens.join(' ') : 'software package';
 }
 
 function dedupeQueryParts(parts: string[]): string[] {

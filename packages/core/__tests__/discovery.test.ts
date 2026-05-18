@@ -184,7 +184,7 @@ describe('discovery.ts', () => {
       expect(result.candidates[0].source).toBe('npm-search');
       expect(result.method).toBe('search');
       expect(result.fallbackUsed).toBe(false);
-      expect(mockSearch).toHaveBeenCalledWith('discord bot client message processing', 'npm');
+      expect(mockSearch).toHaveBeenCalledWith('discord bot client', 'npm');
     });
 
     it('builds weather-specific search terms from weather domain aliases', async () => {
@@ -200,7 +200,7 @@ describe('discovery.ts', () => {
       const result = await discoverCandidatesWithSearch(brief, mockSearch);
 
       expect(mockSearch).toHaveBeenCalledWith(
-        'weather forecast forecasting openmeteo openweather weather data',
+        'weather forecast forecasting openmeteo openweather data',
         'npm'
       );
       expect(result.candidates.map((candidate) => candidate.name)).toContain('openmeteo');
@@ -223,7 +223,7 @@ describe('discovery.ts', () => {
       const result = await discoverCandidatesWithSearch(brief, mockSearch);
 
       expect(mockSearch).toHaveBeenCalledWith(
-        'ai music music generation music composition audio synthesis midi AI music composition midi generation',
+        'ai music generation composition audio synthesis',
         'pypi'
       );
       expect(result.method).toBe('search');

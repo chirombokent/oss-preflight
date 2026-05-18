@@ -130,10 +130,99 @@ export async function searchNpm(
 }
 
 /**
- * Search PyPI registry
- * 
- * Uses PyPI XML-RPC API for search
- * Returns package name, version, and description
+ * Generate candidate PyPI distribution names for a GitHub repo.
+ *
+ * The vast majority of Python projects publish under a name that is the repo
+ * slug (or a trivial dash/underscore/`py-` variant of it). We try the cheap
+ * heuristics first and verify each against the PyPI JSON API.
+ */
+function pypiNameCandidates(repoFullName: string): string[] {
+  const slug = (repoFullName.split('/').pop() ?? repoFullName).toLowerCase().trim();
+  const variants = new Set<string>();
+  const add = (value: string): void => {
+    const cleaned = value.trim();
+    if (cleaned) {
+      variants.add(cleaned);
+    }
+  };
+
+  add(slug);
+  add(slug.replace(/_/g, '-'));
+  add(slug.replace(/-/g, '_'));
+  add(slug.replace(/\.py$/, ''));
+  add(slug.replace(/^(python|py)[-_]/, ''));
+  add(slug.replace(/[-_](python|py)$/, ''));
+
+  return [...variants];
+}
+
+/**
+ * Resolve a GitHub repo to its real PyPI distribution name.
+ *
+ * PyPI no longer exposes a programmatic search API (the HTML search page is
+ * behind an anti-bot challenge), so discovery is driven by GitHub repo search.
+ * Each repo is mapped back to a PyPI package via the official JSON API
+ * (`/pypi/{name}/json`), which is not bot-walled. Name heuristics are tried
+ * first; the repo's `pyproject.toml` is consulted as a fallback.
+ */
+async function resolvePyPIPackage(
+  repoFullName: string
+): Promise<{ name: string; description?: string } | null> {
+  const verify = async (
+    candidate: string
+  ): Promise<{ name: string; description?: string } | null> => {
+    try {
+      const response = await fetch(
+        `https://pypi.org/pypi/${encodeURIComponent(candidate)}/json`,
+        { headers: { Accept: 'application/json', 'User-Agent': 'oss-preflight' } }
+      );
+      if (!response.ok) {
+        return null;
+      }
+      const data = (await response.json()) as { info?: { name?: string; summary?: string } };
+      const name = data.info?.name;
+      if (!name) {
+        return null;
+      }
+      return { name, description: data.info?.summary ?? undefined };
+    } catch {
+      return null;
+    }
+  };
+
+  for (const candidate of pypiNameCandidates(repoFullName).slice(0, 4)) {
+    const resolved = await verify(candidate);
+    if (resolved) {
+      return resolved;
+    }
+  }
+
+  // Fallback: read the published name from the repo's pyproject.toml.
+  try {
+    const response = await fetch(
+      `https://raw.githubusercontent.com/${repoFullName}/HEAD/pyproject.toml`,
+      { headers: { 'User-Agent': 'oss-preflight' } }
+    );
+    if (response.ok) {
+      const toml = await response.text();
+      const nameMatch = toml.match(/^\s*name\s*=\s*["']([^"']+)["']/m);
+      if (nameMatch?.[1]) {
+        return verify(nameMatch[1].trim());
+      }
+    }
+  } catch {
+    // Ignore - resolution is best-effort.
+  }
+
+  return null;
+}
+
+/**
+ * Search for PyPI packages.
+ *
+ * PyPI has no usable search API, so candidates are discovered via GitHub repo
+ * search (scoped to Python) and resolved back to verified PyPI distribution
+ * names. Best-effort: any upstream failure degrades to an empty array.
  */
 export async function searchPyPI(
   query: string,
@@ -141,54 +230,54 @@ export async function searchPyPI(
 ): Promise<SearchResult[]> {
   const canonicalQuery = normalizeSearchQuery(query);
   const cacheKey = `${canonicalQuery}:${limit}`;
-  
+
   // Check cache first
   const cached = await readCache<SearchResult[]>('pypi-search', cacheKey);
   if (cached && !cached.error) {
     return cached.data.map(result => ({ ...result, source: 'pypi-search' as const }));
   }
-  
+
   try {
-    // Use PyPI's simple search endpoint (JSON API)
-    // Note: PyPI doesn't have a great search API, so we use a simple approach
-    const url = `https://pypi.org/search/?q=${encodeURIComponent(query)}&o=`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'Accept': 'text/html',
-        'User-Agent': 'oss-preflight'
-      }
-    });
-    
-    if (!response.ok) {
-      // Graceful degradation - return empty array on error
+    const githubQuery = `${query} language:python`;
+    const perPage = Math.min(limit * 2, 20);
+    const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(githubQuery)}&sort=stars&order=desc&per_page=${perPage}`;
+
+    const response = await fetch(url, { headers: createGitHubHeaders() });
+
+    if (isGitHubRateLimited(response) || !response.ok) {
+      // Graceful degradation - return empty array on rate limit / error
       return [];
     }
-    
-    const html = await response.text();
-    
-    // Parse HTML to extract package names and descriptions
-    // This is a simple regex-based parser for the PyPI search results page
-    const packageRegex = /<a class="package-snippet"[^>]*href="\/project\/([^/]+)\/[^>]*>[\s\S]*?<span class="package-snippet__name">([^<]+)<\/span>[\s\S]*?<p class="package-snippet__description">([^<]*)<\/p>/g;
-    
+
+    const data = (await response.json()) as GitHubSearchResponse;
+
     const results: SearchResult[] = [];
-    let match;
-    let count = 0;
-    
-    while ((match = packageRegex.exec(html)) !== null && count < limit) {
-      if (match[2] && match[3]) {
-        results.push({
-          name: match[2].trim(),
-          description: match[3].trim(),
-          source: 'pypi-search' as const
-        });
-        count++;
+    const seen = new Set<string>();
+
+    for (const item of data.items) {
+      if (results.length >= limit) {
+        break;
       }
+      const resolved = await resolvePyPIPackage(item.full_name);
+      if (!resolved) {
+        continue;
+      }
+      const key = resolved.name.toLowerCase();
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      results.push({
+        name: resolved.name,
+        description: resolved.description ?? item.description ?? undefined,
+        stars: item.stargazers_count,
+        source: 'pypi-search' as const
+      });
     }
-    
+
     // Cache the results
     await writeCache('pypi-search', cacheKey, results, 'live');
-    
+
     return results;
   } catch (error) {
     // Graceful degradation - return empty array, don't crash
