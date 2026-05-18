@@ -39,6 +39,8 @@ export function keywordParser(idea: string): IdeaBrief {
     domain = 'http-client';
   } else if (includesAny(lowerIdea, ['music', 'audio', 'midi', 'song', 'composer', 'composition'])) {
     domain = 'music-generation';
+  } else if (includesAny(lowerIdea, ['crawler', 'crawling', 'scraper', 'scraping', 'spider', 'browser automation', 'website automation'])) {
+    domain = 'web-crawler';
   } else if (includesAny(lowerIdea, ['web', 'api', 'server', 'framework', 'express', 'fastify', 'koa', 'hono', 'django', 'flask', 'fastapi'])) {
     domain = 'web-framework';
   } else if (lowerIdea.includes('bot')) {
@@ -82,6 +84,16 @@ export function keywordParser(idea: string): IdeaBrief {
       capabilities.push('MIDI generation');
     }
   }
+  if (includesAny(lowerIdea, ['crawler', 'crawling', 'crawl', 'scraper', 'scraping', 'spider', 'browser automation', 'website automation'])) {
+    capabilities.push('web crawling');
+    capabilities.push('web scraping');
+    if (includesAny(lowerIdea, ['ai', 'agent', 'intelligent'])) {
+      capabilities.push('AI-assisted crawling');
+    }
+    if (includesAny(lowerIdea, ['browser', 'website automation', 'dynamic', 'javascript-rendered'])) {
+      capabilities.push('browser automation');
+    }
+  }
 
   if (capabilities.length === 0) {
     if (domain === 'web-framework') {
@@ -94,12 +106,16 @@ export function keywordParser(idea: string): IdeaBrief {
       capabilities.push('weather data', 'forecasting');
     } else if (domain === 'music-generation') {
       capabilities.push('AI music composition', 'music generation');
+    } else if (domain === 'web-crawler') {
+      capabilities.push('web crawling', 'web scraping');
     }
   }
 
   const searchTerms =
     domain === 'music-generation'
       ? ['ai music generation', 'music composition', 'audio synthesis', 'midi generation']
+      : domain === 'web-crawler'
+        ? ['web crawler', 'web scraping', 'browser automation', 'crawler framework']
       : undefined;
 
   return {

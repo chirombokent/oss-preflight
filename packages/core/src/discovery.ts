@@ -21,7 +21,10 @@ export type DiscoverySource = 'npm-search' | 'pypi-search' | 'github-search' | '
 export interface DiscoveredCandidate {
   name: string;
   source: DiscoverySource;
+  kind?: 'package' | 'repository';
   description?: string;
+  homepageUrl?: string | null;
+  repositoryUrl?: string | null;
 }
 
 /**
@@ -144,7 +147,7 @@ export async function discoverCandidatesWithSearch(
         source: 'catalog-fallback' as const
       }));
 
-    if (catalogWithSource.length === 0 && deduplicated.length >= 3) {
+    if (catalogWithSource.length === 0) {
       return {
         candidates: deduplicated,
         method: 'search',
@@ -185,6 +188,7 @@ function buildSearchQuery(brief: IdeaBrief): string {
     'web-framework': ['web', 'framework', 'http', 'server', 'routing'],
     'data-science': ['data', 'science', 'dataframe', 'csv', 'notebook'],
     'music-generation': ['ai music', 'music generation', 'music composition', 'audio synthesis', 'midi'],
+    'web-crawler': ['web crawler', 'web scraping', 'browser automation', 'crawler', 'scraper'],
     testing: ['testing', 'unit', 'test', 'runner'],
     'http-client': ['http', 'client', 'request', 'fetch'],
   };

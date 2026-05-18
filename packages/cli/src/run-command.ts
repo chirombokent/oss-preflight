@@ -41,7 +41,8 @@ function generateReport(
 **Idea:** ${idea}
 
 ## Selected Recommendation
-**Package:** ${recommendation.candidate.name}@${recommendation.candidate.version}
+**Candidate:** ${recommendation.candidate.name}@${recommendation.candidate.version}
+**Kind:** ${recommendation.candidate.kind ?? (recommendation.candidate.ecosystem === 'github' ? 'repository' : 'package')}
 **Rank:** ${recommendation.rank}
 **Score:** ${recommendation.score.toFixed(2)}
 
@@ -108,9 +109,10 @@ function generateAdoptionPack(idea: string, recommendation: Recommendation): str
 ## Input
 ${idea}
 
-## Selected Package
+## Selected Candidate
 - Name: ${recommendation.candidate.name}
 - Version: ${recommendation.candidate.version}
+- Kind: ${recommendation.candidate.kind ?? (recommendation.candidate.ecosystem === 'github' ? 'repository' : 'package')}
 - Ecosystem: ${recommendation.candidate.ecosystem}
 - Rank: ${recommendation.rank}
 - Score: ${recommendation.score}

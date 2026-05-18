@@ -497,7 +497,7 @@ function App() {
               <ResultBar result={result} onOverride={(mode) => handleAnalyze(lastInput, mode)} />
               {result.mode === 'recommend' ? (
                 <>
-                  {result.intent.fallbackUsed ? (
+                  {result.intent?.fallbackUsed ? (
                     <div className="mx-auto mt-6 max-w-6xl px-6">
                       <div className="rounded-lg border border-[#D88B31]/25 bg-[#FFF3DF] px-4 py-3 text-sm text-[#7A4D12] dark:bg-[#2A2111] dark:text-[#F4D6A2]">
                         {result.intent.requestedProvider ?? 'AI'} parsing failed, so keyword parsing handled this run.

@@ -133,6 +133,26 @@ export async function writeCache<T>(
 }
 
 /**
+ * Best-effort cache write for live registry/serverless paths.
+ *
+ * Cache availability must not affect discovery or evidence collection; hosted
+ * runtimes may expose the project directory as read-only.
+ */
+export async function writeCacheBestEffort<T>(
+  ecosystem: string,
+  canonicalId: string,
+  data: T,
+  source: CacheEntrySource = 'live',
+  isError = false
+): Promise<void> {
+  try {
+    await writeCache(ecosystem, canonicalId, data, source, isError);
+  } catch {
+    // Cache writes are an optimization. Callers should keep their live result.
+  }
+}
+
+/**
  * Clear cache for a specific package
  */
 export async function clearCache(

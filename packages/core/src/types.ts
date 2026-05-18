@@ -25,6 +25,15 @@ export const EcosystemSchema = z.enum(['npm', 'pypi', 'github']);
 export type Ecosystem = z.infer<typeof EcosystemSchema>;
 
 /**
+ * Candidate kind.
+ *
+ * `package` means an installable npm/PyPI package. `repository` means a
+ * source repository or solution reference that may require manual adoption.
+ */
+export const CandidateKindSchema = z.enum(['package', 'repository']);
+export type CandidateKind = z.infer<typeof CandidateKindSchema>;
+
+/**
  * Evidence fact with source attribution
  */
 export const EvidenceFactSchema = z.object({
@@ -81,6 +90,7 @@ export const CandidateSchema = z.object({
   name: z.string(),
   version: z.string(),
   ecosystem: EcosystemSchema,
+  kind: CandidateKindSchema.optional(),
   description: z.string().optional(),
   homepageUrl: z.string().nullable().optional(),
   repositoryUrl: z.string().nullable().optional(),

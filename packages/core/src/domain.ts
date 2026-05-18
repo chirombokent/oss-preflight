@@ -64,6 +64,18 @@ export function canonicalizeDomain(domain: string): string {
     return 'music-generation';
   }
 
+  if (
+    normalized.includes('crawler') ||
+    normalized.includes('crawling') ||
+    normalized.includes('scraper') ||
+    normalized.includes('scraping') ||
+    normalized.includes('spider') ||
+    normalized.includes('browser-automation') ||
+    normalized.includes('website-automation')
+  ) {
+    return 'web-crawler';
+  }
+
   if (normalized.includes('test')) {
     return 'testing';
   }

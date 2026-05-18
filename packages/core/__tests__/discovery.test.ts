@@ -209,15 +209,46 @@ describe('discovery.ts', () => {
 
     it('uses free-form domains and agentic search terms without requiring a catalog bucket', async () => {
       const brief: IdeaBrief = {
-        capabilities: ['AI music composition', 'music generation'],
-        domain: 'ai music composition',
-        ecosystem: 'pypi',
-        searchTerms: ['audio synthesis', 'midi generation'],
+        capabilities: ['semantic retrieval', 'embedding search'],
+        domain: 'vector database',
+        ecosystem: 'npm',
+        searchTerms: ['embedding search', 'nearest neighbor index'],
       };
       const mockSearch = vi.fn().mockResolvedValue([
-        { name: 'music21', source: 'pypi-search' },
-        { name: 'magenta', source: 'pypi-search' },
-        { name: 'pretty-midi', source: 'pypi-search' },
+        { name: '@qdrant/js-client-rest', source: 'npm-search' },
+        { name: 'weaviate-ts-client', source: 'npm-search' },
+        { name: 'vectra', source: 'npm-search' },
+      ] as DiscoveredCandidate[]);
+
+      const result = await discoverCandidatesWithSearch(brief, mockSearch);
+
+      expect(mockSearch).toHaveBeenCalledWith(
+        'vector database embedding search',
+        'npm'
+      );
+      expect(result.method).toBe('search');
+      expect(result.fallbackUsed).toBe(false);
+      expect(result.candidates.map((candidate) => candidate.name)).toEqual([
+        '@qdrant/js-client-rest',
+        'weaviate-ts-client',
+        'vectra',
+      ]);
+    });
+
+    it('keeps live repository candidates for recognized domains without requiring a catalog bucket', async () => {
+      const brief: IdeaBrief = {
+        capabilities: ['Generate music', 'Compose music using AI'],
+        domain: 'music-generation',
+        ecosystem: 'pypi',
+        searchTerms: ['AI music generation', 'algorithmic composition library'],
+      };
+      const mockSearch = vi.fn().mockResolvedValue([
+        {
+          name: 'cuthbertLab/music21',
+          source: 'github-search',
+          kind: 'repository',
+          repositoryUrl: 'https://github.com/cuthbertLab/music21',
+        },
       ] as DiscoveredCandidate[]);
 
       const result = await discoverCandidatesWithSearch(brief, mockSearch);
@@ -229,9 +260,7 @@ describe('discovery.ts', () => {
       expect(result.method).toBe('search');
       expect(result.fallbackUsed).toBe(false);
       expect(result.candidates.map((candidate) => candidate.name)).toEqual([
-        'music21',
-        'magenta',
-        'pretty-midi',
+        'cuthbertLab/music21',
       ]);
     });
 

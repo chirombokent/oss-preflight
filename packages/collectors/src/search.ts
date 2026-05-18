@@ -1,4 +1,4 @@
-import { readCache, writeCache } from './cache/index.js';
+import { readCache, writeCacheBestEffort } from './cache/index.js';
 
 /**
  * Search result from any registry
@@ -10,6 +10,8 @@ export interface SearchResult {
   score?: number;
   stars?: number;
   language?: string;
+  homepageUrl?: string | null;
+  repositoryUrl?: string | null;
   source: 'npm-search' | 'pypi-search' | 'github-search';
 }
 
@@ -116,11 +118,13 @@ export async function searchNpm(
       version: obj.package.version,
       description: obj.package.description,
       score: obj.score.final,
+      homepageUrl: obj.package.links?.homepage ?? null,
+      repositoryUrl: obj.package.links?.repository ?? null,
       source: 'npm-search' as const
     }));
     
-    // Cache the results
-    await writeCache('npm-search', cacheKey, results, 'live');
+    // Cache writes are best-effort in hosted/serverless runtimes.
+    await writeCacheBestEffort('npm-search', cacheKey, results, 'live');
     
     return results;
   } catch (error) {
@@ -275,8 +279,8 @@ export async function searchPyPI(
       });
     }
 
-    // Cache the results
-    await writeCache('pypi-search', cacheKey, results, 'live');
+    // Cache writes are best-effort in hosted/serverless runtimes.
+    await writeCacheBestEffort('pypi-search', cacheKey, results, 'live');
 
     return results;
   } catch (error) {
@@ -328,11 +332,12 @@ export async function searchGitHub(
       description: item.description ?? undefined,
       stars: item.stargazers_count,
       language: item.language ?? undefined,
+      repositoryUrl: item.html_url,
       source: 'github-search' as const
     }));
     
-    // Cache the results
-    await writeCache('github-search', cacheKey, results, 'live');
+    // Cache writes are best-effort in hosted/serverless runtimes.
+    await writeCacheBestEffort('github-search', cacheKey, results, 'live');
     
     return results;
   } catch (error) {

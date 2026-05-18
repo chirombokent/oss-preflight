@@ -172,6 +172,13 @@ function parseGitHubRepo(repositoryUrl?: string | null): string | null {
   return `${match[1]}/${match[2]}`;
 }
 
+function candidateOwnerRepo(candidate: Candidate): string | null {
+  if (candidate.ecosystem === 'github' && /^[^/\s]+\/[^/\s]+$/i.test(candidate.name)) {
+    return candidate.name;
+  }
+  return parseGitHubRepo(candidate.repositoryUrl);
+}
+
 function findPyPIRepositoryUrl(projectUrls?: Record<string, string>): string | null {
   if (!projectUrls) {
     return null;
@@ -236,7 +243,8 @@ export async function liveSearchFn(
   const discovered: DiscoveredCandidate[] = [];
 
   for (const target of searchOrder) {
-    for (const searchQuery of queries) {
+    const targetQueries = target === 'pypi' ? queries.slice(0, 2) : queries.slice(0, 4);
+    for (const searchQuery of targetQueries) {
       const results = await searchRegistry(searchQuery, target);
       discovered.push(...results);
 
@@ -247,6 +255,20 @@ export async function liveSearchFn(
 
     if (discovered.length >= 3 || !isSubstantiveQuery(query)) {
       break;
+    }
+  }
+
+  if (
+    isSubstantiveQuery(query) &&
+    primary !== 'github' &&
+    !discovered.some((candidate) => candidate.source === 'github-search')
+  ) {
+    for (const searchQuery of queries.slice(0, 4)) {
+      const repositoryResults = await searchRegistry(searchQuery, 'github');
+      discovered.push(...repositoryResults.slice(0, 3));
+      if (repositoryResults.length > 0) {
+        break;
+      }
     }
   }
 
@@ -263,17 +285,38 @@ function uniqueEcosystems(values: Ecosystem[]): Ecosystem[] {
 
 async function searchRegistry(query: string, ecosystem: Ecosystem): Promise<DiscoveredCandidate[]> {
   if (ecosystem === 'pypi') {
-    const results = await searchPyPI(query);
-    return results.map((r) => ({ name: r.name, description: r.description, source: 'pypi-search' as const }));
+    const results = await searchPyPI(query, 5);
+    return results.map((r) => ({
+      name: r.name,
+      description: r.description,
+      source: 'pypi-search' as const,
+      kind: 'package' as const,
+      homepageUrl: r.homepageUrl ?? null,
+      repositoryUrl: r.repositoryUrl ?? null,
+    }));
   }
 
   if (ecosystem === 'github') {
-    const results = await searchGitHub(query);
-    return results.map((r) => ({ name: r.name, description: r.description, source: 'github-search' as const }));
+    const results = await searchGitHub(query, 5);
+    return results.map((r) => ({
+      name: r.name,
+      description: r.description,
+      source: 'github-search' as const,
+      kind: 'repository' as const,
+      homepageUrl: r.homepageUrl ?? null,
+      repositoryUrl: r.repositoryUrl ?? `https://github.com/${r.name}`,
+    }));
   }
 
-  const results = await searchNpm(query);
-  return results.map((r) => ({ name: r.name, description: r.description, source: 'npm-search' as const }));
+  const results = await searchNpm(query, 5);
+  return results.map((r) => ({
+    name: r.name,
+    description: r.description,
+    source: 'npm-search' as const,
+    kind: 'package' as const,
+    homepageUrl: r.homepageUrl ?? null,
+    repositoryUrl: r.repositoryUrl ?? null,
+  }));
 }
 
 function isSubstantiveQuery(query: string): boolean {
@@ -377,6 +420,10 @@ export interface RecommendPipelineOptions extends AiConfigOptions {
    * Injected search adapter (test hook). Defaults to {@link liveSearchFn}.
    */
   searchFn?: SearchFn;
+  /**
+   * Maximum recommendations to return after ranking.
+   */
+  maxRecommendations?: number;
 }
 
 export interface IntentParseMetadata {
@@ -503,7 +550,7 @@ async function gatherEvidence(
   const evidence: EvidenceMap = {};
 
   const enriched = await Promise.all(candidates.map(async (candidate) => {
-    if (candidate.ecosystem !== 'npm' && candidate.ecosystem !== 'pypi') {
+    if (candidate.ecosystem !== 'npm' && candidate.ecosystem !== 'pypi' && candidate.ecosystem !== 'github') {
       return candidate;
     }
 
@@ -561,10 +608,16 @@ async function gatherEvidence(
     }
 
     // Repo-derived evidence (GitHub + OpenSSF), best-effort.
-    const ownerRepo = parseGitHubRepo(resolved.repositoryUrl);
+    const ownerRepo = candidateOwnerRepo(resolved);
     if (ownerRepo) {
       try {
         const gh = await collectGitHubData(ownerRepo, forceRefresh);
+        resolved = {
+          ...resolved,
+          repositoryUrl: gh.repo.html_url ?? resolved.repositoryUrl,
+          homepageUrl: gh.repo.homepage ?? resolved.homepageUrl,
+          description: resolved.description ?? gh.repo.description ?? undefined,
+        };
         inputs.github = {
           repo: {
             stargazers_count: gh.repo.stargazers_count ?? null,
@@ -669,9 +722,10 @@ export async function runRecommendPipeline(
     name: c.name,
     version: '1.0.0', // Placeholder - collectors will provide real version
     ecosystem: ecosystemForDiscoverySource(c.source, brief.ecosystem),
+    kind: c.kind ?? (c.source === 'github-search' ? 'repository' : 'package'),
     ...(c.description ? { description: c.description } : {}),
-    homepageUrl: null,
-    repositoryUrl: null
+    homepageUrl: c.homepageUrl ?? null,
+    repositoryUrl: c.repositoryUrl ?? null
   }));
   
   // Gather evidence (collectors integration)
@@ -686,8 +740,10 @@ export async function runRecommendPipeline(
   // Score and rank (evidence-aware when collectors returned facts)
   const recommendations = scoreAndRank(enrichedCandidates, brief, undefined, evidence);
   
-  // Return top 3
-  const topRecommendations = recommendations.slice(0, 3);
+  // Return top ranked candidates. CLI defaults to 3; richer surfaces can ask
+  // for more so package and repository rows can both be shown.
+  const maxRecommendations = options.maxRecommendations ?? 3;
+  const topRecommendations = recommendations.slice(0, maxRecommendations);
 
   // Save if requested
   if (options.save) {
@@ -744,6 +800,7 @@ export function buildRecommendWorkflowTrace(
   workflow.candidates = discovery.candidates.map((candidate) => ({
     name: candidate.name,
     source: candidate.source,
+    kind: candidate.kind ?? (candidate.source === 'github-search' ? 'repository' : 'package'),
     discoveredAt,
   }));
   workflow.recommendations = recommendations;
@@ -764,6 +821,7 @@ export async function runRecommendAnalysis(
 ): Promise<RecommendAnalysisResult> {
   const { recommendations, brief, discovery, intent } = await runRecommendPipeline(idea, {
     ...options,
+    maxRecommendations: options.maxRecommendations ?? 6,
     save: false,
   });
 

@@ -156,6 +156,13 @@ const mockIntentParser = async (_idea: string): Promise<IdeaBrief> => ({
   constraints: {}
 });
 
+function jsonResponse(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 beforeEach(() => {
   process.env = { ...originalEnv };
   delete process.env.ANTHROPIC_API_KEY;
@@ -561,6 +568,21 @@ describe('AI Provider Integration', () => {
     expect(result.capabilities).toEqual(expect.arrayContaining(['weather data', 'forecasting']));
   });
 
+  it('keyword fallback recognizes AI crawler ideas without collapsing to general', async () => {
+    const { parseIntentWithFallback } = await import('../src/recommend-command.js');
+
+    const result = await parseIntentWithFallback('AI crawler');
+
+    expect(result.ecosystem).toBe('npm');
+    expect(result.domain).toBe('web-crawler');
+    expect(result.capabilities).toEqual(
+      expect.arrayContaining(['web crawling', 'web scraping', 'AI-assisted crawling'])
+    );
+    expect(result.searchTerms).toEqual(
+      expect.arrayContaining(['web crawler', 'web scraping', 'browser automation'])
+    );
+  });
+
   it('reports when provider parsing falls back to keyword parsing', async () => {
     const { parseIntentWithFallbackResult } = await import('../src/recommend-command.js');
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -581,6 +603,40 @@ describe('AI Provider Integration', () => {
       requestedProvider: 'gemini',
       fallbackUsed: true,
     });
+    consoleSpy.mockRestore();
+  });
+
+  it('keeps provider-fallback discovery specific for AI crawler ideas', async () => {
+    const { runRecommendPipeline } = await import('../src/recommend-command.js');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const searchFn = vi.fn().mockResolvedValue([
+      { name: 'crawlee', source: 'npm-search' },
+      { name: 'playwright', source: 'npm-search' },
+      { name: 'puppeteer', source: 'npm-search' },
+    ]);
+
+    const result = await runRecommendPipeline('AI crawler', {
+      intentParser: {
+        provider: 'gemini',
+        parse: async () => {
+          throw new Error('Gemini provider returned 503');
+        },
+      },
+      collectEvidence: false,
+      searchFn,
+    });
+
+    expect(result.intent).toMatchObject({
+      provider: 'keyword',
+      requestedProvider: 'gemini',
+      fallbackUsed: true,
+    });
+    expect(result.brief.domain).toBe('web-crawler');
+    expect(searchFn).toHaveBeenCalledWith(
+      expect.stringContaining('crawler'),
+      'npm'
+    );
+    expect(result.discovery.query).not.toBe('software package');
     consoleSpy.mockRestore();
   });
 
@@ -652,7 +708,7 @@ describe('AI Provider Integration', () => {
       searchFn: async () => [
         { name: 'magenta', source: 'npm-search' },
         { name: 'music21', source: 'pypi-search' },
-        { name: 'salu133445/musegan', source: 'github-search' },
+        { name: 'salu133445/musegan', source: 'github-search', repositoryUrl: 'https://github.com/salu133445/musegan' },
       ],
     });
 
@@ -662,6 +718,10 @@ describe('AI Provider Integration', () => {
       ['music21', 'pypi'],
       ['salu133445/musegan', 'github'],
     ]);
+    expect(candidates.find((candidate) => candidate.name === 'salu133445/musegan')).toMatchObject({
+      kind: 'repository',
+      repositoryUrl: 'https://github.com/salu133445/musegan',
+    });
   });
 
   it('OpenAI-compatible adapter calls /chat/completions and normalizes the response', async () => {
@@ -725,6 +785,33 @@ describe('AI Provider Integration', () => {
         headers: expect.objectContaining({ 'x-goog-api-key': 'gemini-key' }),
       })
     );
+    expect(brief.domain).toBe('discord');
+  });
+
+  it('Gemini adapter retries transient 503 responses before falling back', async () => {
+    const { createGeminiIntentParser } = await import('../src/ai/index.js');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(jsonResponse(503, { error: 'unavailable' }))
+      .mockResolvedValueOnce(jsonResponse(200, {
+        candidates: [{
+          content: {
+            parts: [{
+              text: '{"capabilities":["messages"],"domain":"discord","ecosystem":"npm"}',
+            }],
+          },
+        }],
+      }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const parser = createGeminiIntentParser({
+      apiKey: 'gemini-key',
+      model: 'gemini-test',
+      baseUrl: 'https://generativelanguage.googleapis.com',
+      retryDelayMs: 0,
+    });
+    const brief = await parser.parse('Discord bot');
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(brief.domain).toBe('discord');
   });
 });

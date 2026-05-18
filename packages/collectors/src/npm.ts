@@ -1,5 +1,5 @@
 import { PackageNotFoundError, CollectorError } from './errors.js';
-import { readCache, writeCache } from './cache/index.js';
+import { readCache, writeCacheBestEffort } from './cache/index.js';
 import type { CollectorResultSource } from './cache/index.js';
 
 /**
@@ -172,13 +172,13 @@ export async function collectNpmData(
       source: 'live'
     };
     
-    // Cache the result
-    await writeCache('npm', canonicalId, data, 'live');
+    // Cache the result when the runtime allows it.
+    await writeCacheBestEffort('npm', canonicalId, data, 'live');
     
     return data;
   } catch (error) {
     if (error instanceof PackageNotFoundError) {
-      await writeCache('npm', canonicalId, { error: error.message }, 'live', true);
+      await writeCacheBestEffort('npm', canonicalId, { error: error.message }, 'live', true);
       throw error;
     }
     
@@ -189,8 +189,8 @@ export async function collectNpmData(
       return sanitizeNpmCollectedData(cached.data, cached.collectedAt, 'cache-fallback');
     }
     
-    // Cache the error
-    await writeCache('npm', canonicalId, { error: (error as Error).message }, 'live', true);
+    // Cache the error when the runtime allows it.
+    await writeCacheBestEffort('npm', canonicalId, { error: (error as Error).message }, 'live', true);
     
     throw new CollectorError('npm', packageName, error as Error);
   }

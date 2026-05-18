@@ -60,6 +60,7 @@ export const WorkflowTraceSchema = z.object({
   candidates: z.array(z.object({
     name: z.string(),
     source: z.enum(['npm-search', 'pypi-search', 'github-search', 'catalog-fallback', 'manifest']),
+    kind: z.enum(['package', 'repository']).optional(),
     discoveredAt: z.string(), // ISO-8601 UTC
   })),
   recommendations: z.array(z.any()), // Recommendation[] - using any to avoid circular dependency

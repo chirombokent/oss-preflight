@@ -1,5 +1,5 @@
 import { CollectorError, RateLimitError } from './errors.js';
-import { readCache, writeCache } from './cache/index.js';
+import { readCache, writeCacheBestEffort } from './cache/index.js';
 import type { CollectorResultSource } from './cache/index.js';
 
 /**
@@ -184,8 +184,8 @@ export async function collectGitHubData(
       source: 'live'
     };
     
-    // Cache the result
-    await writeCache('github', canonicalId, data, 'live');
+    // Cache the result when the runtime allows it.
+    await writeCacheBestEffort('github', canonicalId, data, 'live');
     
     return data;
   } catch (error) {
@@ -215,8 +215,8 @@ export async function collectGitHubData(
       };
     }
     
-    // Cache the error
-    await writeCache('github', canonicalId, { error: (error as Error).message }, 'live', true);
+    // Cache the error when the runtime allows it.
+    await writeCacheBestEffort('github', canonicalId, { error: (error as Error).message }, 'live', true);
     
     throw new CollectorError('github', ownerRepo, error as Error);
   }

@@ -337,10 +337,11 @@ function generateAdoptionReport(recommendation: Recommendation, smokeResult?: { 
 
 **Generated**: ${timestamp}
 
-## Selected Package
+## Selected Candidate
 
 - **Name**: ${recommendation.candidate.name}
 - **Version**: ${recommendation.candidate.version}
+- **Kind**: ${recommendation.candidate.kind ?? (recommendation.candidate.ecosystem === 'github' ? 'repository' : 'package')}
 - **Ecosystem**: ${recommendation.candidate.ecosystem}
 - **Score**: ${recommendation.score}/100
 
@@ -362,7 +363,7 @@ function generateAdoptionReport(recommendation: Recommendation, smokeResult?: { 
     report += `- ${source}\n`;
   }
 
-  report += `\n## Package Details
+  report += `\n## Candidate Details
 
 - **Repository**: ${recommendation.candidate.repositoryUrl || 'N/A'}
 - **Homepage**: ${recommendation.candidate.homepageUrl || 'N/A'}
@@ -433,9 +434,10 @@ export function generateAdoptionPack(idea: string, recommendation: Recommendatio
 ## Input
 ${idea}
 
-## Selected Package
+## Selected Candidate
 - Name: ${recommendation.candidate.name}
 - Version: ${recommendation.candidate.version}
+- Kind: ${recommendation.candidate.kind ?? (recommendation.candidate.ecosystem === 'github' ? 'repository' : 'package')}
 - Ecosystem: ${recommendation.candidate.ecosystem}
 - Rank: ${recommendation.rank}
 - Score: ${recommendation.score}

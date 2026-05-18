@@ -57,6 +57,7 @@ describe('types.ts - Zod schemas', () => {
         name: 'discord.js',
         version: '14.11.0',
         ecosystem: 'npm',
+        kind: 'package',
         homepageUrl: 'https://discord.js.org',
         repositoryUrl: 'https://github.com/discordjs/discord.js',
       };
@@ -72,6 +73,20 @@ describe('types.ts - Zod schemas', () => {
         ecosystem: 'npm',
         homepageUrl: null,
         repositoryUrl: 'https://github.com/discordjs/discord.js',
+      };
+
+      const result = CandidateSchema.safeParse(candidate);
+      expect(result.success).toBe(true);
+    });
+
+    it('validates repository candidates as first-class solutions', () => {
+      const candidate = {
+        name: 'microsoft/playwright',
+        version: '1.0.0',
+        ecosystem: 'github',
+        kind: 'repository',
+        homepageUrl: 'https://playwright.dev',
+        repositoryUrl: 'https://github.com/microsoft/playwright',
       };
 
       const result = CandidateSchema.safeParse(candidate);

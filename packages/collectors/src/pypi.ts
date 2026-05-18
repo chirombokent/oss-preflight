@@ -1,5 +1,5 @@
 import { PackageNotFoundError, CollectorError } from './errors.js';
-import { readCache, writeCache } from './cache/index.js';
+import { readCache, writeCacheBestEffort } from './cache/index.js';
 import type { CollectorResultSource } from './cache/index.js';
 
 /**
@@ -121,13 +121,13 @@ export async function collectPyPIData(
       source: 'live'
     };
     
-    // Cache the result
-    await writeCache('pypi', canonicalId, data, 'live');
+    // Cache the result when the runtime allows it.
+    await writeCacheBestEffort('pypi', canonicalId, data, 'live');
     
     return data;
   } catch (error) {
     if (error instanceof PackageNotFoundError) {
-      await writeCache('pypi', canonicalId, { error: error.message }, 'live', true);
+      await writeCacheBestEffort('pypi', canonicalId, { error: error.message }, 'live', true);
       throw error;
     }
     
@@ -138,8 +138,8 @@ export async function collectPyPIData(
       return sanitizePyPICollectedData(cached.data, cached.collectedAt, 'cache-fallback');
     }
     
-    // Cache the error
-    await writeCache('pypi', canonicalId, { error: (error as Error).message }, 'live', true);
+    // Cache the error when the runtime allows it.
+    await writeCacheBestEffort('pypi', canonicalId, { error: (error as Error).message }, 'live', true);
     
     throw new CollectorError('pypi', packageName, error as Error);
   }

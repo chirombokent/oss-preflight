@@ -1,5 +1,5 @@
 import { CollectorError } from './errors.js';
-import { readCache, writeCache } from './cache/index.js';
+import { readCache, writeCacheBestEffort } from './cache/index.js';
 import type { CollectorResultSource } from './cache/index.js';
 
 /**
@@ -108,8 +108,8 @@ export async function collectOpenSSFData(
       source: 'live'
     };
     
-    // Cache the result (even if null - we don't want to keep retrying)
-    await writeCache('openssf', canonicalId, data, 'live');
+    // Cache the result when the runtime allows it.
+    await writeCacheBestEffort('openssf', canonicalId, data, 'live');
     
     return data;
   } catch (error) {
@@ -123,8 +123,8 @@ export async function collectOpenSSFData(
       };
     }
     
-    // Cache the error
-    await writeCache('openssf', canonicalId, { error: (error as Error).message }, 'live', true);
+    // Cache the error when the runtime allows it.
+    await writeCacheBestEffort('openssf', canonicalId, { error: (error as Error).message }, 'live', true);
     
     throw new CollectorError('openssf', ownerRepo, error as Error);
   }

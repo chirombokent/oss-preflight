@@ -35,7 +35,7 @@ export function WorkflowTracePanel({ workflow }: WorkflowTracePanelProps) {
               >
                 <span className="truncate text-sm font-semibold text-[#303541] dark:text-white">{candidate.name}</span>
                 <span className="shrink-0 rounded-md bg-white px-2 py-1 text-xs text-[#4F7CAC] shadow-sm dark:bg-white/10 dark:text-[#7EC8E3]">
-                  {candidate.source}
+                  {candidate.kind ? `${candidate.kind} / ${candidate.source}` : candidate.source}
                 </span>
               </div>
             )) : (

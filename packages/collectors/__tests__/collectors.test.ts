@@ -6,7 +6,7 @@ import { collectNpmData, type NpmCollectedData } from '../src/npm.js';
 import { collectGitHubData } from '../src/github.js';
 import { collectPyPIData } from '../src/pypi.js';
 import { collectOpenSSFData } from '../src/openssf.js';
-import { searchPyPI } from '../src/search.js';
+import { searchGitHub, searchPyPI } from '../src/search.js';
 import { PackageNotFoundError, RateLimitError } from '../src/errors.js';
 import { readCache, writeCache } from '../src/cache/index.js';
 
@@ -373,6 +373,45 @@ describe('Collectors', () => {
       );
     });
 
+    it('keeps live PyPI search results when the cache directory is not writable', async () => {
+      const blockedCachePath = join(cacheDir, 'cache-file');
+      await writeFile(blockedCachePath, 'not a directory');
+      process.env.OSS_PREFLIGHT_CACHE_DIR = blockedCachePath;
+
+      mockFetch.mockImplementation(async (url: string) => {
+        if (url.includes('api.github.com/search/repositories')) {
+          return jsonResponse(200, {
+            items: [
+              {
+                full_name: 'scrapy/scrapy',
+                description: 'GitHub repo description',
+                stargazers_count: 51000,
+                language: 'Python',
+                html_url: 'https://github.com/scrapy/scrapy'
+              }
+            ]
+          });
+        }
+        if (url.includes('pypi.org/pypi/scrapy/json')) {
+          return jsonResponse(200, {
+            info: { name: 'Scrapy', summary: 'A high-level web crawling framework' }
+          });
+        }
+        return jsonResponse(404, {});
+      });
+
+      const results = await searchPyPI('web crawler', 5);
+
+      expect(results).toEqual([
+        {
+          name: 'Scrapy',
+          description: 'A high-level web crawling framework',
+          stars: 51000,
+          source: 'pypi-search'
+        }
+      ]);
+    });
+
     it('falls back to pyproject.toml when the repo name is not the PyPI name', async () => {
       mockFetch.mockImplementation(async (url: string) => {
         if (url.includes('api.github.com/search/repositories')) {
@@ -415,6 +454,35 @@ describe('Collectors', () => {
       const results = await searchPyPI('web crawler', 5);
 
       expect(results).toEqual([]);
+    });
+  });
+
+  describe('searchGitHub', () => {
+    it('keeps repository URLs for solution candidates', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse(200, {
+        items: [
+          {
+            full_name: 'microsoft/playwright',
+            description: 'Browser automation framework',
+            stargazers_count: 79000,
+            language: 'TypeScript',
+            html_url: 'https://github.com/microsoft/playwright'
+          }
+        ]
+      }));
+
+      const results = await searchGitHub('browser automation', 5);
+
+      expect(results).toEqual([
+        {
+          name: 'microsoft/playwright',
+          description: 'Browser automation framework',
+          stars: 79000,
+          language: 'TypeScript',
+          repositoryUrl: 'https://github.com/microsoft/playwright',
+          source: 'github-search'
+        }
+      ]);
     });
   });
 });

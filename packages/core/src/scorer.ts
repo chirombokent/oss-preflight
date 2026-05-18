@@ -43,7 +43,9 @@ const DOMAIN_NAME_TOKENS: Record<string, string[]> = {
   discord: ['discord'],
   weather: ['weather', 'forecast', 'openmeteo', 'openweather', 'meteostat', 'meteorology', 'climate'],
   'web-framework': ['express', 'fastify', 'koa', 'hapi', 'hono', 'web', 'http', 'server', 'router', 'routing', 'flask', 'django', 'fastapi', 'tornado'],
+  'web-crawler': ['crawler', 'crawl', 'crawling', 'scraper', 'scraping', 'spider', 'browser', 'automation', 'puppeteer', 'playwright', 'cheerio', 'scrapy', 'selenium', 'apify'],
   'data-science': ['data', 'science', 'numpy', 'pandas', 'scikit', 'matplotlib', 'csv', 'notebook'],
+  'music-generation': ['music', 'midi', 'audio', 'song', 'composition', 'composer', 'generation', 'tone', 'magenta'],
   testing: ['test', 'testing', 'jest', 'vitest', 'mocha', 'chai', 'pytest'],
   'http-client': ['http', 'fetch', 'request', 'axios', 'got', 'undici'],
 };

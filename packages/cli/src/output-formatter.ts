@@ -42,6 +42,7 @@ function formatJson(recommendations: Recommendation[], brief: IdeaBrief): string
         name: rec.candidate.name,
         version: rec.candidate.version,
         ecosystem: rec.candidate.ecosystem,
+        kind: rec.candidate.kind ?? (rec.candidate.ecosystem === 'github' ? 'repository' : 'package'),
         description: rec.candidate.description,
         homepageUrl: rec.candidate.homepageUrl,
         repositoryUrl: rec.candidate.repositoryUrl
@@ -103,8 +104,9 @@ function formatTable(recommendations: Recommendation[], brief: IdeaBrief): strin
   
   // Table header
   const header = sprintf(
-    '%-4s %-25s %-8s %-10s %-12s %-10s',
+    '%-4s %-12s %-25s %-8s %-10s %-12s %-10s',
     'Rank',
+    'Kind',
     'Name',
     'Score',
     'Goal Fit',
@@ -116,9 +118,11 @@ function formatTable(recommendations: Recommendation[], brief: IdeaBrief): strin
   
   // Table rows
   for (const rec of recommendations) {
+    const kind = rec.candidate.kind ?? (rec.candidate.ecosystem === 'github' ? 'repository' : 'package');
     const row = sprintf(
-      '%-4d %-25s %-8.1f %-10d %-12d %-10d',
+      '%-4d %-12s %-25s %-8.1f %-10d %-12d %-10d',
       rec.rank,
+      kind,
       rec.candidate.name,
       rec.score,
       rec.subscores.goalFit,
@@ -164,13 +168,13 @@ function formatMarkdown(recommendations: Recommendation[], brief: IdeaBrief): st
   lines.push('');
   
   // Table
-  lines.push('| Rank | Name | Score | Goal Fit | Maintenance | Safety | Scaffold |');
-  lines.push('|------|------|-------|----------|-------------|--------|----------|');
+  lines.push('| Rank | Kind | Name | Score | Goal Fit | Maintenance | Safety | Scaffold |');
+  lines.push('|------|------|------|-------|----------|-------------|--------|----------|');
   
   for (const rec of recommendations) {
     const scaffold = rec.scaffoldAvailable ? '✓' : '—';
     lines.push(
-      `| ${rec.rank} | ${rec.candidate.name} | ${rec.score.toFixed(1)} | ${rec.subscores.goalFit} | ${rec.subscores.maintenance} | ${rec.subscores.safety} | ${scaffold} |`
+      `| ${rec.rank} | ${rec.candidate.kind ?? (rec.candidate.ecosystem === 'github' ? 'repository' : 'package')} | ${rec.candidate.name} | ${rec.score.toFixed(1)} | ${rec.subscores.goalFit} | ${rec.subscores.maintenance} | ${rec.subscores.safety} | ${scaffold} |`
     );
   }
   
